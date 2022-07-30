@@ -1,4 +1,4 @@
-import {HOMEPAGE_ROUTE, LOGIN_ROUTE, SIGNUP_ROUTE, USERPAGE_ROUTE, SETTINGS_ROUTE} from './utils/consts';
+import {HOMEPAGE_ROUTE, LOGIN_ROUTE, SIGNUP_ROUTE, USERPAGE_ROUTE, SETTINGS_ROUTE} from './utils/data/consts';
 import {HomePage, LoginPage, SignUpPage, SettingsPage, UserPage} from './components/pages/index';
 
 export const publicRoutes = [

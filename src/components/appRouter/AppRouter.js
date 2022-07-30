@@ -1,9 +1,9 @@
 import {Routes, Route, Navigate} from 'react-router-dom';
 import {publicRoutes, privateRoutes} from '../../routes';
-import {USERPAGE_ROUTE, HOMEPAGE_ROUTE} from '../../utils/consts';
+import {USERPAGE_ROUTE, HOMEPAGE_ROUTE} from '../../utils/data/consts';
 
 function AppRouter(props) {
-    const user = false;
+    const user = true;
     return user ?
     (
         <Routes>
