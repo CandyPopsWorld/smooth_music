@@ -1,0 +1,29 @@
+@import '../../style/mixin.scss';
+@import '../../style/variables.scss';
+
+.user_main{
+    @include flex($flexDirection: column);
+    width: 100%;
+    height: 82vh;
+    background-color: $user_main_bg_color;
+    color: $user_main_color;
+
+    &_text{
+        text-align: center;
+    }
+
+    &_animation{
+        @include flex;
+        background-image: url('../../resources/video/animation.gif');
+        background-size: cover;
+        width: 400px;
+        height: 400px;
+
+        h1{
+            cursor: pointer;
+            &:hover{
+                transform: scale(1.1);
+            }
+        }
+    }
+}
