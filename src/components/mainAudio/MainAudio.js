@@ -9,21 +9,22 @@ import arrow from '../../resources/image/controls/arrow.png';
 import './MainAudio.scss';
 
 import { useAudioContext } from '../../context/AudioContext';
+import { useDatabaseContext } from '../../context/DatabaseContext';
 
 function MainAudio(props) {
 
+    const {currentAudio} = useDatabaseContext();
+
     const {
-        currentTime,
         setCurrentTime,
-        titleOrigin,
         setTitleOrigin,
-        titleTranslate,
         setTitleTranslate, 
-        viewTitle, 
-        setViewTitle, 
+        setViewTitle,
+        setTextOfMusic, 
         textOfMusic, 
-        setTextOfMusic
     } = useAudioContext();
+
+    const {currentTextOfMusic} = useDatabaseContext();
 
     const loadMetadata = (e) => {
         const {duration, currentTime} = e.target;
@@ -41,8 +42,9 @@ function MainAudio(props) {
 
     const currentText = (currentTime) => {
         console.log('time:', currentTime);
-        let element_text = textOfMusic.forEach(item => {
-            if(currentTime === item.timeStart){
+        let element_text = currentTextOfMusic.forEach(item => {
+            if(currentTime === +item.timeStart){
+                console.log("Совпадение");
                 setTitleOrigin(item.titleOrigin);
                 setTitleTranslate(item.titleTranslate);
                 console.log('title:', item.titleOrigin);
@@ -62,20 +64,31 @@ function MainAudio(props) {
 
     const viewTitlePause = () => {
         setViewTitle(false);
-    }
+    };
+
+    const startPlay = (e) => {
+        if(currentTextOfMusic.length !== 0){
+            setTextOfMusic(currentTextOfMusic);
+            setTitleOrigin(<span style={{opacity: '0.1'}}>{currentTextOfMusic !== null ? currentTextOfMusic[0].titleOrigin : null}</span>);
+            setTitleTranslate(<span style={{opacity: '0.1'}}>{currentTextOfMusic !== null ? currentTextOfMusic[0].titleTranslate : null}</span>);
+            e.target.play();
+            console.log("Можно играть!");
+        }
+    };
 
     return (
         <div className='user_main_audio'>
             <div className="audio_player">
                 <ReactAudioPlayer 
-                src={spriteAudio} 
+                src={currentAudio} 
                 controls 
                 onLoadedMetadata={loadMetadata} 
                 listenInterval={1000} 
                 onListen={currentTimeAudio}
                 onEnded={endAudio}
                 onPause={viewTitlePause}
-                onPlay={viewTitlePlay}/>
+                onPlay={viewTitlePlay}
+                onCanPlayThrough={startPlay}/>
             </div>
         </div>
     );
