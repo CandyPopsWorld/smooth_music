@@ -1,4 +1,5 @@
 import React from 'react';
+import Navbar from '../navbar/Navbar';
 
 import './HeaderUser.scss';
 function Header(props) {
@@ -10,20 +11,7 @@ function Header(props) {
                 </div>
             </div>
 
-            <div className="user_header_item">
-                <div className="user_header_item_list">
-                    <div className="user_header_item_list_link">
-                        <a href="">Главное</a>
-                    </div>
-                    <div className="user_header_item_list_link">
-                        <a href="">Коллекция</a>
-                    </div>
-
-                    <div className="user_header_item_list_link">
-                        <a href="">Настройки</a>
-                    </div>
-                </div>
-            </div>
+            <Navbar/>
 
             <div className="user_header_item">
                 <div className="user_header_item_user">

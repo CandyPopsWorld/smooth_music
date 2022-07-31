@@ -1,0 +1,10 @@
+@import '../../style/mixin.scss';
+@import '../../style/variables.scss';
+
+.user_settings{
+    @include flex($justifyContent: space-around, $flexDirection: column);
+    width: 100%;
+    height: 82vh;
+    background-color: $user_main_bg_color;
+    color: $user_main_color;
+}

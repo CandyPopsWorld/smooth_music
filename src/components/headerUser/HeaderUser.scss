@@ -19,9 +19,16 @@
         &_list{
             width: 500px;
             @include flex($justifyContent: space-around);
-            &_link a{
+            &_link button{
                 color: $user_header_link_color;
+                background-color: transparent;
+                border: none;
+                cursor: pointer;
                 text-decoration: none;
+            }
+
+            &_link button.active{
+                color: orangered;
             }
         }
 

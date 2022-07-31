@@ -23,8 +23,4 @@ export const privateRoutes = [
         path: USERPAGE_ROUTE,
         element: <UserPage/>
     },
-    {
-        path: SETTINGS_ROUTE,
-        element: <SettingsPage/>
-    }
 ];
