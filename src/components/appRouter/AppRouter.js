@@ -9,7 +9,6 @@ function AppRouter(props) {
     
     const {auth} = useFirebaseContext();
     const [user] = useAuthState(auth);
-    console.log(privateRoutes);
 
     return user ?
     (

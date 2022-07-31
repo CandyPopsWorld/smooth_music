@@ -1,15 +1,16 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { getStorage } from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 import { createContext, useContext } from 'react';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDOfvQV2zzDxNYSTqQEX9oxiVK8xIq839s",
-    authDomain: "smooth-music-4a8a6.firebaseapp.com",
-    projectId: "smooth-music-4a8a6",
-    storageBucket: "smooth-music-4a8a6.appspot.com",
-    messagingSenderId: "230900424564",
-    appId: "1:230900424564:web:96c60c7e3f827c83839621"
+    apiKey: process.env.REACT_APP_FIREBASE_APIKEY,
+    authDomain: process.env.REACT_APP_FIREBASE_AUTHDOMAIN,
+    projectId: process.env.REACT_APP_FIREBASE_PROJECTID,
+    storageBucket: process.env.REACT_APP_FIREBASE_STORAGEBUCKET,
+    messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGINGSENDERID,
+    appId: process.env.REACT_APP_FIREBASE_APPID,
 };
 
 const firebaseContext = createContext();
@@ -18,11 +19,13 @@ export const FirebaseContext = ({children}) => {
     const app = initializeApp(firebaseConfig);
     const auth = getAuth();
     const db = getFirestore(app);
+    const storage = getStorage(app);
 
     const value = {
         app,
         auth,
-        db
+        db,
+        storage
     };
 
     return (
