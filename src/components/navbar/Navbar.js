@@ -4,7 +4,7 @@ import './Navbar.scss';
 import {useTabsContext} from '../../context/TabsContext';
 
 const tabs = [
-    {active: false,title: 'Главное',id: 1},
+    {active: false,title: 'Главная',id: 1},
     {active: false,title: 'Коллекция',id: 2},
     {active: false,title: 'Настройки',id: 3},
     {active: false,title:'Загрузка',id: 4}

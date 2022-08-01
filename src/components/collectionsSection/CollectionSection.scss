@@ -54,6 +54,15 @@
                 }
             }
 
+            &_duration{
+                .duration_time{
+                    color: white;
+                    &:hover{
+                        color: orangered;
+                    }
+                }
+            }
+
             &_num{
             }
         }
@@ -63,4 +72,17 @@
 .item_list_all_collection{
     margin: 5px;
     @include flex($flexDirection: column);
+}
+
+.circle_animation{
+    @include flex;
+    width: 10px;
+    height: 10px;
+    color: orangered;
+    animation: pulse  0.5s alternate infinite linear;
+}
+
+@keyframes pulse {
+    from {font-size: 1em;}
+    to {font-size: 1.2em;}
 }

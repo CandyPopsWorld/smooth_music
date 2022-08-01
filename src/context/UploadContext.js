@@ -16,6 +16,7 @@ export const UploadContext = ({children}) => {
     const [nameMusic, setNameMusic] = useState('');
     const [album, setAlbum] = useState('');
     const [authorMusic, setAuthorMusic] = useState('');
+    const [durationMusic, setDurationMusic] = useState('');
 
     const [loading,setLoading] = useState(false);
 
@@ -26,6 +27,7 @@ export const UploadContext = ({children}) => {
         setNameMusic('');
         setAuthorMusic('');
         setAlbum('');
+        setDurationMusic('');
     };
 
     const value = {
@@ -43,7 +45,9 @@ export const UploadContext = ({children}) => {
         clearUploadContext,
         setNameMusic,
         setAuthorMusic,
-        setAlbum
+        setAlbum,
+        durationMusic,
+        setDurationMusic
     };
     
     return (

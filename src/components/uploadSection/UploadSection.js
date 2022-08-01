@@ -21,7 +21,9 @@ function UploadSection(props) {
         authorMusic,
         setAuthorMusic,
         album,
-        setAlbum
+        setAlbum,
+        durationMusic,
+        setDurationMusic
     } = useUploadContext();
     const {storage, db} = useFirebaseContext();
     // const [filePredProsmotr, setFilePredProsmotr] = useState(null);
@@ -81,6 +83,7 @@ function UploadSection(props) {
             album: album,
             textOfMusic: textOfMusic,
             id: file.name,
+            duration: durationMusic,
         })
         clearUploadContext();
         setLoading(false);
@@ -102,7 +105,7 @@ function UploadSection(props) {
     };
     
     if(file !== null){
-        console.log(file.name);
+        console.log(file);
     }
 
     return (
@@ -161,6 +164,16 @@ function UploadSection(props) {
                             id='author'
                             defaultValue={authorMusic}
                             onChange={(e) => setAuthorMusic(e.target.value)}/>
+                        </div>
+
+                        <div className="user_upload_base_data_list_item">
+                            <label htmlFor="">Продолжительность</label>
+                            <input 
+                            type="text" 
+                            name={'duration'}
+                            id='duration'
+                            defaultValue={durationMusic}
+                            onChange={(e) => setDurationMusic(e.target.value)}/>
                         </div>
                     </div>
 

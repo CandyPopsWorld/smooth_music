@@ -8,7 +8,7 @@ import {ref,getDownloadURL } from "firebase/storage";
 import './MainSectionUser.scss';
 function MainSectionUser(props) {
     const {titleOrigin, titleTranslate, viewTitle} = useAudioContext();
-    const {currentAudio, setCurrentAudio, setCurrentTextOfMusic, ids, setIds} = useDatabaseContext();
+    const {currentAudio, setCurrentAudio, setCurrentTextOfMusic, ids, setIds, setCurrentIdAudio} = useDatabaseContext();
     const {db, storage} = useFirebaseContext();
 
     const onRandomAudio = () => {
@@ -16,6 +16,7 @@ function MainSectionUser(props) {
         const pathReference = ref(storage, `${randId}.mp3`);
         randomDownloadFile(pathReference);
         getDataAboutAudio(`${randId}.mp3`);
+        setCurrentIdAudio(`${randId}.mp3`);
     };
 
     const randomId = () => {
