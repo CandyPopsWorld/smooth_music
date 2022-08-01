@@ -6,6 +6,7 @@ export const DatabaseContext = ({children}) => {
     const [currentAudio, setCurrentAudio] = useState(null);
     const [currentTextOfMusic, setCurrentTextOfMusic] = useState([]);
     const [allDocumentDatabaseAudio, setAllDocumentDatabaseAudio] = useState([]);
+    const [ids, setIds] = useState(null);
 
     const value = {
         allDocumentDatabaseAudio,
@@ -13,7 +14,9 @@ export const DatabaseContext = ({children}) => {
         currentAudio,
         setCurrentAudio,
         currentTextOfMusic,
-        setCurrentTextOfMusic
+        setCurrentTextOfMusic,
+        ids,
+        setIds
     }
 
     return (

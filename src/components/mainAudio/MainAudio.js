@@ -42,6 +42,14 @@ function MainAudio(props) {
 
     const currentText = (currentTime) => {
         console.log('time:', currentTime);
+        if(+currentTextOfMusic[0].timeStart >= 4){
+            if(+currentTextOfMusic[0].timeStart - currentTime <= 3 && +currentTextOfMusic[0].timeStart - currentTime > 0){
+                // setTitleOrigin(+currentTextOfMusic[0].timeStart - currentTime);
+                setTitleOrigin(<span style={{opacity: '0.1', fontSize: '2em'}}>{+currentTextOfMusic[0].timeStart - currentTime}</span>)
+                setTitleTranslate('');
+                return;
+            }
+        }
         let element_text = currentTextOfMusic.forEach(item => {
             if(currentTime === +item.timeStart){
                 console.log("Совпадение");

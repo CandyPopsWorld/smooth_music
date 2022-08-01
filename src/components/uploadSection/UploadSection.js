@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useUploadContext } from '../../context/UploadContext';
 import ReactAudioPlayer from 'react-audio-player';
 import {ref, uploadBytes} from "firebase/storage";
-import {doc, getDoc, arrayUnion, setDoc} from 'firebase/firestore';
+import {doc, getDoc, arrayUnion, setDoc, updateDoc} from 'firebase/firestore';
 import { useFirebaseContext } from '../../context/FirebaseContext';
 import Loader from '../loader/Loader';
 import './UploadSection.scss';
@@ -64,6 +64,7 @@ function UploadSection(props) {
     const uploadFile = (file) => {
 
         const storageRef = ref(storage, file.name);
+        updateMaxIdAudio(file);
         uploadBytes(storageRef, file)
         .then(() => {
           console.log('File Upload!');
@@ -83,6 +84,13 @@ function UploadSection(props) {
         })
         clearUploadContext();
         setLoading(false);
+    };
+
+    const updateMaxIdAudio = async (file) => {
+        const idsRef = await doc(db, 'ids', 'ids');
+        await updateDoc(idsRef, {
+            maxId: file.name
+        });
     };
 
     const uploadContentAudioOnFirebase = () => {
