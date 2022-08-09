@@ -23,17 +23,27 @@ function UploadSection(props) {
         album,
         setAlbum,
         durationMusic,
-        setDurationMusic
+        setDurationMusic,
+        albumId,
+        setAlbumId
     } = useUploadContext();
     const {storage, db} = useFirebaseContext();
+    const [currentPreviewTime, setCurrentPreviewTime] = useState(0);
+    const [valueTextArea, setValueTextArea] = useState('');
+    const [visibleTextArea, setVisibleTextArea] = useState(true);
     // const [filePredProsmotr, setFilePredProsmotr] = useState(null);
+
+    const currentPreviewTimeFloor = (currentTime) => {
+        const floorTime = Math.floor(currentTime);
+        setCurrentPreviewTime(floorTime);
+    }
 
     const getFileInput = (event) => {
         const blob = window.URL || window.webkitURL;
         let file = event.target.files[0];
         const fileURL = blob.createObjectURL(file);
         // console.log(file);
-        setFile(<ReactAudioPlayer src={fileURL} controls/>);
+        setFile(<ReactAudioPlayer src={fileURL} controls listenInterval={1000} onListen={currentPreviewTimeFloor}/>);
         setFileUpload(file);
     };
 
@@ -58,14 +68,15 @@ function UploadSection(props) {
             timeStart={timeStart} 
             updateListItem={updateListItem} 
             key={i}
-            keyId={i}/>
+            keyId={i}
+            currentPreviewTime={currentPreviewTime}/>
         )
     });
 
 
     const uploadFile = (file) => {
 
-        const storageRef = ref(storage, file.name);
+        const storageRef = ref(storage, `audio/${file.name}`);
         updateMaxIdAudio(file);
         uploadBytes(storageRef, file)
         .then(() => {
@@ -84,8 +95,10 @@ function UploadSection(props) {
             textOfMusic: textOfMusic,
             id: file.name,
             duration: durationMusic,
+            albumId: albumId
         })
         clearUploadContext();
+        setCurrentPreviewTime(0);
         setLoading(false);
     };
 
@@ -101,11 +114,33 @@ function UploadSection(props) {
             setLoading(true);
             uploadFile(fileUpload);
             uploadCollectionDb(fileUpload);
+            updateAlbumDoc(fileUpload);
         }
     };
+
+    const transform_value_textarea = () => {
+        const text = valueTextArea.split('\n');
+        text.forEach(item => {
+          item = item.split('~');
+          const object = {titleOrigin: item[0],titleTranslate: item[1], timeStart: item[2]};
+          setTextOfMusic(prev => [...prev, object]);
+          console.log(object);
+          setValueTextArea('');
+          setVisibleTextArea(false);
+          // console.log(item);
+        })
+        // console.log(text);
+      };
+
+      const updateAlbumDoc = async (file) => {
+        const albumRef = await doc(db, 'albums', albumId);
+        updateDoc(albumRef,{
+            musics: arrayUnion({title: nameMusic, idAudio: file.name})
+        })
+      };
     
     if(file !== null){
-        console.log(file);
+        // console.log(file);
     }
 
     return (
@@ -122,6 +157,7 @@ function UploadSection(props) {
                         <>
                             <p>Предпросмотр загруженного аудио</p>
                             {file}
+                            <p>Текущее время: {currentPreviewTime}</p>
                         </>
                         :
                         null
@@ -157,6 +193,16 @@ function UploadSection(props) {
                         </div>
 
                         <div className="user_upload_base_data_list_item">
+                            <label htmlFor="">Альбом(ID)</label>
+                            <input 
+                            type="text" 
+                            name='albumID'
+                            id='albumID'
+                            defaultValue={albumId}
+                            onChange={(e) => setAlbumId(e.target.value)}/>
+                        </div>
+
+                        <div className="user_upload_base_data_list_item">
                             <label htmlFor="">Автор(группа)</label>
                             <input 
                             type="text" 
@@ -180,10 +226,20 @@ function UploadSection(props) {
                     <div className="user_upload_text_header">
                         <h3>Введите перевод текста</h3>
                     </div>
-
+                    
                     <div className="user_upload_translate_list">
                         {elements_inputs_list}
                     </div>
+{/* 
+                    {
+                        visibleTextArea ?
+                        <div className="user_upload_translate_textarea">
+                            <textarea name="" id="" cols="150" rows="5" value={valueTextArea} onChange={(e) => setValueTextArea(e.target.value)}></textarea>
+                            <button onClick={transform_value_textarea}>Преобразовать в массив</button>
+                        </div>
+                        :
+                        null   
+                    } */}
 
                     <div className="user_upload_plus" onClick={addListItem}>
                         +
@@ -202,7 +258,7 @@ function UploadSection(props) {
 };
 
 
-const InputItem = ({titleOrigin, titleTranslate, timeStart, updateListItem,keyId}) => {
+const InputItem = ({titleOrigin, titleTranslate, timeStart, updateListItem,keyId, currentPreviewTime}) => {
     const [origin,setOrigin] = useState('');
     const [translate, setTranslate] = useState('');
     const [time, setTime] = useState('');
@@ -223,26 +279,34 @@ const InputItem = ({titleOrigin, titleTranslate, timeStart, updateListItem,keyId
                 updateListItem(keyId, origin, translate, value);
                 break;
             default:
-                console.log('Loz');
+                // console.log('Loz');
         }
     }
 
     return(
         <div className="user_upload_translate_list_item">
             <div className="user_upload_translate_list_item_item">
+                <span style={{color: 'orangered'}}>{keyId + 1}</span>
+            </div>
+
+            <div className="user_upload_translate_list_item_item">
                 <label htmlFor="">Введите оригинальную строчку</label>
-                <input type="text" defaultValue={titleOrigin} onChange={updateState} name={'origin'}/>
+                <input type="text" value={titleOrigin} onChange={updateState} name={'origin'}/>
             </div>
 
             <div className="user_upload_translate_list_item_item">
                 <label htmlFor="">Введите переведенную строку</label>
-                <input type="text" defaultValue={titleTranslate} onChange={updateState} name={'translate'}/>
+                <input type="text" value={titleTranslate} onChange={updateState} name={'translate'}/>
             </div>
 
             <div className="user_upload_translate_list_item_item">
                 <label htmlFor="">Введите время с которой начинается строка(в секундах!)</label>
-                <input type="number" defaultValue={timeStart} onChange={updateState} name={'time'}/>
+                <input type="number" value={timeStart} onChange={updateState} name={'time'}/>
             </div>
+
+            {/* <div className="user_upload_translate_list_item_item">
+                <button name={'time'} onClick={(e) => updateState(e)} value={currentPreviewTime}>Время</button>
+            </div> */}
         </div>
     )
 }

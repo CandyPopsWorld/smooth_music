@@ -6,15 +6,16 @@ export const UploadContext = ({children}) => {
     const [file, setFile] = useState(null);
     const [fileUpload, setFileUpload] = useState(null);
     const [textOfMusic, setTextOfMusic] = useState([
-        {
-            titleOrigin: ``, 
-            titleTranslate: ``, 
-            timeStart: '', 
-        }
+        // {
+        //     titleOrigin: ``, 
+        //     titleTranslate: ``, 
+        //     timeStart: '', 
+        // }
     ]);
 
     const [nameMusic, setNameMusic] = useState('');
     const [album, setAlbum] = useState('');
+    const [albumId,setAlbumId] = useState('');
     const [authorMusic, setAuthorMusic] = useState('');
     const [durationMusic, setDurationMusic] = useState('');
 
@@ -28,6 +29,7 @@ export const UploadContext = ({children}) => {
         setAuthorMusic('');
         setAlbum('');
         setDurationMusic('');
+        setAlbumId('');
     };
 
     const value = {
@@ -47,7 +49,9 @@ export const UploadContext = ({children}) => {
         setAuthorMusic,
         setAlbum,
         durationMusic,
-        setDurationMusic
+        setDurationMusic,
+        albumId,
+        setAlbumId
     };
     
     return (

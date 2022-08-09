@@ -53,14 +53,14 @@ function CollectionsSection(props) {
 };
 
 
-const AudioItem = ({idKey,uniqueid, i, name, album, author,textOfMusic, duration}) => {
+export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duration}) => {
 
     const {storage} = useFirebaseContext();
     const {setCurrentAudio, setCurrentTextOfMusic,setCurrentIdAudio, currentIdAudio} = useDatabaseContext();
 
     const getMusicByClick = (id) => {
         console.log(id);
-        const pathReference = ref(storage, id);
+        const pathReference = ref(storage, `audio/${id}`);
         setCurrentTextOfMusic(textOfMusic);
         setCurrentIdAudio(id);
         getDownloadURL(pathReference)
@@ -77,7 +77,7 @@ const AudioItem = ({idKey,uniqueid, i, name, album, author,textOfMusic, duration
     }
 
     return (
-        <div idKey={idKey} className="user_collection_list_all_music_item" onClick={() => getMusicByClick(uniqueid)}>
+        <div className="user_collection_list_all_music_item" onClick={() => getMusicByClick(uniqueid)}>
             <div className="user_collection_list_all_music_item_base">
                 <div className="user_collection_list_all_music_item_num item_list_all_collection">
                     {uniqueid === currentIdAudio ? <span className='circle_animation'>●</span> : i + 1 }

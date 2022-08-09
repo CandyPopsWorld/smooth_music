@@ -13,7 +13,7 @@ function MainSectionUser(props) {
 
     const onRandomAudio = () => {
         const randId = randomId();
-        const pathReference = ref(storage, `${randId}.mp3`);
+        const pathReference = ref(storage, `audio/${randId}.mp3`);
         randomDownloadFile(pathReference);
         getDataAboutAudio(`${randId}.mp3`);
         setCurrentIdAudio(`${randId}.mp3`);

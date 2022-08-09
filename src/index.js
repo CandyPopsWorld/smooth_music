@@ -11,18 +11,22 @@ import './global.scss';
 import {ref, uploadBytes,getDownloadURL } from "firebase/storage";
 import { UploadContext } from './context/UploadContext';
 import { DatabaseContext } from './context/DatabaseContext';
+import { AlbumContext } from './context/AlbumContext';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <FirebaseContext>
-    <DatabaseContext>
-      <UploadContext>
-        <TabsContext>
-          <AudioContext>
-              <App/>
-          </AudioContext>
-        </TabsContext>
-      </UploadContext>
-    </DatabaseContext>
+    <AlbumContext>
+      <DatabaseContext>
+        <UploadContext>
+          <TabsContext>
+            <AudioContext>
+                <App/>
+            </AudioContext>
+          </TabsContext>
+        </UploadContext>
+      </DatabaseContext>
+    </AlbumContext>
   </FirebaseContext>
 );

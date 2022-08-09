@@ -22,7 +22,7 @@
                 width: 0;
             }
             @include flex($flexDirection: row, $flexWrap: wrap);
-            height: 300px;
+            height: 500px;
             overflow-x: auto;
             &_item{
                 @include flex($flexWrap: wrap);
@@ -45,5 +45,13 @@
         cursor: pointer;
         font-size: 1.3em;
         @include flex;
+    }
+}
+
+.user_upload_translate_textarea{
+    @include flex($flexDirection: column);
+    textarea{
+        border: 2px solid orangered;
+        outline: none;
     }
 }

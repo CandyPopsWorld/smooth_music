@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from '../navbar/Navbar';
 import {useFirebaseContext} from '../../context/FirebaseContext';
+import avatarSprite from '../../resources/image/avatar.png';
 
 import './HeaderUser.scss';
 function Header(props) {
@@ -18,7 +19,7 @@ function Header(props) {
 
             <div className="user_header_item">
                 <div className="user_header_item_user">
-                    <img className='user_avatar_header' src={auth.currentUser.photoURL !== null ? auth.currentUser.photoURL : avatar} alt="user" />
+                    <img className='user_avatar_header' src={auth.currentUser.photoURL !== null ? auth.currentUser.photoURL : avatarSprite} alt="user" />
                 </div>
             </div>
         </div>

@@ -15,8 +15,9 @@
 
     &_list_all_music{
         @include flex($flexDirection: column, $flexWrap: wrap, $alignItems: flex-start);
+        align-content: center;
         height: 600px;
-        width: 400px;
+        width: 600px;
         overflow-x: auto;
         &::-webkit-scrollbar{
             width: 0;
