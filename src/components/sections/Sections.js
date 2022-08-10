@@ -5,6 +5,7 @@ import CreateAlbumsSection from '../createAlbumsSection/CreateAlbumsSection';
 import MainSectionUser from '../mainSectionUser/MainSectionUser';
 import SettingsSection from '../settingsSection/SettingsSection';
 import UploadSection from '../uploadSection/UploadSection';
+import UserFavoritesSection from '../userFavoritesSection/UserFavoritesSection';
 
 import './Sections.scss';
 
@@ -24,6 +25,8 @@ function Sections(props) {
         section_element = <AlbumsSection/>
     } else if(activeSlide === 6){
         section_element = <CreateAlbumsSection/>
+    } else if(activeSlide === 7){
+        section_element = <UserFavoritesSection/>
     }
 
     return (

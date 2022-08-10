@@ -5,8 +5,9 @@ import {useTabsContext} from '../../context/TabsContext';
 
 const tabs = [
     {active: false,title: 'Главная',id: 1},
+    {active: false,title: 'Коллекция',id: 7},
     {active: false,title: 'Вся Музыка',id: 2},
-    {active: false,title: 'Коллекции',id: 5},
+    {active: false,title: 'Все Альбомы',id: 5},
     {active: false,title: 'Настройки',id: 3},
     {active: false,title:'Загрузить аудио',id: 4},
     {active: false,title: 'Создать Альбом',id: 6},

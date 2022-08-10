@@ -5,6 +5,7 @@ import {useDatabaseContext} from '../../context/DatabaseContext';
 import {ref, uploadBytes,getDownloadURL } from "firebase/storage";
 import { updateProfile } from 'firebase/auth';
 import { useEffect, useState } from 'react';
+import { useFavoritesContext } from '../../context/FavoritesContext';
 function CollectionsSection(props) {
 
     const {db, auth} = useFirebaseContext();
@@ -60,6 +61,8 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
     const {setCurrentAudio, setCurrentTextOfMusic,setCurrentIdAudio, currentIdAudio} = useDatabaseContext();
     const [favoriteObj, setFavoriteObj] = useState([]);
     const [favoriteClass, setFavoriteClass] = useState(false);
+
+    const {setFavoriteAudio, setPlaylistMusic} = useFavoritesContext();
 
     const getMusicByClick = (id) => {
         console.log(id);

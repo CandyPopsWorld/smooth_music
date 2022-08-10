@@ -8,6 +8,7 @@ import './AlbumSection.scss';
 import { useAlbumContext } from '../../context/AlbumContext';
 import Loader from '../loader/Loader';
 import {arrayUnion, arrayRemove, updateDoc} from "firebase/firestore";
+import { useFavoritesContext } from '../../context/FavoritesContext';
 function AlbumsSection(props) {
     const {albumsOffset, setAlbumsOffset} = useDatabaseContext();
     const {db, storage} = useFirebaseContext();
@@ -90,7 +91,8 @@ function AlbumsSection(props) {
     );
 };
 
-const Album = ({image, uid, title, musics, setAlbumMusics}) => {
+export const Album = ({image, uid, title, musics, setAlbumMusics}) => {
+    const {setFavoriteAlbums} = useFavoritesContext();
     const {db, auth} = useFirebaseContext();
     const {active, setActive} = useAlbumContext();
     const [favoriteClass, setFavoriteClass] = useState(false);
@@ -189,7 +191,7 @@ const Album = ({image, uid, title, musics, setAlbumMusics}) => {
     )
 };
 
-const MusicsList = ({albumMusics}) => {
+export const MusicsList = ({albumMusics, title = null}) => {
     let albumName = '';
     let elements_audio_items = null;
     if(albumMusics.length > 0){
@@ -213,7 +215,7 @@ const MusicsList = ({albumMusics}) => {
         <div className='music_list_albums'>
             {
                 albumMusics.length > 0 && albumName.length > 0 ?
-                <h2>Альбом {albumName}</h2>
+                <h2>{title === null ? `Альбом ${albumName}` : title}</h2>
                 :
                 null
             }
