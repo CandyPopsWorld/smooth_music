@@ -7,6 +7,7 @@ import { AudioItem } from '../collectionsSection/CollectionsSection';
 import './AlbumSection.scss';
 import { useAlbumContext } from '../../context/AlbumContext';
 import Loader from '../loader/Loader';
+import {arrayUnion, arrayRemove, updateDoc} from "firebase/firestore";
 function AlbumsSection(props) {
     const {albumsOffset, setAlbumsOffset} = useDatabaseContext();
     const {db, storage} = useFirebaseContext();
@@ -90,8 +91,9 @@ function AlbumsSection(props) {
 };
 
 const Album = ({image, uid, title, musics, setAlbumMusics}) => {
-    const {db} = useFirebaseContext();
+    const {db, auth} = useFirebaseContext();
     const {active, setActive} = useAlbumContext();
+    const [favoriteClass, setFavoriteClass] = useState(false);
     // const [active, setActive] = useState(false);
 
     const getMusicFromAlbum = async () => {
@@ -118,13 +120,66 @@ const Album = ({image, uid, title, musics, setAlbumMusics}) => {
         clazz+= ' active';
     }
 
+    const onFavoriteAlbum = () => {
+        getFavoriteAlbum().then((res) => {
+            let bool = false;
+            res.forEach(({albumId}) => {
+                if(uid === albumId){
+                    bool = true;
+                }
+            })
+            if(bool === true){
+                setFavoriteClass(false);
+                removeUserFavoriteAlbum();
+            } else{
+                setFavoriteClass(true);
+                addUserFavoriteAlbum();
+            }
+        });
+        // addUserFavoriteAudio();
+    };
+
+    const addUserFavoriteAlbum = async () => {
+        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
+        await updateDoc(userDbRef, {
+            favoriteAlbum: arrayUnion({albumId: uid})
+        });
+    };
+
+    const removeUserFavoriteAlbum = async () => {
+        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
+        await updateDoc(userDbRef, {
+            favoriteAlbum: arrayRemove({albumId: uid})
+        });
+    };
+
+
+    const getFavoriteAlbum = async () => {
+        const docRef = doc(db, 'users', auth.currentUser.uid);
+        const docSnap = await getDoc(docRef);
+        // await setFavoriteObj(docSnap.data().favoriteAudio);
+        return docSnap.data().favoriteAlbum;
+        // console.log(docSnap.data().favoriteAudio);
+    };
+
+    useEffect(() => {
+        getFavoriteAlbum().then((res) => {
+            res.forEach(({albumId}) => {
+                if(albumId === uid){
+                    setFavoriteClass(true);
+                }
+            })
+        })
+    }, [])
+
     return (
         <div className="albums_section_item_albums_block_item">
             {/* <div className="albums_section_item_albums_block_item_bg"> */}
             <div className={clazz}>
                 <img src={image} alt="" />
                 <div className="albums_section_item_albums_block_item_bg_controls">
-                    <i onClick={getMusicFromAlbum} className="fa-solid fa-circle-play"></i>
+                    <i onClick={getMusicFromAlbum} className="fa-solid fa-circle-play play_album_control"></i>
+                    <i className="fa-solid fa-heart favorite_album_control" onClick={onFavoriteAlbum} style={favoriteClass ? {color: 'orangered'} : null}></i>
                 </div>
             </div>
             <div className="albums_section_item_albums_block_item_title">

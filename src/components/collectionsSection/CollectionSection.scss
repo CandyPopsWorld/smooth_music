@@ -16,7 +16,7 @@
     &_list_all_music{
         // @include flex($flexDirection: column, $flexWrap: nowrap, $alignItems: flex-start);
         @include flex($justifyContent: flex-start, $alignItems: flex-start, $flexWrap: wrap);
-        align-content: center;
+        // align-content: center;
         height: inherit;
         width: 500px;
         overflow-y: auto;
@@ -28,7 +28,9 @@
             // @include flex($flexWrap: wrap);
             cursor: pointer;
             &:hover{
-
+                .user_collection_list_all_music_item_favorite{
+                    visibility: visible;
+                }
             }
 
             &_base{
@@ -66,11 +68,22 @@
                 }
             }
 
+            &_favorite{
+                visibility: hidden;
+                i:hover{
+                    color: orangered;
+                }
+            }
+
             &_num{
             }
         }
     }
 }
+
+// .user_collection_list_all_music_item_favorite{
+//     visibility: hidden;
+// }
 
 .item_list_all_collection{
     margin: 5px;

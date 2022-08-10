@@ -74,10 +74,10 @@ function UploadSection(props) {
     });
 
 
-    const uploadFile = (file) => {
+    const uploadFile = (file, maxId) => {
 
-        const storageRef = ref(storage, `audio/${file.name}`);
-        updateMaxIdAudio(file);
+        const storageRef = ref(storage, `audio/${maxId}`);
+        updateMaxIdAudio(file, maxId);
         uploadBytes(storageRef, file)
         .then(() => {
           console.log('File Upload!');
@@ -87,34 +87,39 @@ function UploadSection(props) {
         })
     };
 
-    const uploadCollectionDb = async (file) => {
-        await setDoc(doc(db, 'audio', file.name), {
+    const uploadCollectionDb = async (file, maxId) => {
+        await setDoc(doc(db, 'audio', maxId), {
             name: nameMusic,
             author: authorMusic,
             album: album,
             textOfMusic: textOfMusic,
-            id: file.name,
+            id: maxId,
             duration: durationMusic,
-            albumId: albumId
+            albumId: albumId,
         })
         clearUploadContext();
         setCurrentPreviewTime(0);
         setLoading(false);
     };
 
-    const updateMaxIdAudio = async (file) => {
+    const updateMaxIdAudio = async (file, maxId) => {
         const idsRef = await doc(db, 'ids', 'ids');
         await updateDoc(idsRef, {
-            maxId: file.name
+            maxId: maxId
         });
     };
 
-    const uploadContentAudioOnFirebase = () => {
+    const uploadContentAudioOnFirebase = (object) => {
+        const maxIdNum = +object.maxId;
+        const maxIdStr = String(maxIdNum + 1);
+        console.log(maxIdNum);
+        console.log(maxIdStr);
+        console.log(object);
         if(nameMusic !== '' && authorMusic !== ''){
             setLoading(true);
-            uploadFile(fileUpload);
-            uploadCollectionDb(fileUpload);
-            updateAlbumDoc(fileUpload);
+            uploadFile(fileUpload, maxIdStr);
+            uploadCollectionDb(fileUpload, maxIdStr);
+            updateAlbumDoc(fileUpload, maxIdStr);
         }
     };
 
@@ -132,11 +137,18 @@ function UploadSection(props) {
         // console.log(text);
       };
 
-      const updateAlbumDoc = async (file) => {
+      const updateAlbumDoc = async (file, maxId) => {
         const albumRef = await doc(db, 'albums', albumId);
         updateDoc(albumRef,{
-            musics: arrayUnion({title: nameMusic, idAudio: file.name})
+            musics: arrayUnion({title: nameMusic, idAudio: maxId})
         })
+      };
+
+      const getMaxIdAudio = async () => {
+        const docRef = doc(db, 'ids', 'ids');
+        const docSnap = await getDoc(docRef);
+        // await setAlbumIds(docSnap.data());
+        await uploadContentAudioOnFirebase(docSnap.data());
       };
     
     if(file !== null){
@@ -245,7 +257,7 @@ function UploadSection(props) {
                         +
                     </div>
 
-                    <button onClick={uploadContentAudioOnFirebase}>Загрузить музыку в облачное хранилище</button>
+                    <button onClick={getMaxIdAudio}>Загрузить музыку в облачное хранилище</button>
                 </>
 
                 :

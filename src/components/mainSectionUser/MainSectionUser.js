@@ -13,15 +13,16 @@ function MainSectionUser(props) {
 
     const onRandomAudio = () => {
         const randId = randomId();
-        const pathReference = ref(storage, `audio/${randId}.mp3`);
+        console.log(randId);
+        const pathReference = ref(storage, `audio/${randId}`);
         randomDownloadFile(pathReference);
-        getDataAboutAudio(`${randId}.mp3`);
-        setCurrentIdAudio(`${randId}.mp3`);
+        getDataAboutAudio(`${randId}`);
+        setCurrentIdAudio(`${randId}`);
     };
 
     const randomId = () => {
-        const minId = +ids.minId.substring(0, ids.minId.length - 4);
-        const maxId = +ids.maxId.substring(0, ids.maxId.length - 4);
+        const minId = +ids.minId;
+        const maxId = +ids.maxId;
         const randId = Math.floor(Math.random() * (maxId - minId + 1) + minId);
         return randId;
     };

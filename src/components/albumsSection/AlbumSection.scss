@@ -38,6 +38,13 @@
                                 transform: scale(1.3);
                             }
                         }
+                        .play_album_control{
+                            color: orangered;
+                        }
+                        .favorite_album_control{
+                            color: white;
+                            margin-left: 10px;
+                        }
                     }
                 }
             }

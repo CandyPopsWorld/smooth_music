@@ -58,7 +58,9 @@ function SignUpPage(props) {
             id: auth.currentUser.uid,
             username: username,
             email: auth.currentUser.email,
-            music: []
+            music: [],
+            favoriteAudio: [],
+            favoriteAlbum: []
         });
     }
 
