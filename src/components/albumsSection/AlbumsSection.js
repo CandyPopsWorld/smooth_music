@@ -95,7 +95,7 @@ const Album = ({image, uid, title, musics, setAlbumMusics}) => {
     // const [active, setActive] = useState(false);
 
     const getMusicFromAlbum = async () => {
-        // setAlbumMusics([]);
+        setAlbumMusics([]);
         setActive(uid);
         await musics.forEach(item => {
             getDataIdByDatabase(item.idAudio);

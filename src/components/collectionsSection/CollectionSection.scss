@@ -14,16 +14,18 @@
     }
 
     &_list_all_music{
-        @include flex($flexDirection: column, $flexWrap: wrap, $alignItems: flex-start);
+        // @include flex($flexDirection: column, $flexWrap: nowrap, $alignItems: flex-start);
+        @include flex($justifyContent: flex-start, $alignItems: flex-start, $flexWrap: wrap);
         align-content: center;
-        height: 600px;
-        width: 600px;
+        height: inherit;
+        width: 500px;
+        overflow-y: auto;
         overflow-x: auto;
         &::-webkit-scrollbar{
             width: 0;
         }
         &_item{
-            @include flex($flexWrap: wrap);
+            // @include flex($flexWrap: wrap);
             cursor: pointer;
             &:hover{
 
