@@ -4,6 +4,7 @@ import {useFirebaseContext} from '../../context/FirebaseContext';
 import avatarSprite from '../../resources/image/avatar.png';
 
 import './HeaderUser.scss';
+import Search from '../search/Search';
 function Header(props) {
     const {auth} = useFirebaseContext();
     const avatar = 'https://cdn-icons.flaticon.com/png/512/3177/premium/3177440.png?token=exp=1659188291~hmac=29958df9fed263f651bef67423fce779';
@@ -16,6 +17,7 @@ function Header(props) {
             </div>
 
             <Navbar/>
+            <Search/>
 
             <div className="user_header_item">
                 <div className="user_header_item_user">

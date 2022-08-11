@@ -13,6 +13,7 @@ import { UploadContext } from './context/UploadContext';
 import { DatabaseContext } from './context/DatabaseContext';
 import { AlbumContext } from './context/AlbumContext';
 import { FavoritesContext } from './context/FavoritesContext';
+import { SearchContext } from './context/SearchContext';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -24,7 +25,9 @@ root.render(
           <UploadContext>
             <TabsContext>
               <AudioContext>
+                <SearchContext>
                   <App/>
+                </SearchContext>
               </AudioContext>
             </TabsContext>
           </UploadContext>
