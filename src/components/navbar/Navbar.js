@@ -1,20 +1,20 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Navbar.scss';
-
+import { doc, getDoc } from "firebase/firestore";
 import {useTabsContext} from '../../context/TabsContext';
+import { useFirebaseContext } from '../../context/FirebaseContext';
 
 const tabs = [
     {active: false,title: 'Главная',id: 1},
-    {active: false,title: 'Коллекция',id: 7},
-    {active: false,title: 'Вся Музыка',id: 2},
-    {active: false,title: 'Все Альбомы',id: 5},
-    {active: false,title: 'Настройки',id: 3},
-    {active: false,title:'Загрузить аудио',id: 4},
-    {active: false,title: 'Создать Альбом',id: 6},
+    {active: false,title: 'Коллекция',id: 2},
+    {active: false,title: 'Вся Музыка',id: 3},
+    {active: false,title: 'Все Альбомы',id: 4},
+    {active: false,title: 'Настройки',id: 5},
 ]
 
 function Navbar(props) {
     const {activeSlide, setActiveSlide} = useTabsContext();
+    const {auth, db} = useFirebaseContext();
 
     const elements_btns = tabs.map(item => {
         const clazz = activeSlide === item.id ? 'active' : '';
@@ -29,7 +29,7 @@ function Navbar(props) {
         </div>
         )
     });
-
+    
     return (
         <div className="user_header_item user_header_tabs">
             <div className="user_header_item_list">

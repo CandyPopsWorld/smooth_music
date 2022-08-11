@@ -13,7 +13,6 @@ const nav_data = [
     {active: false, title: 'Альбомы', id: 1},
     {active: false, title: 'Исполнители', id: 2},
     {active: false, title: 'Плейлисты', id: 3},
-    {active: false, title: 'Подкасты и книги', id: 4},
 ];
 
 function UserFavoritesSection(props) {
@@ -27,8 +26,6 @@ function UserFavoritesSection(props) {
                 return <Author_Block/>;
             case 3:
                 return <Playlist_Block/>;
-            case 4:
-                return <Podkast_Block/>;
             default: throw new Error();
         }
     };
@@ -141,16 +138,6 @@ const Playlist_Block = () => {
         </div>
     )
 };
-
-const Podkast_Block = () => {
-    return (
-        <div className='favorite_section_tabs_block_authors'>
-            <h1>Подкасты и книги</h1>
-        </div>
-    )
-};
-
-
 // 
 
 const Album_Block = () => {
