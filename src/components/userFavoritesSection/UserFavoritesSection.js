@@ -198,7 +198,16 @@ const Album_Block = () => {
     let elements_albums = null;
     if(albums.length > 0){
         elements_albums = albums.map(item => {
-            return <Album key={item.id} title={item.title} image={item.image} uid={item.id} musics={item.musics} setAlbumMusics={setAlbumMusics}/>
+            return <Album 
+            key={item.id} 
+            title={item.title} 
+            image={item.image} 
+            uid={item.id} 
+            musics={item.musics}
+            year={item.year}
+            authorId={item.authorId}
+            genreId={item.genreId} 
+            setAlbumMusics={setAlbumMusics}/>
         });
     }
 

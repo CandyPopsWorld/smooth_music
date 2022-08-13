@@ -2,7 +2,7 @@
 @import '../../style/mixin.scss';
 
 .search_panel{
-    position: relative;
+    // position: relative;
     input{
         border-radius: 2px solid white;
         border-color: white;
@@ -15,21 +15,38 @@
     &_modal{
         @include flex($flexDirection: column);
         margin-top: 20px;
-        position: absolute;
         width: 450px;
-        height: 500px;
-        background-color: rebeccapurple;
+        position: absolute;
+        max-height: 500px;
+        background-color: rgb(14, 15, 15);
         color: white;
         margin-right: 100px;
         overflow: auto;
+        // left: -100px;
+        top: 50px;
+        right: 50px;
+        // pointer-events: none;
+        z-index: 100;
 
         &_audio_list{
+            pointer-events: all;
             @include flex($flexDirection: column, $justifyContent: flex-start, $alignItems: flex-start);
         }
         h4{
             margin: 0;
         }
+        span{
+            text-align: center;
+        }
     }
+}
+
+.search_modal{
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 
@@ -37,6 +54,20 @@
 .album_item{
     margin-left: 10px;
     @include flex($flexDirection: row, $justifyContent: flex-start, $alignItems: center);
+
+    &:hover{
+        .album_item_favorite{
+            visibility: visible;
+        }
+    }
+
+    &_favorite{
+        cursor: pointer;
+        visibility: hidden;
+        &:hover{
+            color: orangered;
+        }
+    }
 
     &_text{
         @include flex($flexDirection: column, $justifyContent: flex-start, $alignItems: flex-start);

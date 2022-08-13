@@ -3,9 +3,13 @@ import { createContext, useContext, useState } from "react";
 const searchContext = createContext();
 
 export function SearchContext({children}){
+    const [search, setSearch] = useState('');
     const [audios, setAudios] = useState([]);
     const [albums, setAlbums] = useState([]);
     const [authors, setAuthors] = useState([]);
+    const [showModal, setShowModal] = useState(false);
+
+    const [searchInfoAboutItem, setSearchInfoAboutItem] = useState(null);
 
     const value = {
         audios,
@@ -13,7 +17,13 @@ export function SearchContext({children}){
         albums,
         setAlbums,
         authors,
-        setAuthors
+        setAuthors,
+        showModal,
+        setShowModal,
+        search,
+        setSearch,
+        searchInfoAboutItem,
+        setSearchInfoAboutItem
     };
 
     return (

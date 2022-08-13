@@ -4,10 +4,13 @@ const tabsContext = createContext();
 
 export const TabsContext = ({children}) => {
     const [activeSlide, setActiveSlide] = useState(1);
+    const [searchTab, setSearchTab] = useState(null);
 
     const value = {
         activeSlide,
-        setActiveSlide
+        setActiveSlide,
+        searchTab,
+        setSearchTab
     };
 
     return (

@@ -9,6 +9,8 @@ import { useAlbumContext } from '../../context/AlbumContext';
 import Loader from '../loader/Loader';
 import {arrayUnion, arrayRemove, updateDoc} from "firebase/firestore";
 import { useFavoritesContext } from '../../context/FavoritesContext';
+import { useTabsContext } from '../../context/TabsContext';
+import { useSearchContext } from '../../context/SearchContext';
 function AlbumsSection(props) {
     const {albumsOffset, setAlbumsOffset} = useDatabaseContext();
     const {db, storage} = useFirebaseContext();
@@ -64,7 +66,16 @@ function AlbumsSection(props) {
     const elements_albums = albums.map(item => {
         // console.log(item);
         return (
-            <Album key={item.id} title={item.title} image={item.image} uid={item.id} musics={item.musics} setAlbumMusics={setAlbumMusics}/>
+            <Album 
+            key={item.id} 
+            title={item.title} 
+            image={item.image} 
+            uid={item.id} 
+            musics={item.musics}
+            year={item.year}
+            authorId={item.authorId}
+            genreId={item.genreId} 
+            setAlbumMusics={setAlbumMusics}/>
         )
     });
 
@@ -91,7 +102,9 @@ function AlbumsSection(props) {
     );
 };
 
-export const Album = ({image, uid, title, musics, setAlbumMusics}) => {
+export const Album = ({image, uid, title, musics, setAlbumMusics, year, authorId, genreId}) => {
+    const {setSearchInfoAboutItem} = useSearchContext();
+    const {setActiveSlide, setSearchTab} = useTabsContext();
     const {setFavoriteAlbums} = useFavoritesContext();
     const {db, auth} = useFirebaseContext();
     const {active, setActive} = useAlbumContext();
@@ -138,7 +151,6 @@ export const Album = ({image, uid, title, musics, setAlbumMusics}) => {
                 addUserFavoriteAlbum();
             }
         });
-        // addUserFavoriteAudio();
     };
 
     const addUserFavoriteAlbum = async () => {
@@ -178,7 +190,11 @@ export const Album = ({image, uid, title, musics, setAlbumMusics}) => {
         <div className="albums_section_item_albums_block_item">
             {/* <div className="albums_section_item_albums_block_item_bg"> */}
             <div className={clazz}>
-                <img src={image} alt="" />
+                <img src={image} alt="" onClick={async () => {
+                    await setSearchInfoAboutItem({image, uid, title, musics, year, authorId, genreId});
+                    await setSearchTab(1);
+                    await setActiveSlide(6);
+                }}/>
                 <div className="albums_section_item_albums_block_item_bg_controls">
                     <i onClick={getMusicFromAlbum} className="fa-solid fa-circle-play play_album_control"></i>
                     <i className="fa-solid fa-heart favorite_album_control" onClick={onFavoriteAlbum} style={favoriteClass ? {color: 'orangered'} : null}></i>

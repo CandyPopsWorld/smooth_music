@@ -60,7 +60,8 @@ function SignUpPage(props) {
             email: auth.currentUser.email,
             music: [],
             favoriteAudio: [],
-            favoriteAlbum: []
+            favoriteAlbum: [],
+            favoriteAuthor: []
         });
     }
 

@@ -10,9 +10,9 @@ import './MainAudio.scss';
 
 import { useAudioContext } from '../../context/AudioContext';
 import { useDatabaseContext } from '../../context/DatabaseContext';
+import { useSearchContext } from '../../context/SearchContext';
 
 function MainAudio(props) {
-
     const {currentAudio} = useDatabaseContext();
 
     const {

@@ -1,7 +1,9 @@
+import { useSearchContext } from '../../context/SearchContext';
 import {useTabsContext} from '../../context/TabsContext';
 import AlbumsSection from '../albumsSection/AlbumsSection';
 import CollectionsSection from '../collectionsSection/CollectionsSection';
 import MainSectionUser from '../mainSectionUser/MainSectionUser';
+import SearchSection from '../searchSection/SearchSection';
 import SettingsSection from '../settingsSection/SettingsSection';
 import UserFavoritesSection from '../userFavoritesSection/UserFavoritesSection';
 
@@ -21,6 +23,8 @@ function Sections(props) {
         section_element = <AlbumsSection/>
     } else if(activeSlide === 5){
         section_element = <SettingsSection/>
+    } else if(activeSlide === 6){
+        section_element = <SearchSection/>
     }
 
     return (

@@ -17,6 +17,11 @@
             &_item{
                 margin: 10px;
                 text-align: center;
+
+                img{
+                    cursor: pointer;
+                }
+
                 &_bg{
                     position: relative;
                     &.active{
