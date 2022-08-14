@@ -57,8 +57,13 @@
     height: 10px;
     background-color: gray;
     cursor: pointer;
+    outline: none;
 }
 
 .audio_player{
     @include flex;
+}
+
+.line{
+    color: white;
 }

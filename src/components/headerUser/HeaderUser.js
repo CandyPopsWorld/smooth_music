@@ -7,6 +7,7 @@ import './HeaderUser.scss';
 import Search from '../search/Search';
 import { useSearchContext } from '../../context/SearchContext';
 import { useTabsContext } from '../../context/TabsContext';
+import { useAudioContext } from '../../context/AudioContext';
 function Header(props) {
     const {auth} = useFirebaseContext();
     const {activeSlide, setActiveSlide} = useTabsContext();

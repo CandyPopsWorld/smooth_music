@@ -28,6 +28,10 @@
         // pointer-events: none;
         z-index: 100;
 
+        &::-webkit-scrollbar{
+            width: 0;
+        }
+
         &_audio_list{
             pointer-events: all;
             @include flex($flexDirection: column, $justifyContent: flex-start, $alignItems: flex-start);

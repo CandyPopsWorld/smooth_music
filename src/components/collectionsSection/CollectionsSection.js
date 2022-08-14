@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { useFavoritesContext } from '../../context/FavoritesContext';
 import { useSearchContext } from '../../context/SearchContext';
 import { useTabsContext } from '../../context/TabsContext';
+import { useAudioContext } from '../../context/AudioContext';
 
 export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duration, authorId, albumId}) => {
 
@@ -24,9 +25,12 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
 
     const [authorData, setAuthorData] = useState(null);
     const [albumData, setAlbumData] = useState(null);
+    const {setPlayed, setCurrentTime} = useAudioContext();
 
     const getMusicByClick = (id) => {
         console.log(id);
+        setPlayed(true);
+        setCurrentTime(0);
         const pathReference = ref(storage, `audio/${id}`);
         setCurrentTextOfMusic(textOfMusic);
         setCurrentIdAudio(id);

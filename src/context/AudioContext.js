@@ -9,6 +9,7 @@ export function AudioContext({children}){
     const [titleOrigin, setTitleOrigin] = useState(<span style={{opacity: '0.1'}}>{textOfMusic !== null ? textOfMusic[0].titleOrigin : null}</span>);
     const [titleTranslate, setTitleTranslate] = useState(<span style={{opacity: '0.1'}}>{textOfMusic !== null ? textOfMusic[0].titleTranslate : null}</span>);
     const [viewTitle, setViewTitle] = useState(false);
+    const [played, setPlayed] = useState(true);
 
     const value = {
         currentTime,
@@ -20,7 +21,9 @@ export function AudioContext({children}){
         setTitleOrigin,
         setTitleTranslate,
         setViewTitle,
-        setTextOfMusic
+        setTextOfMusic,
+        played,
+        setPlayed
     }
 
     return (

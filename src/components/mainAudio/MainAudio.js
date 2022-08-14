@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
 
+import {doc, getDoc} from 'firebase/firestore';
 
 import spriteAudio from '../../resources/audio/come.mp3';
 import play from '../../resources/image/controls/play.png';
+import pause from '../../resources/image/controls/pause.png';
 import arrow from '../../resources/image/controls/arrow.png';
 
 import './MainAudio.scss';
@@ -11,9 +13,12 @@ import './MainAudio.scss';
 import { useAudioContext } from '../../context/AudioContext';
 import { useDatabaseContext } from '../../context/DatabaseContext';
 import { useSearchContext } from '../../context/SearchContext';
+import { useFirebaseContext } from '../../context/FirebaseContext';
+import { useRef } from 'react';
 
 function MainAudio(props) {
-    const {currentAudio} = useDatabaseContext();
+    const {currentAudio, currentIdAudio} = useDatabaseContext();
+    const [duration, setDuration] = useState(null);
 
     const {
         setCurrentTime,
@@ -21,14 +26,18 @@ function MainAudio(props) {
         setTitleTranslate, 
         setViewTitle,
         setTextOfMusic, 
-        textOfMusic, 
+        textOfMusic,
+        currentTime 
     } = useAudioContext();
 
     const {currentTextOfMusic} = useDatabaseContext();
 
+    let audioRef = useRef(null);
+
     const loadMetadata = (e) => {
         const {duration, currentTime} = e.target;
         const durationFloor = Math.floor(duration);
+        setDuration(durationFloor);
         // console.log(currentTime);
         // console.log(durationFloor);
     };
@@ -84,8 +93,17 @@ function MainAudio(props) {
         }
     };
 
+    if(audioRef !== null && audioRef.current !== null){
+        console.log(audioRef.current.audioEl.current);
+    }
+
     return (
         <div className='user_main_audio'>
+            <View 
+            currentIdAudio={currentIdAudio} 
+            duration={duration} 
+            currentTime={currentTime}
+            audioRef={audioRef !== null && audioRef.current !== null ? audioRef.current.audioEl.current : null}/>
             <div className="audio_player">
                 <ReactAudioPlayer 
                 src={currentAudio} 
@@ -96,25 +114,103 @@ function MainAudio(props) {
                 onEnded={endAudio}
                 onPause={viewTitlePause}
                 onPlay={viewTitlePlay}
-                onCanPlayThrough={startPlay}/>
+                onCanPlayThrough={startPlay}
+                ref={audioRef}
+                style={{display: 'none'}}/>
             </div>
         </div>
     );
 };
 
 
-const View = () => {
+const View = ({currentIdAudio, duration, currentTime, audioRef}) => {
+    
+    const {auth, db} = useFirebaseContext();
+    const [audioData, setAudioData] = useState(null);
+    const {played, setPlayed} = useAudioContext();
+
+    const getAudioData = async () => {
+        const docRef = await doc(db, 'audio', currentIdAudio);
+        const docSnap = await getDoc(docRef);
+        await setAudioData(docSnap.data());
+    };
+
+    useEffect(() => {
+        getAudioData();
+    }, [currentIdAudio])
+
+    if(audioRef !== null){
+        console.log(audioRef.currentTime);
+    }
+
+    const transformCurrentTime = () => {
+        let minutes = null;
+        let seconds = null;
+        
+        minutes = Math.trunc(currentTime / 60);
+        if(currentTime < 60){
+            seconds = currentTime;
+        } else {
+            seconds = currentTime - (minutes * 60);
+        }
+
+        minutes = validateNum(minutes);
+        seconds = validateNum(seconds);
+
+        return `${minutes}:${seconds}`;
+    };
+
+    const transformDurationTime = () => {
+        let minutes = null;
+        let seconds = null;
+        if(duration !== null){
+            minutes = Math.trunc(duration / 60);
+            seconds = duration - (minutes * 60);
+            // seconds = (duration / 60) - Math.floor((duration / 60)).toFixed(1);
+        }
+        
+        minutes = validateNum(minutes);
+        seconds = validateNum(seconds);
+
+        return `${minutes}:${seconds}`;
+    };
+
+    const validateNum = (num) => {
+        if(num <= 9){
+            return `0${num}`;
+        } else {
+            return num;
+        }
+    }
+
     return (
         <div className="controls">
             <div className="line">
-            <input type={'range'} min={0} max={100} className="controls_line"/>
+                <span className='current_time_audio'>{duration !== null  ? transformCurrentTime() : null}</span>
+                <input type={'range'} min={0} max={duration} className="controls_line" value={currentTime} onChange={(e) => {
+                   if(audioRef !== null){
+                       audioRef.currentTime = e.target.value;
+                       setPlayed(true);
+                   }
+                }}/>
+                <span className='duration_time_audio'>{duration !== null ? transformDurationTime() : null}</span>
             </div>
             <div className="controls_buttons">
                 <div className="controls_buttons_item arrow_back">
                     <img src={arrow} alt="" />
                 </div>
                 <div className="controls_buttons_item play_video">
-                    <img src={play} alt="" />
+                    <img src={played === true ? pause : play} alt="" onClick={() => {
+                        if(audioRef !== null){
+                            if(played === true){
+                                audioRef.pause();
+                                setPlayed(false);
+                            } else {
+                                audioRef.play();
+                                setPlayed(true);
+                            }
+                        }
+                    }}/>
                 </div>
                 <div className="controls_buttons_item arrow_next">
                     <img src={arrow} alt="" />
@@ -122,10 +218,10 @@ const View = () => {
 
                 <div className="controls_text">
                     <div className="controls_text_name_music">
-                        Come As You Are
+                        {audioData !== null ? audioData.name : null}
                     </div>
                     <div className="controls_text_author_music">
-                        Nirvana
+                        {audioData !== null ? audioData.author : null}
                     </div>
                 </div>
 

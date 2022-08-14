@@ -10,8 +10,10 @@ function MainSectionUser(props) {
     const {titleOrigin, titleTranslate, viewTitle} = useAudioContext();
     const {currentAudio, setCurrentAudio, setCurrentTextOfMusic, ids, setIds, setCurrentIdAudio} = useDatabaseContext();
     const {db, storage} = useFirebaseContext();
+    const {setPlayed} = useAudioContext();
 
     const onRandomAudio = () => {
+        setPlayed(true);
         const randId = randomId();
         console.log(randId);
         const pathReference = ref(storage, `audio/${randId}`);
