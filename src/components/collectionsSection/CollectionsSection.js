@@ -6,6 +6,8 @@ import {ref, uploadBytes,getDownloadURL } from "firebase/storage";
 import { updateProfile } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { useFavoritesContext } from '../../context/FavoritesContext';
+import { useSearchContext } from '../../context/SearchContext';
+import { useTabsContext } from '../../context/TabsContext';
 function CollectionsSection(props) {
 
     const {db, auth} = useFirebaseContext();
@@ -27,7 +29,7 @@ function CollectionsSection(props) {
 
     let elements_all_music = null;
     if(allDocumentDatabaseAudio.length !== 0){
-        elements_all_music = allDocumentDatabaseAudio.map(({album, author, name, id, textOfMusic, duration}, i) => {
+        elements_all_music = allDocumentDatabaseAudio.map(({album, author, name, id, textOfMusic, duration, authorId, albumId}, i) => {
             return(
                 <AudioItem 
                 idkey={id}
@@ -38,7 +40,9 @@ function CollectionsSection(props) {
                 name={name} 
                 i={i}
                 textOfMusic={textOfMusic}
-                duration={duration}/>
+                duration={duration}
+                authorId={authorId}
+                albumId={albumId}/>
             )
         });
     }
@@ -55,7 +59,7 @@ function CollectionsSection(props) {
 };
 
 
-export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duration}) => {
+export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duration, authorId, albumId}) => {
 
     const {storage, auth, db} = useFirebaseContext();
     const {setCurrentAudio, setCurrentTextOfMusic,setCurrentIdAudio, currentIdAudio} = useDatabaseContext();
@@ -63,6 +67,13 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
     const [favoriteClass, setFavoriteClass] = useState(false);
 
     const {setFavoriteAudio, setPlaylistMusic} = useFavoritesContext();
+
+
+    const {setSearchInfoAboutItem, setShowModal} = useSearchContext();
+    const {setActiveSlide, setSearchTab} = useTabsContext();
+
+    const [authorData, setAuthorData] = useState(null);
+    const [albumData, setAlbumData] = useState(null);
 
     const getMusicByClick = (id) => {
         console.log(id);
@@ -120,6 +131,18 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
         // console.log(docSnap.data().favoriteAudio);
     };
 
+    const getAuthorMusic = async (id) => {
+        const docRef = doc(db, 'authors', id);
+        const docSnap = await getDoc(docRef);
+        await setAuthorData(docSnap.data());
+    };
+
+    const getAlbumMusic = async (id) => {
+        const docRef = doc(db, 'albums', id);
+        const docSnap = await getDoc(docRef);
+        await setAlbumData(docSnap.data());
+    };
+
     if(uniqueid === currentIdAudio){
 
     };
@@ -133,23 +156,79 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
                 }
             })
         })
+
+        getAuthorMusic(authorId);
+        getAlbumMusic(albumId);
+        // console.log(authorId);
     }, [])
 
-    console.log(favoriteClass);
+    const getImageAlbumStorage = async (id) => {
+        const pathReference = ref(storage, `album/${id}`);
+        let urlExport = '';
+        await getDownloadURL(pathReference)
+        .then((url) => {
+            urlExport = url;
+        })
+        .catch((error) => {
+            // console.log(error);
+        })
+        return urlExport;
+    };
+
+    const getSingleAuthorPage = async () => {
+        setActiveSlide(1);
+        setShowModal(false);
+        await getImageAuthorStorage(authorId).then((image) => {
+            console.log(image);
+            if(authorData !== null){
+                setAuthorData(prev => [{image, uid: prev.id, title: prev.title, description: prev.description, albums: prev.albums, musics: prev.musics}]);
+                setSearchInfoAboutItem({image,...authorData});
+            }
+        });
+        await setSearchTab(2);
+        await setActiveSlide(6);
+    };
+
+    const getImageAuthorStorage = async (id) => {
+        const pathReference = ref(storage, `author/${id}`);
+        let urlExport = '';
+        await getDownloadURL(pathReference)
+        .then((url) => {
+            urlExport = url;
+        })
+        .catch((error) => {
+            // console.log(error);
+        })
+        return urlExport;
+    };
+
+    const getSingleAlbumPage = async () => {
+        setActiveSlide(1);
+        setShowModal(false);
+        await getImageAlbumStorage(albumId).then((image) => {
+            if(albumData !== null){
+                setAuthorData(prev => [{image, uid: prev.id, title: prev.title, musics: prev.musics, year: prev.year, authorId, genreId: prev.genreId}]);
+                setSearchInfoAboutItem({image,...albumData});
+            }
+        });
+        // await setSearchInfoAboutItem({image, uid: id, title, musics, year, authorId, genreId});
+        await setSearchTab(1);
+        await setActiveSlide(6);
+    };
 
     return (
-        <div className="user_collection_list_all_music_item" onClick={() => getMusicByClick(uniqueid)}>
+        <div className="user_collection_list_all_music_item">
             <div className="user_collection_list_all_music_item_base">
-                <div className="user_collection_list_all_music_item_num item_list_all_collection">
+                <div className="user_collection_list_all_music_item_num item_list_all_collection" onClick={() => getMusicByClick(uniqueid)}>
                     {uniqueid === currentIdAudio ? <span className='circle_animation'>●</span> : i + 1 }
                 </div>
-                <div className="user_collection_list_all_music_item_name item_list_all_collection">
+                <div className="user_collection_list_all_music_item_name item_list_all_collection" onClick={() => getMusicByClick(uniqueid)}>
                     {name}
                 </div>
-                <div className="user_collection_list_all_music_item_album item_list_all_collection">
+                <div className="user_collection_list_all_music_item_album item_list_all_collection" onClick={() => getSingleAlbumPage()}>
                     {album}
                 </div>
-                <div className="user_collection_list_all_music_item_author item_list_all_collection">
+                <div className="user_collection_list_all_music_item_author item_list_all_collection" onClick={() => getSingleAuthorPage()}>
                     {author}
                 </div>
                 <div className="user_collection_list_all_music_item_duration item_list_all_collection">

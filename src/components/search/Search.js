@@ -50,7 +50,7 @@ function Search(props) {
     const getFindItemsAlbumAndAuthor = (arr, searchTerm) => {
         let findArray = [];
         arr.forEach(item => {
-            if(item.title.includes(searchTerm)){
+            if(item.title.toLowerCase().includes(searchTerm.toLowerCase())){
                 if(findArray.length < 4){
                     findArray.push(item);
                 }
@@ -145,7 +145,14 @@ function Search(props) {
         elements_search_author = shortAuthorFind.map((item, i) => {
             return (
                 <div className="search_panel_modal_author_list_item" key={i}>
-                    <AuthorItem image={item.image} title={item.title} id={item.id}/>
+                    <AuthorItem 
+                    image={item.image} 
+                    title={item.title}
+                    description={item.description}
+                    albums={item.albums}
+                    musics={item.musics} 
+                    id={item.id}
+                    setShowModal={setShowModal}/>
                 </div>
             )
         });
@@ -273,7 +280,6 @@ const AlbumItem = ({image, title, author, id, musics, year, authorId, genreId, s
         await setActiveSlide(6);
     };
 
-
     return (
         <div className="album_item">
             <div className="album_item_image">
@@ -294,9 +300,11 @@ const AlbumItem = ({image, title, author, id, musics, year, authorId, genreId, s
     )
 };
 
-const AuthorItem = ({image, title, id}) => {
+const AuthorItem = ({image, title, description, albums, musics, id, setShowModal}) => {
 
     const {db, auth} = useFirebaseContext();
+    const {setSearchInfoAboutItem} = useSearchContext();
+    const {setActiveSlide, setSearchTab} = useTabsContext();
     const [favoriteClass, setFavoriteClass] = useState(false);
     
     const onFavoriteAlbum = () => {
@@ -348,13 +356,21 @@ const AuthorItem = ({image, title, id}) => {
         })
     }, [])
 
+    const getSingleAuthorPage = async () => {
+        setActiveSlide(1);
+        setShowModal(false);
+        await setSearchInfoAboutItem({image, uid: id, title, description, albums, musics});
+        await setSearchTab(2);
+        await setActiveSlide(6);
+    };
+
     return (
         <div className="album_item">
-            <div className="album_item_image">
+            <div className="album_item_image" onClick={getSingleAuthorPage}>
                 <img src={image} alt="" />
             </div>
             <div className="album_item_text">
-                <div className="album_item_text_author">
+                <div className="album_item_text_author" onClick={getSingleAuthorPage}>
                     {title}
                 </div>
             </div>

@@ -2,6 +2,7 @@ import './SearchSection.scss';
 import SingleAlbumPage from '../pages/singleAlbumPage/SingleAlbumPage';
 import { useTabsContext } from '../../context/TabsContext';
 import { useSearchContext } from '../../context/SearchContext';
+import SingleAuthorPage from '../pages/singleAuthorPage/SingleAuthorPage';
 
 function SearchSection(props) {
     const {searchInfoAboutItem} = useSearchContext();
@@ -11,6 +12,9 @@ function SearchSection(props) {
     switch(searchTab){
         case 1:
             search_section = <SingleAlbumPage {...searchInfoAboutItem}/>
+            break;
+        case 2:
+            search_section = <SingleAuthorPage {...searchInfoAboutItem}/>
             break;
         default:
             break;
