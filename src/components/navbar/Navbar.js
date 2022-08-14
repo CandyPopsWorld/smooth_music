@@ -7,8 +7,6 @@ import { useFirebaseContext } from '../../context/FirebaseContext';
 const tabs = [
     {active: false,title: 'Главная',id: 1},
     {active: false,title: 'Коллекция',id: 2},
-    {active: false,title: 'Вся Музыка',id: 3},
-    {active: false,title: 'Все Альбомы',id: 4},
     {active: false,title: 'Настройки',id: 5},
 ]
 

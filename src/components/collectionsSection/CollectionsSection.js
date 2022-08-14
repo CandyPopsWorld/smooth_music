@@ -8,56 +8,6 @@ import { useEffect, useState } from 'react';
 import { useFavoritesContext } from '../../context/FavoritesContext';
 import { useSearchContext } from '../../context/SearchContext';
 import { useTabsContext } from '../../context/TabsContext';
-function CollectionsSection(props) {
-
-    const {db, auth} = useFirebaseContext();
-    const {allDocumentDatabaseAudio,setAllDocumentDatabaseAudio} = useDatabaseContext();
-
-    const getAllDocumentDatabase = async () => {
-        const querySnapshot = await getDocs(collection(db, "audio"));
-        querySnapshot.forEach((doc) => {
-            setAllDocumentDatabaseAudio(prev => [...prev,doc.data()]);
-            console.log(doc.id, " => ", doc.data());
-        });
-    };
-
-    useEffect(() => {
-        if(allDocumentDatabaseAudio.length === 0){
-            getAllDocumentDatabase();
-        }
-    }, [])
-
-    let elements_all_music = null;
-    if(allDocumentDatabaseAudio.length !== 0){
-        elements_all_music = allDocumentDatabaseAudio.map(({album, author, name, id, textOfMusic, duration, authorId, albumId}, i) => {
-            return(
-                <AudioItem 
-                idkey={id}
-                uniqueid={id} 
-                key={id} 
-                album={album} 
-                author={author} 
-                name={name} 
-                i={i}
-                textOfMusic={textOfMusic}
-                duration={duration}
-                authorId={authorId}
-                albumId={albumId}/>
-            )
-        });
-    }
-
-    return (
-        <div className='user_collection'>
-            <h2>Коллекция</h2>
-            <h3>Вся музыка</h3>
-            <div className="user_collection_list_all_music">
-                {elements_all_music}
-            </div>
-        </div>
-    );
-};
-
 
 export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duration, authorId, albumId}) => {
 
@@ -241,5 +191,3 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
         </div>
     )
 };
-
-export default CollectionsSection;
