@@ -7,7 +7,10 @@ import Loader from '../loader/Loader';
 import { Album } from '../albumsSection/AlbumsSection';
 import { useEffect, useState } from 'react';
 import {ref,getDownloadURL } from "firebase/storage";
+import {arrayUnion, arrayRemove, updateDoc} from "firebase/firestore";
 import likeSprite from '../../resources/image/like_playlist.png';
+import { useSearchContext } from '../../context/SearchContext';
+import { useTabsContext } from '../../context/TabsContext';
 
 const nav_data = [
     {active: false, title: 'Альбомы', id: 1},
@@ -55,14 +58,6 @@ function UserFavoritesSection(props) {
             </div>
         </div>
     );
-};
-
-const Author_Block = () => {
-    return (
-        <div className='favorite_section_tabs_block_authors'>
-            <h1>Исполнители</h1>
-        </div>
-    )
 };
 
 const Playlist_Block = () => {
@@ -139,6 +134,156 @@ const Playlist_Block = () => {
     )
 };
 // 
+
+const Author_Block = () => {
+
+    const {db,auth, storage} = useFirebaseContext();
+    const {authors, setAuthors, favoriteAuthors, setFavoriteAuthors} = useFavoritesContext();
+
+    const getFavoriteAuthors = async () => {
+        const docRef = doc(db, 'users', auth.currentUser.uid);
+        const docSnap = await getDoc(docRef);
+        console.log(docSnap.data().favoriteAuthor);
+        setFavoriteAuthors(docSnap.data().favoriteAuthor);
+        getAuthorsForFavorite(docSnap.data().favoriteAuthor);
+    };
+
+    const getAuthorsForFavorite = async (arr) => {
+        await arr.forEach(item => {
+            getAuthor(item.authorId).then(author => {
+                getImageAuthorStorage(item.authorId).then((image) => {
+                    setAuthors(prev => [...prev, {...author, image}]);
+                });
+            });
+        })
+    };
+
+    const getImageAuthorStorage = async (id) => {
+        const pathReference = ref(storage, `author/${id}`);
+        let urlExport = '';
+        await getDownloadURL(pathReference)
+        .then((url) => {
+            urlExport = url;
+        })
+        .catch((error) => {
+            // console.log(error);
+        })
+        return urlExport;
+    };
+
+    const getAuthor = async (id) => {
+        const docRef = await doc(db, 'authors', id);
+        const docSnap = await getDoc(docRef);
+        // console.log(docSnap.data());
+        return await docSnap.data();
+    };
+
+    useEffect(() => {
+        if(authors.length === 0){
+            getFavoriteAuthors();
+        }
+    }, [])
+
+    let elements_authors = null;
+    if(authors.length > 0){
+        elements_authors = authors.map(item => {
+            return <Author 
+            key={item.id} 
+            image={item.image}
+            id={item.id}
+            description={item.description}
+            title={item.title}
+            albums={item.albums}
+            musics={item.musics}
+            />
+        });
+    }
+
+    return (
+        <div className='favorite_section_tabs_block_authors'>
+            <div className="favorite_section_tabs_block_authors_list">
+                {elements_authors}
+            </div>
+        </div>
+    )
+};
+
+const Author = ({image, id, description, title, albums, musics}) => {
+
+    const {db, auth} = useFirebaseContext();
+    const {setSearchInfoAboutItem, setShowModal} = useSearchContext();
+    const {setActiveSlide, setSearchTab} = useTabsContext();
+    const [favoriteClass, setFavoriteClass] = useState(false);
+
+    const onFavoriteAuthor = () => {
+        getFavoriteAuthor().then((res) => {
+            let bool = false;
+            res.forEach(({authorId}) => {
+                if(id === authorId){
+                    bool = true;
+                }
+            })
+            if(bool === true){
+                setFavoriteClass(false);
+                removeUserFavoriteAuthor();
+            } else{
+                setFavoriteClass(true);
+                addUserFavoriteAuthor();
+            }
+        });
+    };
+
+    const getFavoriteAuthor = async () => {
+        const docRef = doc(db, 'users', auth.currentUser.uid);
+        const docSnap = await getDoc(docRef);
+        return docSnap.data().favoriteAuthor;
+    };
+
+    const addUserFavoriteAuthor = async () => {
+        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
+        await updateDoc(userDbRef, {
+            favoriteAuthor: arrayUnion({authorId: id})
+        });
+    };
+
+    const removeUserFavoriteAuthor = async () => {
+        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
+        await updateDoc(userDbRef, {
+            favoriteAuthor: arrayRemove({authorId: id})
+        });
+    };
+
+    useEffect(() => {
+        getFavoriteAuthor().then((res) => {
+            res.forEach(({authorId}) => {
+                if(authorId === id){
+                    setFavoriteClass(true);
+                }
+            })
+        })
+    }, [])
+
+    const getSingleAuthorPage = async () => {
+        setActiveSlide(1);
+        setShowModal(false);
+        await setSearchInfoAboutItem({image, uid: id, title, description, albums, musics});
+        await setSearchTab(2);
+        await setActiveSlide(6);
+    };
+
+
+    return(
+        <div className="favorite_section_author_block">
+            <div className="favorite_section_author_block_image">
+                <img src={image} alt="" onClick={getSingleAuthorPage}/>
+                <span style={{textAlign: 'center'}}>{title}</span>
+                <div className="favorite_section_author_block_favorite">
+                    <i className="fa-solid fa-heart favorite_album_control" onClick={onFavoriteAuthor} style={favoriteClass ? {color: 'orangered'} : null}></i>
+                </div>
+            </div>
+        </div>
+    )
+};
 
 const Album_Block = () => {
     const {auth, db, storage} = useFirebaseContext();

@@ -19,5 +19,41 @@
 
     &_tabs_block{
         width: 100%;
+        &_authors{
+            &_list{
+                @include flex($justifyContent: flex-start, $alignItems: flex-start, $flexWrap: wrap);
+            }
+        }
+    }
+
+    &_author_block{
+        position: relative;
+        margin: 10px;
+        &_image{
+            @include flex($flexDirection: column);
+            width: 200px;
+            height: 200px;
+            img{
+                width: inherit;
+                height: inherit;
+                cursor: pointer;
+                border-radius: 50%;
+            }
+        }
+        &_favorite{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            i{
+                transform: scale(1);
+                cursor: pointer;
+                font-size: 2em;
+                &:hover{
+                    color: orangered;
+                    transform: scale(1.5);
+                }
+            }
+        }
     }
 }

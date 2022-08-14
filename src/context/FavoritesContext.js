@@ -12,6 +12,10 @@ export function FavoritesContext({children}){
     const [activePlaylist, setActivePlaylist] = useState(0);
     const [favoriteAudio, setFavoriteAudio] = useState([]);
 
+    //Authors Tab
+    const [favoriteAuthors, setFavoriteAuthors] = useState([]);
+    const [authors, setAuthors] = useState([]);
+
     const value = {
         activeTab,
         setActiveTab,
@@ -26,7 +30,11 @@ export function FavoritesContext({children}){
         activePlaylist,
         setActivePlaylist,
         favoriteAudio,
-        setFavoriteAudio
+        setFavoriteAudio,
+        authors,
+        setAuthors,
+        favoriteAuthors,
+        setFavoriteAuthors
     };
 
     return(
