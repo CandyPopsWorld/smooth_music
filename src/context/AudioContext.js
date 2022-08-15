@@ -11,6 +11,9 @@ export function AudioContext({children}){
     const [viewTitle, setViewTitle] = useState(false);
     const [played, setPlayed] = useState(true);
 
+    const [originalTextMute, setOriginalTextMute] = useState(true);
+    const [translateTextMute, setTranslateTextMute] = useState(true);
+
     const value = {
         currentTime,
         titleOrigin,
@@ -23,7 +26,11 @@ export function AudioContext({children}){
         setViewTitle,
         setTextOfMusic,
         played,
-        setPlayed
+        setPlayed,
+        originalTextMute,
+        setOriginalTextMute,
+        translateTextMute,
+        setTranslateTextMute
     }
 
     return (

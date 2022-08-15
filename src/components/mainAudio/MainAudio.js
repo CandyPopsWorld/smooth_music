@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import ReactAudioPlayer from 'react-audio-player';
 
-import {doc, getDoc} from 'firebase/firestore';
+import {doc, getDoc, updateDoc, arrayUnion, arrayRemove} from 'firebase/firestore';
 
 import spriteAudio from '../../resources/audio/come.mp3';
 import play from '../../resources/image/controls/play.png';
@@ -19,6 +19,9 @@ import { useRef } from 'react';
 function MainAudio(props) {
     const {currentAudio, currentIdAudio} = useDatabaseContext();
     const [duration, setDuration] = useState(null);
+    const [volume, setVolume] = useState(null);
+    const [mute, setMute] = useState(false);
+    const [favoriteClass, setFavoriteClass] = useState(false);
 
     const {
         setCurrentTime,
@@ -35,9 +38,10 @@ function MainAudio(props) {
     let audioRef = useRef(null);
 
     const loadMetadata = (e) => {
-        const {duration, currentTime} = e.target;
+        const {duration, currentTime, volume} = e.target;
         const durationFloor = Math.floor(duration);
         setDuration(durationFloor);
+        setVolume(volume);
         // console.log(currentTime);
         // console.log(durationFloor);
     };
@@ -103,7 +107,14 @@ function MainAudio(props) {
             currentIdAudio={currentIdAudio} 
             duration={duration} 
             currentTime={currentTime}
-            audioRef={audioRef !== null && audioRef.current !== null ? audioRef.current.audioEl.current : null}/>
+            audioRef={audioRef !== null && audioRef.current !== null ? audioRef.current.audioEl.current : null}
+            volume={volume}
+            setVolume={setVolume}
+            mute={mute}
+            setMute={setMute}
+            uniqueid={currentIdAudio}
+            favoriteClass={favoriteClass}
+            setFavoriteClass={setFavoriteClass}/>
             <div className="audio_player">
                 <ReactAudioPlayer 
                 src={currentAudio} 
@@ -116,18 +127,21 @@ function MainAudio(props) {
                 onPlay={viewTitlePlay}
                 onCanPlayThrough={startPlay}
                 ref={audioRef}
-                style={{display: 'none'}}/>
+                style={{display: 'none'}}
+                volume={volume}/>
             </div>
         </div>
     );
 };
 
 
-const View = ({currentIdAudio, duration, currentTime, audioRef}) => {
+const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolume, mute, setMute, uniqueid, favoriteClass, setFavoriteClass}) => {
     
     const {auth, db} = useFirebaseContext();
     const [audioData, setAudioData] = useState(null);
     const {played, setPlayed} = useAudioContext();
+
+    const {setOriginalTextMute, setTranslateTextMute, originalTextMute, translateTextMute} = useAudioContext();
 
     const getAudioData = async () => {
         const docRef = await doc(db, 'audio', currentIdAudio);
@@ -136,11 +150,32 @@ const View = ({currentIdAudio, duration, currentTime, audioRef}) => {
     };
 
     useEffect(() => {
+        getFavoriteMusic().then((res) => {
+            res.forEach(({audioId}) => {
+                if(audioId === uniqueid){
+                    setFavoriteClass(true);
+                }
+            })
+        })
+    }, [])
+
+    useEffect(() => {
         getAudioData();
+
+        setFavoriteClass(false);
+        getFavoriteMusic().then((res) => {
+            res.forEach(({audioId}) => {
+                if(audioId === uniqueid){
+                    setFavoriteClass(true);
+                }
+            })
+        })
+
     }, [currentIdAudio])
 
     if(audioRef !== null){
         console.log(audioRef.currentTime);
+        console.log(audioRef.volume);
     }
 
     const transformCurrentTime = () => {
@@ -181,7 +216,50 @@ const View = ({currentIdAudio, duration, currentTime, audioRef}) => {
         } else {
             return num;
         }
-    }
+    };
+
+    //favorite
+    const onFavoriteMusic = () => {
+        getFavoriteMusic().then((res) => {
+            let bool = false;
+            res.forEach(({audioId}) => {
+                if(uniqueid === audioId){
+                    bool = true;
+                }
+            })
+            if(bool === true){
+                setFavoriteClass(false);
+                removeUserFavoriteAudio();
+            } else{
+                setFavoriteClass(true);
+                addUserFavoriteAudio();
+            }
+        });
+        // addUserFavoriteAudio();
+    };
+
+    const addUserFavoriteAudio = async () => {
+        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
+        await updateDoc(userDbRef, {
+            favoriteAudio: arrayUnion({audioId: uniqueid})
+        });
+    };
+
+    const removeUserFavoriteAudio = async () => {
+        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
+        await updateDoc(userDbRef, {
+            favoriteAudio: arrayRemove({audioId: uniqueid})
+        });
+    };
+
+
+    const getFavoriteMusic = async () => {
+        const docRef = doc(db, 'users', auth.currentUser.uid);
+        const docSnap = await getDoc(docRef);
+        // await setFavoriteObj(docSnap.data().favoriteAudio);
+        return docSnap.data().favoriteAudio;
+        // console.log(docSnap.data().favoriteAudio);
+    };
 
     return (
         <div className="controls">
@@ -226,8 +304,43 @@ const View = ({currentIdAudio, duration, currentTime, audioRef}) => {
                 </div>
 
                 <div className="controls_favorite">
-                    ❤
+                    <i onClick={onFavoriteMusic} className="fa-solid fa-heart" style={favoriteClass ? {color: 'orangered'} : null}></i>
                 </div>
+
+                <div className="controls_volume_block">
+                    {
+                        mute === false ?
+                        <i className="fa-solid fa-volume-high" style={{color: 'white'}} onClick={() => {
+                            setVolume(0);
+                            setMute(true);
+                        }}></i>
+                        :
+                        <i className="fa-solid fa-volume-xmark" style={{color: 'white'}} onClick={() => {
+                            setVolume(1);
+                            setMute(false);
+                        }}></i>
+                    }
+                    {/* <i className="fa-solid fa-volume-high" style={{color: 'white'}}></i> */}
+                    <input type="range" min={0} max={1} step={0.1} value={volume} onChange={(e) => {
+                        if(audioRef !== null){
+                            setVolume(e.target.value);
+                            audioRef.volume = e.target.value;
+                        }
+                    }}/>
+                </div>
+
+                <div className="controls_original_text_block" onClick={() => {
+                    setOriginalTextMute(prev => !prev);
+                }}>
+                    <span style={originalTextMute === true ? {color: 'orangered'} : {color: 'white'}}>OR</span>
+                </div>
+
+                 <div className="controls_translate_text_block" onClick={() => {
+                    setTranslateTextMute(prev => !prev);
+                 }}>
+                    <span style={translateTextMute === true ? {color: 'orangered'} : {color: 'white'}}>TR</span>
+                </div>
+
             </div>
         </div>
     )

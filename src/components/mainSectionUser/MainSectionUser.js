@@ -11,6 +11,7 @@ function MainSectionUser(props) {
     const {currentAudio, setCurrentAudio, setCurrentTextOfMusic, ids, setIds, setCurrentIdAudio} = useDatabaseContext();
     const {db, storage} = useFirebaseContext();
     const {setPlayed} = useAudioContext();
+    const {originalTextMute, translateTextMute} = useAudioContext();
 
     const onRandomAudio = () => {
         setPlayed(true);
@@ -62,14 +63,14 @@ function MainSectionUser(props) {
             {
                 viewTitle === false ?
                 <div className="user_main_animation">
-                    <h1 className='user_volna' onClick={onRandomAudio}>Моя Волна</h1>
+                    <h1 className='user_volna' style={{userSelect: 'none'}} onClick={onRandomAudio}>Моя Волна</h1>
                 </div>
 
                 :
 
                 <div className="user_main_text">
-                    <h2 className='title_origin'>{titleOrigin}</h2>
-                    <h2 className='title_translate'>{titleTranslate}</h2>
+                    <h2 className='title_origin'>{originalTextMute === true ? titleOrigin : null}</h2>
+                    <h2 className='title_translate'>{translateTextMute === true ? titleTranslate : null}</h2>
                 </div>
             }
         </div>
