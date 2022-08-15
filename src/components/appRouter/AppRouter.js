@@ -27,7 +27,7 @@ function AppRouter(props) {
             {publicRoutes.map(({path, element}) => {
                 return <Route path={path} element={element} key={path}/>
             })}
-            <Route path='*' element={<Navigate to={HOMEPAGE_ROUTE}/>}/>
+            <Route path='*' element={<Navigate to={'/login'}/>}/>
         </Routes>
     )
 }

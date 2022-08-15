@@ -1,0 +1,87 @@
+@import '../../../style/mixin.scss';
+
+.signup_wrapper{
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    background-color: black;
+    color: white;
+}
+
+.signup_container{
+    @include flex($flexDirection: column, $justifyContent: flex-start, $alignItems: center);
+
+    &_item{
+        &_header{
+            position: relative;
+            font-size: 1.5em;
+
+            &::before{
+                content:" ";
+                display: inline-block;
+                height: 1px;
+                width: 300px;
+                margin-bottom: 5px;
+                margin-right: 20px;
+                background: orangered;
+            }
+
+            &::after{
+                content:" ";
+                display: inline-block;
+                height: 1px;
+                width: 300px;
+                margin-bottom: 5px;
+                margin-left: 20px;
+                background: orangered;
+            }
+        }
+
+        &_form{
+            margin-top: 130px;
+        }
+
+        &_input{
+            @include flex($flexDirection: column, $justifyContent: flex-start, $alignItems: flex-start);
+            margin-bottom: 20px;
+            input{
+                width: 400px;
+                height: 30px;
+                background-color: transparent;
+                border-radius: 4px;
+                border: 1px solid white;
+                outline: none;
+                color: orangered;
+
+                &:hover{
+                    border-radius: 4px;
+                    border: 1px solid orangered;
+                }
+
+                &:focus{
+                    border-radius: 4px;
+                    border: 1px solid orangered;
+                }
+            }
+        }
+    }
+}
+
+.signup_container_item_button{
+    @include flex($justifyContent: flex-end, $alignItems: center);
+
+    button{
+        cursor: pointer;
+        background-color: orangered;
+        color: white;
+        @include flex;
+        border: none;
+        padding: 15px 15px;
+        border-radius: 20px;
+        transform: scale(1);
+        transition: transform 0.2s;
+        &:hover{
+            transform: scale(1.1);
+        }
+    }
+}

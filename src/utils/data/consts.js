@@ -1,4 +1,3 @@
-export const HOMEPAGE_ROUTE = process.env.REACT_APP_HOMEPAGE_ROUTE;
 export const LOGIN_ROUTE = process.env.REACT_APP_LOGINPAGE_ROUTE;
 export const SIGNUP_ROUTE = process.env.REACT_APP_SIGNUPPAGE_ROUTE;
 

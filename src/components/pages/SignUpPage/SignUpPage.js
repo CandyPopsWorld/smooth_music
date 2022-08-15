@@ -5,6 +5,8 @@ import {useFirebaseContext} from '../../../context/FirebaseContext';
 
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile} from 'firebase/auth';
 import { doc, setDoc } from "firebase/firestore"; 
+import logoSprite from '../../../resources/image/logo.png';
+import { Link, NavLink } from 'react-router-dom';
 
 import './SignUpPage.scss';
 import { useState } from 'react';
@@ -68,14 +70,32 @@ function SignUpPage(props) {
     return (
         <div>
             <Helmet title={SIGNUP_HELMET.title} description={SIGNUP_HELMET.description}/>
-            <div className="signup_container">
+            <div className="login_navbar">
+                <NavLink to={'/login'} style={({ isActive }) =>
+              isActive ? {color: 'orangered'} : null
+            }>Вход</NavLink>
+                <span>/</span>
+                <NavLink to={'/signup'} style={({ isActive }) =>
+              isActive ? {color: 'orangered'} : null
+            }>Регистрация</NavLink>
+            </div>
+            <div className="signup_wrapper">
+                <div className="login_header">
+                    <div className="login_header_logo">
+                        <img src={logoSprite} alt="logo" />
+                        <h1>Smooth Music</h1>
+                    </div>
+                    <div className="login_header_hr"></div>
+                </div>
+
+                <div className="signup_container">
                 <div className="signup_container_item">
                     <div className="signup_container_item_header">
                         Регистрация
                     </div>
                 </div>
 
-                <div className="signup_container_item">
+                <div className="signup_container_item signup_container_item_form">
                     <div className="signup_container_item_input">
                             <label htmlFor="">Никнейм</label>
                             <input 
@@ -120,6 +140,8 @@ function SignUpPage(props) {
                         <button id='signup' onClick={registerUser}>Зарегистрироваться</button>
                     </div>
                 </div>
+            </div>
+                
             </div>
         </div>
     );
