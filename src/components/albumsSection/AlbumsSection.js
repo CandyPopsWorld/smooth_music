@@ -125,6 +125,8 @@ export const MusicsList = ({albumMusics, title = null}) => {
             )
         });
     }
+
+    console.log('albMusc:', albumMusics);
     return (
         <div className='music_list_albums'>
             {

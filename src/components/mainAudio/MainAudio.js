@@ -10,11 +10,13 @@ import arrow from '../../resources/image/controls/arrow.png';
 
 import './MainAudio.scss';
 
+import {ref, uploadBytes,getDownloadURL } from "firebase/storage";
 import { useAudioContext } from '../../context/AudioContext';
 import { useDatabaseContext } from '../../context/DatabaseContext';
 import { useSearchContext } from '../../context/SearchContext';
 import { useFirebaseContext } from '../../context/FirebaseContext';
 import { useRef } from 'react';
+import { useTabsContext } from '../../context/TabsContext';
 
 function MainAudio(props) {
     const {currentAudio, currentIdAudio} = useDatabaseContext();
@@ -117,8 +119,9 @@ function MainAudio(props) {
             setFavoriteClass={setFavoriteClass}/>
             <div className="audio_player">
                 <ReactAudioPlayer 
-                src={currentAudio} 
-                controls 
+                src={currentAudio !== null ? currentAudio : ''} 
+                controls
+                autoPlay={true} 
                 onLoadedMetadata={loadMetadata} 
                 listenInterval={1000} 
                 onListen={currentTimeAudio}
@@ -126,6 +129,8 @@ function MainAudio(props) {
                 onPause={viewTitlePause}
                 onPlay={viewTitlePlay}
                 onCanPlayThrough={startPlay}
+                onCanPlay={startPlay}
+                onAbort={startPlay}
                 ref={audioRef}
                 style={{display: 'none'}}
                 volume={volume}/>
@@ -137,19 +142,34 @@ function MainAudio(props) {
 
 const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolume, mute, setMute, uniqueid, favoriteClass, setFavoriteClass}) => {
     
-    const {auth, db} = useFirebaseContext();
+    const {auth, db, storage} = useFirebaseContext();
     const [audioData, setAudioData] = useState(null);
     const {played, setPlayed} = useAudioContext();
 
     const {setOriginalTextMute, setTranslateTextMute, originalTextMute, translateTextMute} = useAudioContext();
 
+    const [album, setAlbum] = useState(null);
+    const [author, setAuthor] = useState(null);
+
+    const {setSearchInfoAboutItem, setShowModal} = useSearchContext();
+    const {setActiveSlide, setSearchTab} = useTabsContext();
+
+
+    const [currentTimeInput, setCurrentTimeInput] = useState(currentTime);
+    const [volumeInput, setVolumeInput] = useState(volume);
+
     const getAudioData = async () => {
+        if(currentIdAudio === null){
+            return;
+        }
         const docRef = await doc(db, 'audio', currentIdAudio);
         const docSnap = await getDoc(docRef);
         await setAudioData(docSnap.data());
     };
 
     useEffect(() => {
+        setCurrentTimeInput(currentTime);
+        setVolumeInput(volume);
         getFavoriteMusic().then((res) => {
             res.forEach(({audioId}) => {
                 if(audioId === uniqueid){
@@ -157,6 +177,9 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
                 }
             })
         })
+
+        getAlbumAudio();
+        getAuthorAudio();
     }, [])
 
     useEffect(() => {
@@ -171,7 +194,21 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
             })
         })
 
+        setAlbum(null);
+        setAuthor(null);
+
+        getAlbumAudio();
+        getAuthorAudio();
+
     }, [currentIdAudio])
+
+    useEffect(() => {
+        setVolumeInput(volume);
+    }, [volume])
+
+    useEffect(() => {
+        setCurrentTimeInput(currentTime);
+    }, [currentTimeInput])
 
     if(audioRef !== null){
         console.log(audioRef.currentTime);
@@ -261,11 +298,107 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
         // console.log(docSnap.data().favoriteAudio);
     };
 
+    const getAlbumAudio = async () => {
+        if(currentIdAudio === null){
+            return;
+        }
+        const docRef = await doc(db, 'audio', uniqueid);
+        const docSnap = await getDoc(docRef);
+        const albumId = await docSnap.data().albumId;
+
+        const albumRef = await doc(db, 'albums', albumId);
+        const albumSnap = await getDoc(albumRef);
+
+        await getImageAlbumStorage(albumId).then((image) => {
+            setAlbum({image, 
+                uid: albumSnap.data().id, 
+                title: albumSnap.data().title, 
+                musics: albumSnap.data().musics, 
+                year: albumSnap.data().year, authorId: albumSnap.data().authorId, 
+                genreId: albumSnap.data().genreId})
+            // setAlbum([{image, ...albumSnap.data()}]);
+        });
+        
+
+    };
+
+    const getSingleAlbumPage = async () => {
+        setActiveSlide(1);
+        setShowModal(false);
+        if(album !== null){
+            setSearchInfoAboutItem({...album});
+        }
+        await setSearchTab(1);
+        await setActiveSlide(6);
+    };
+
+    const getImageAlbumStorage = async (id) => {
+        const pathReference = ref(storage, `album/${id}`);
+        let urlExport = '';
+        await getDownloadURL(pathReference)
+        .then((url) => {
+            urlExport = url;
+        })
+        .catch((error) => {
+            // console.log(error);
+        })
+        return urlExport;
+    };
+
+    //author
+
+    const getAuthorAudio = async () => {
+        if(currentIdAudio === null){
+            return;
+        }
+        const docRef = await doc(db, 'audio', uniqueid);
+        const docSnap = await getDoc(docRef);
+        const authorId = await docSnap.data().authorId;
+
+        const authorRef = await doc(db, 'authors', authorId);
+        const authorSnap = await getDoc(authorRef);
+
+        await getImageAuthorStorage(authorId).then((image) => {
+            setAuthor({image, 
+                uid: authorSnap.data().id, 
+                title: authorSnap.data().title, 
+                description: authorSnap.data().description, 
+                albums: authorSnap.data().albums, 
+                musics: authorSnap.data().musics})
+        });
+        
+
+    };
+
+    const getSingleAuthorPage = async () => {
+        setActiveSlide(1);
+        setShowModal(false);
+        if(author !== null){
+            setSearchInfoAboutItem({...author});
+        }
+        await setSearchTab(2);
+        await setActiveSlide(6);
+    };
+
+    const getImageAuthorStorage = async (id) => {
+        const pathReference = ref(storage, `author/${id}`);
+        let urlExport = '';
+        await getDownloadURL(pathReference)
+        .then((url) => {
+            urlExport = url;
+        })
+        .catch((error) => {
+            // console.log(error);
+        })
+        return urlExport;
+    };
+
+
     return (
         <div className="controls">
             <div className="line">
                 <span className='current_time_audio'>{duration !== null  ? transformCurrentTime() : null}</span>
-                <input type={'range'} min={0} max={duration} className="controls_line" value={currentTime} onChange={(e) => {
+                <input type={'range'} min={0} max={duration} className="controls_line" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} value={currentTime !== null ? currentTime : 0} onChange={(e) => {
                    if(audioRef !== null){
                        audioRef.currentTime = e.target.value;
                        setPlayed(true);
@@ -275,10 +408,10 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
             </div>
             <div className="controls_buttons">
                 <div className="controls_buttons_item arrow_back">
-                    <img src={arrow} alt="" />
+                    <img src={arrow} alt="" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}}/>
                 </div>
                 <div className="controls_buttons_item play_video">
-                    <img src={played === true ? pause : play} alt="" onClick={() => {
+                    <img src={played === true ? pause : play} alt="" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={() => {
                         if(audioRef !== null){
                             if(played === true){
                                 audioRef.pause();
@@ -291,37 +424,52 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
                     }}/>
                 </div>
                 <div className="controls_buttons_item arrow_next">
-                    <img src={arrow} alt="" />
+                    <img src={arrow} alt="" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}}/>
+                </div>
+
+                <div className="controls_album_image" style={currentIdAudio !== null && album !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={ () => {
+                    if(album !== null){
+                        getSingleAlbumPage();
+                    }
+                }}>
+                    <img 
+                    src={album !== null && album.image ? album.image : null} 
+                    alt="" 
+                    style={album !== null && album.image ? {width: '32px', height: '32px', pointerEvents: 'all'} : {width: '32px', height: '32px', pointerEvents: 'none'}}/>
                 </div>
 
                 <div className="controls_text">
-                    <div className="controls_text_name_music">
+                    <div className="controls_text_name_music" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}}>
                         {audioData !== null ? audioData.name : null}
                     </div>
-                    <div className="controls_text_author_music">
+                    <div className="controls_text_author_music" style={currentIdAudio !== null && author !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={() => {
+                        if(author !== null){
+                            getSingleAuthorPage();
+                        }
+                    }}>
                         {audioData !== null ? audioData.author : null}
                     </div>
                 </div>
 
-                <div className="controls_favorite">
+                <div className="controls_favorite" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}}>
                     <i onClick={onFavoriteMusic} className="fa-solid fa-heart" style={favoriteClass ? {color: 'orangered'} : null}></i>
                 </div>
 
                 <div className="controls_volume_block">
                     {
                         mute === false ?
-                        <i className="fa-solid fa-volume-high" style={{color: 'white'}} onClick={() => {
+                        <i className="fa-solid fa-volume-high" style={currentIdAudio !== null ? {color: 'white', pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={() => {
                             setVolume(0);
                             setMute(true);
                         }}></i>
                         :
-                        <i className="fa-solid fa-volume-xmark" style={{color: 'white'}} onClick={() => {
+                        <i className="fa-solid fa-volume-xmark" style={currentIdAudio !== null ? {color: 'white', pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={() => {
                             setVolume(1);
                             setMute(false);
                         }}></i>
                     }
                     {/* <i className="fa-solid fa-volume-high" style={{color: 'white'}}></i> */}
-                    <input type="range" min={0} max={1} step={0.1} value={volume} onChange={(e) => {
+                    <input type="range" min={0} max={1} step={0.1} value={volume !== null ? volume : 0} style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}}  onChange={(e) => {
                         if(audioRef !== null){
                             setVolume(e.target.value);
                             audioRef.volume = e.target.value;
@@ -329,13 +477,13 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
                     }}/>
                 </div>
 
-                <div className="controls_original_text_block" onClick={() => {
+                <div className="controls_original_text_block" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={() => {
                     setOriginalTextMute(prev => !prev);
                 }}>
                     <span style={originalTextMute === true ? {color: 'orangered'} : {color: 'white'}}>OR</span>
                 </div>
 
-                 <div className="controls_translate_text_block" onClick={() => {
+                 <div className="controls_translate_text_block" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={() => {
                     setTranslateTextMute(prev => !prev);
                  }}>
                     <span style={translateTextMute === true ? {color: 'orangered'} : {color: 'white'}}>TR</span>

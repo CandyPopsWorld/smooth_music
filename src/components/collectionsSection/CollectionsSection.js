@@ -10,7 +10,7 @@ import { useSearchContext } from '../../context/SearchContext';
 import { useTabsContext } from '../../context/TabsContext';
 import { useAudioContext } from '../../context/AudioContext';
 
-export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duration, authorId, albumId}) => {
+export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duration}) => {
 
     const {storage, auth, db} = useFirebaseContext();
     const {setCurrentAudio, setCurrentTextOfMusic,setCurrentIdAudio, currentIdAudio} = useDatabaseContext();
@@ -26,6 +26,9 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
     const [authorData, setAuthorData] = useState(null);
     const [albumData, setAlbumData] = useState(null);
     const {setPlayed, setCurrentTime} = useAudioContext();
+
+    const [authorId, setAuthorId] = useState(null);
+    const [albumId, setAlbumId] = useState(null);
 
     const getMusicByClick = (id) => {
         console.log(id);
@@ -86,12 +89,14 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
     };
 
     const getAuthorMusic = async (id) => {
+        console.log('IDIDID:', id);
         const docRef = doc(db, 'authors', id);
         const docSnap = await getDoc(docRef);
         await setAuthorData(docSnap.data());
     };
 
     const getAlbumMusic = async (id) => {
+        console.log('IDIDID:', id);
         const docRef = doc(db, 'albums', id);
         const docSnap = await getDoc(docRef);
         await setAlbumData(docSnap.data());
@@ -110,9 +115,16 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
                 }
             })
         })
+        
+        getAuthorId().then((authorId) => {
+            getAuthorMusic(authorId);
+        });
+        getAlbumId().then((albumId) => {
+            getAlbumMusic(albumId);
+        });
 
-        getAuthorMusic(authorId);
-        getAlbumMusic(albumId);
+        // getAuthorMusic(authorId);
+        // getAlbumMusic(albumId);
         // console.log(authorId);
     }, [])
 
@@ -130,6 +142,9 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
     };
 
     const getSingleAuthorPage = async () => {
+        if(authorId === null || authorData === null){
+            return;
+        }
         setActiveSlide(1);
         setShowModal(false);
         await getImageAuthorStorage(authorId).then((image) => {
@@ -157,17 +172,33 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
     };
 
     const getSingleAlbumPage = async () => {
+        if(albumId === null || albumData === null){
+            return;
+        }
         setActiveSlide(1);
         setShowModal(false);
         await getImageAlbumStorage(albumId).then((image) => {
             if(albumData !== null){
-                setAuthorData(prev => [{image, uid: prev.id, title: prev.title, musics: prev.musics, year: prev.year, authorId, genreId: prev.genreId}]);
+                setAlbumData(prev => [{image, uid: prev.id, title: prev.title, musics: prev.musics, year: prev.year, authorId, genreId: prev.genreId}]);
                 setSearchInfoAboutItem({image,...albumData});
             }
         });
-        // await setSearchInfoAboutItem({image, uid: id, title, musics, year, authorId, genreId});
         await setSearchTab(1);
         await setActiveSlide(6);
+    };
+
+    const getAuthorId = async () => {
+        const docRef = doc(db, 'audio', uniqueid);
+        const docSnap = await getDoc(docRef);
+        await setAuthorId(docSnap.data().authorId);
+        return docSnap.data().authorId;
+    };
+
+    const getAlbumId = async () => {
+        const docRef = doc(db, 'audio', uniqueid);
+        const docSnap = await getDoc(docRef);
+        await setAlbumId(docSnap.data().albumId);
+        return docSnap.data().albumId;
     };
 
     return (

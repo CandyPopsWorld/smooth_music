@@ -70,3 +70,12 @@
         }
     }
 };
+
+.music_list_albums_wrapper{
+    @include flex($flexDirection: column, $justifyContent: flex-start, $alignItems: flex-start);
+    overflow: auto;
+}
+
+.music_list_albums{
+    overflow: auto;
+}
