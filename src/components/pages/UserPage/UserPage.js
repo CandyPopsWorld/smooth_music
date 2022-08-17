@@ -7,12 +7,21 @@ import MainSectionUser from '../../mainSectionUser/MainSectionUser';
 import MainAudio from '../../mainAudio/MainAudio';
 import Sections from '../../sections/Sections';
 
-// import {signOut} from 'firebase/auth';
-// import {useFirebaseContext} from '../../../context/FirebaseContext';
+import {useFirebaseContext} from '../../../context/FirebaseContext';
+import { useEffect } from 'react';
+import { localSettings } from '../../../utils/data/localStorage';
 
 function UserPage(props) {
-    // const {auth} = useFirebaseContext();
-    // signOut(auth);
+    const {auth} = useFirebaseContext();
+
+    useEffect(() => {
+        if(localStorage.getItem(auth.currentUser.uid)){
+
+        } else{
+            localStorage.setItem(auth.currentUser.uid,JSON.stringify(localSettings));
+        }
+    }, [])
+
     return (
         <div className='user_page'>
             <Helmet title={USERPAGE_HELMET.title} description={USERPAGE_HELMET.description}/>

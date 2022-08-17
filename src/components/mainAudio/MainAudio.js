@@ -19,6 +19,7 @@ import { useRef } from 'react';
 import { useTabsContext } from '../../context/TabsContext';
 import Hint from '../hint/Hint';
 import {repeatHint, translateTextHint, originalTextHint} from '../../utils/data/hintData';
+import { localSettings } from '../../utils/data/localStorage';
 
 function MainAudio(props) {
     const {storage} = useFirebaseContext();
@@ -102,7 +103,7 @@ function MainAudio(props) {
     };
 
     const startPlay = (e) => {
-        if(currentTextOfMusic.length !== 0){
+        if(currentTextOfMusic.length !== 0 && played === true){
             setTextOfMusic(currentTextOfMusic);
             setTitleOrigin(<span style={{opacity: '0.1'}}>{currentTextOfMusic !== null ? currentTextOfMusic[0].titleOrigin : null}</span>);
             setTitleTranslate(<span style={{opacity: '0.1'}}>{currentTextOfMusic !== null ? currentTextOfMusic[0].titleTranslate : null}</span>);
@@ -249,6 +250,7 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
     const [author, setAuthor] = useState(null);
 
     const {setSearchInfoAboutItem, setShowModal} = useSearchContext();
+    const {setCurrentPlayMusicList, currentPlayMusicList, setCurrentUidMusicList} = useDatabaseContext();
     const {setActiveSlide, setSearchTab} = useTabsContext();
 
 
@@ -266,6 +268,27 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
         await setAudioData(docSnap.data());
     };
 
+    const getMusicLocalStorage = async (id) => {
+        setCurrentUidMusicList(id);
+        console.log(id);
+        setPlayed(false);
+        setCurrentTime(0);
+        const pathReference = ref(storage, `audio/${id}`);
+
+        const docRef = await doc(db, 'audio', id);
+        const docSnap = await getDoc(docRef);
+
+        setCurrentTextOfMusic(docSnap.data().textOfMusic);
+        setCurrentIdAudio(id);
+        getDownloadURL(pathReference)
+        .then((url) => {
+            setCurrentAudio(url);
+        })
+        .catch(() => {
+    
+        })
+    };
+
     useEffect(() => {
         setCurrentTimeInput(currentTime);
         setVolumeInput(volume);
@@ -277,6 +300,14 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
             })
         })
 
+        if(localStorage.getItem(auth.currentUser.uid)){
+            const id = JSON.parse(localStorage.getItem(auth.currentUser.uid)).currentAudio;
+            const list = JSON.parse(localStorage.getItem(auth.currentUser.uid)).currentPlayMusicList;
+            if(id !== null && list !== null){
+                setCurrentPlayMusicList(list);
+                getMusicLocalStorage(id);
+            }
+        }
         getAlbumAudio();
         getAuthorAudio();
     }, [])
@@ -298,6 +329,20 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
 
         getAlbumAudio();
         getAuthorAudio();
+        if(currentIdAudio !== null){
+            let object = null;
+            if(localStorage.getItem(auth.currentUser.uid)){
+                object = JSON.parse(localStorage.getItem(auth.currentUser.uid));
+                object.currentAudio = currentIdAudio;
+                object.currentPlayMusicList = currentPlayMusicList;
+            } else {
+                localSettings.currentAudio = currentIdAudio;
+                localSettings.currentPlayMusicList = currentPlayMusicList;
+                object = localSettings;
+            }
+            const serializedLocalSettings = JSON.stringify(object);
+            localStorage.setItem(auth.currentUser.uid, serializedLocalSettings);
+        }
 
     }, [currentIdAudio])
 

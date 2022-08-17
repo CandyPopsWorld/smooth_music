@@ -6,6 +6,7 @@ import './Search.scss';
 import { useSearchContext } from '../../context/SearchContext';
 import { AudioItem } from '../collectionsSection/CollectionsSection';
 import { useTabsContext } from '../../context/TabsContext';
+
 function Search(props) {
 
     const {db, storage} = useFirebaseContext();
