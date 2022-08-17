@@ -105,3 +105,14 @@ i{
     }
 }
 
+.controls_repeat_text_block{
+    @include flex($flexDirection: column);
+    margin-left: 15px;
+    span{
+        cursor: pointer;
+        color: white;
+        &:hover{
+            color: orangered;
+        }
+    }
+}

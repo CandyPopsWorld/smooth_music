@@ -13,6 +13,9 @@ export const DatabaseContext = ({children}) => {
     const [albumsOffset, setAlbumsOffset] = useState(0);
     const [albums, setAlbums] = useState(null);
 
+    const [currentPlayMusicList, setCurrentPlayMusicList] = useState(null);
+    const [currentUidMusicList, setCurrentUidMusicList] = useState(null);
+
     const value = {
         allDocumentDatabaseAudio,
         setAllDocumentDatabaseAudio,
@@ -31,7 +34,11 @@ export const DatabaseContext = ({children}) => {
         albumsOffset,
         setAlbumsOffset,
         albums,
-        setAlbums
+        setAlbums,
+        currentPlayMusicList,
+        setCurrentPlayMusicList,
+        currentUidMusicList,
+        setCurrentUidMusicList
     }
 
     return (

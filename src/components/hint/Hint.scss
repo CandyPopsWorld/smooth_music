@@ -1,0 +1,11 @@
+@import '../../style/mixin.scss';
+.hint{
+    @include flex;
+    position: absolute;
+    background-color: rgb(14, 15, 15);
+    color: white;
+    height: max-content;
+    width: max-content;
+    padding: 10px;
+    transform: translate(-50%, -50%);
+}

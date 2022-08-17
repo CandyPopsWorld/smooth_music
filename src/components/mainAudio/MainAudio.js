@@ -17,8 +17,11 @@ import { useSearchContext } from '../../context/SearchContext';
 import { useFirebaseContext } from '../../context/FirebaseContext';
 import { useRef } from 'react';
 import { useTabsContext } from '../../context/TabsContext';
+import Hint from '../hint/Hint';
+import {repeatHint, translateTextHint, originalTextHint} from '../../utils/data/hintData';
 
 function MainAudio(props) {
+    const {storage} = useFirebaseContext();
     const {currentAudio, currentIdAudio} = useDatabaseContext();
     const [duration, setDuration] = useState(null);
     const [volume, setVolume] = useState(null);
@@ -36,6 +39,13 @@ function MainAudio(props) {
     } = useAudioContext();
 
     const {currentTextOfMusic} = useDatabaseContext();
+
+    const {played, setPlayed} = useAudioContext();
+    const {setCurrentPlayMusicList, currentPlayMusicList, setCurrentUidMusicList, currentUidMusicList} = useDatabaseContext();
+    const [currentIndexMusicListAudio, setCurrentIndexMusicListAudio] = useState(null);
+    const {setCurrentAudio, setCurrentTextOfMusic,setCurrentIdAudio} = useDatabaseContext();
+
+    const [repeatMusicList, setRepeatMusicList] = useState(true);
 
     let audioRef = useRef(null);
 
@@ -79,6 +89,8 @@ function MainAudio(props) {
         setViewTitle(false);
         setTitleOrigin('');
         setTitleTranslate('');
+        setPlayed(false);
+        clickNextMusic();
     };
 
     const viewTitlePlay = () => {
@@ -100,8 +112,87 @@ function MainAudio(props) {
     };
 
     if(audioRef !== null && audioRef.current !== null){
-        console.log(audioRef.current.audioEl.current);
+        // console.log(audioRef.current.audioEl.current);
     }
+
+    const clickBackMusic = async () => {
+        if(currentPlayMusicList === null || currentUidMusicList === null){
+            return;
+        }
+
+        const currentIndex = currentPlayMusicList.findIndex(item => currentUidMusicList === item.id);
+        setCurrentIndexMusicListAudio(currentIndex);
+        if(currentIndex === 0){
+            return;
+        }
+
+        const currentIdPrevAudio = currentPlayMusicList[currentIndex - 1].id;
+        const currentTextOfMusicPrevAudio = currentPlayMusicList[currentIndex - 1].textOfMusic;
+        await setCurrentUidMusicList(currentIdPrevAudio);
+
+        await setPlayed(true);
+        await setCurrentTime(0);
+        const pathReference = await ref(storage, `audio/${currentIdPrevAudio}`);
+        await setCurrentTextOfMusic(currentTextOfMusicPrevAudio);
+        await setCurrentIdAudio(currentIdPrevAudio);
+        await getDownloadURL(pathReference)
+        .then((url) => {
+            setCurrentAudio(url);
+        })
+        .catch(() => {
+        
+        })
+    
+    };
+
+    const clickNextMusic = async () => {
+        if(currentPlayMusicList === null || currentUidMusicList === null){
+            return;
+        }
+
+        const currentIndex = currentPlayMusicList.findIndex(item => currentUidMusicList === item.id);
+        setCurrentIndexMusicListAudio(currentIndex);
+        if(currentIndex === currentPlayMusicList.length - 1 && repeatMusicList === false){
+            return;
+        }
+
+        if(currentIndex === currentPlayMusicList.length - 1 && repeatMusicList === true){
+            const currentIdPrevAudio = currentPlayMusicList[0].id;
+            const currentTextOfMusicPrevAudio = currentPlayMusicList[0].textOfMusic;
+            await setCurrentUidMusicList(currentIdPrevAudio);
+    
+            await setPlayed(true);
+            await setCurrentTime(0);
+            const pathReference = await ref(storage, `audio/${currentIdPrevAudio}`);
+            await setCurrentTextOfMusic(currentTextOfMusicPrevAudio);
+            await setCurrentIdAudio(currentIdPrevAudio);
+            await getDownloadURL(pathReference)
+            .then((url) => {
+                setCurrentAudio(url);
+            })
+            .catch(() => {
+            
+            })
+            return;
+        }
+
+        const currentIdPrevAudio = currentPlayMusicList[currentIndex + 1].id;
+        const currentTextOfMusicPrevAudio = currentPlayMusicList[currentIndex + 1].textOfMusic;
+        await setCurrentUidMusicList(currentIdPrevAudio);
+
+        await setPlayed(true);
+        await setCurrentTime(0);
+        const pathReference = await ref(storage, `audio/${currentIdPrevAudio}`);
+        await setCurrentTextOfMusic(currentTextOfMusicPrevAudio);
+        await setCurrentIdAudio(currentIdPrevAudio);
+        await getDownloadURL(pathReference)
+        .then((url) => {
+            setCurrentAudio(url);
+        })
+        .catch(() => {
+        
+        })
+    };
 
     return (
         <div className='user_main_audio'>
@@ -116,7 +207,12 @@ function MainAudio(props) {
             setMute={setMute}
             uniqueid={currentIdAudio}
             favoriteClass={favoriteClass}
-            setFavoriteClass={setFavoriteClass}/>
+            setFavoriteClass={setFavoriteClass}
+            clickBackMusic={clickBackMusic}
+            clickNextMusic={clickNextMusic}
+            currentIndexMusicListAudio={currentIndexMusicListAudio}
+            setRepeatMusicList={setRepeatMusicList}
+            repeatMusicList={repeatMusicList}/>
             <div className="audio_player">
                 <ReactAudioPlayer 
                 src={currentAudio !== null ? currentAudio : ''} 
@@ -140,13 +236,14 @@ function MainAudio(props) {
 };
 
 
-const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolume, mute, setMute, uniqueid, favoriteClass, setFavoriteClass}) => {
+const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolume, mute, setMute, uniqueid, favoriteClass, setFavoriteClass, clickBackMusic, clickNextMusic, currentIndexMusicListAudio, setRepeatMusicList, repeatMusicList}) => {
     
     const {auth, db, storage} = useFirebaseContext();
     const [audioData, setAudioData] = useState(null);
     const {played, setPlayed} = useAudioContext();
 
-    const {setOriginalTextMute, setTranslateTextMute, originalTextMute, translateTextMute} = useAudioContext();
+    const {setOriginalTextMute, setTranslateTextMute, originalTextMute, translateTextMute, setCurrentTime} = useAudioContext();
+    const {setCurrentAudio, setCurrentTextOfMusic,setCurrentIdAudio} = useDatabaseContext();
 
     const [album, setAlbum] = useState(null);
     const [author, setAuthor] = useState(null);
@@ -157,6 +254,8 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
 
     const [currentTimeInput, setCurrentTimeInput] = useState(currentTime);
     const [volumeInput, setVolumeInput] = useState(volume);
+
+    const [elementHint, setElementHint] = useState(null);
 
     const getAudioData = async () => {
         if(currentIdAudio === null){
@@ -211,8 +310,8 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
     }, [currentTimeInput])
 
     if(audioRef !== null){
-        console.log(audioRef.currentTime);
-        console.log(audioRef.volume);
+        // console.log(audioRef.currentTime);
+        // console.log(audioRef.volume);
     }
 
     const transformCurrentTime = () => {
@@ -393,7 +492,6 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
         return urlExport;
     };
 
-
     return (
         <div className="controls">
             <div className="line">
@@ -408,7 +506,7 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
             </div>
             <div className="controls_buttons">
                 <div className="controls_buttons_item arrow_back">
-                    <img src={arrow} alt="" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}}/>
+                    <img onClick={clickBackMusic} src={arrow} alt="" style={currentIndexMusicListAudio === 0 ? {pointerEvents: 'none'} : currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}}/>
                 </div>
                 <div className="controls_buttons_item play_video">
                     <img src={played === true ? pause : play} alt="" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={() => {
@@ -424,7 +522,7 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
                     }}/>
                 </div>
                 <div className="controls_buttons_item arrow_next">
-                    <img src={arrow} alt="" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}}/>
+                    <img onClick={clickNextMusic} src={arrow} alt="" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}}/>
                 </div>
 
                 <div className="controls_album_image" style={currentIdAudio !== null && album !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={ () => {
@@ -479,16 +577,34 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
 
                 <div className="controls_original_text_block" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={() => {
                     setOriginalTextMute(prev => !prev);
+                }} onMouseOver={() => {
+                    setElementHint(<Hint message={originalTextHint} top={'-20px'} left={'50%'}/>);
+                }} onMouseOut={() => {
+                    setElementHint(null);
                 }}>
                     <span style={originalTextMute === true ? {color: 'orangered'} : {color: 'white'}}>OR</span>
                 </div>
 
                  <div className="controls_translate_text_block" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={() => {
                     setTranslateTextMute(prev => !prev);
+                 }} onMouseOver={() => {
+                    setElementHint(<Hint message={translateTextHint} top={'-20px'} left={'50%'}/>);
+                 }} onMouseOut={() => {
+                    setElementHint(null);
                  }}>
                     <span style={translateTextMute === true ? {color: 'orangered'} : {color: 'white'}}>TR</span>
                 </div>
 
+                <div className="controls_repeat_text_block" style={currentIdAudio !== null ? {pointerEvents: 'all', position: 'relative'} : {pointerEvents: 'none', position: 'relative'}} onClick={() => {
+                    setRepeatMusicList(prev => !prev);
+                }} onMouseOver={() => {
+                    setElementHint(<Hint message={repeatHint} top={'-20px'} left={'50%'}/>);
+                }} onMouseOut={() => {
+                    setElementHint(null);
+                }}>
+                    {elementHint}
+                    <span style={repeatMusicList === true ? {color: 'orangered'} : {color: 'white'}}>RP</span>
+                </div>
             </div>
         </div>
     )

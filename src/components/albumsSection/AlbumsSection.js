@@ -121,7 +121,8 @@ export const MusicsList = ({albumMusics, title = null}) => {
                 name={name} 
                 i={i}
                 textOfMusic={textOfMusic}
-                duration={duration}/>
+                duration={duration}
+                albumMusics={albumMusics}/>
             )
         });
     }

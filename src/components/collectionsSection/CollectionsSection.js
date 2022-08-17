@@ -10,8 +10,9 @@ import { useSearchContext } from '../../context/SearchContext';
 import { useTabsContext } from '../../context/TabsContext';
 import { useAudioContext } from '../../context/AudioContext';
 
-export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duration}) => {
+export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duration, albumMusics}) => {
 
+    // console.log('alb:', albumMusics);
     const {storage, auth, db} = useFirebaseContext();
     const {setCurrentAudio, setCurrentTextOfMusic,setCurrentIdAudio, currentIdAudio} = useDatabaseContext();
     const [favoriteObj, setFavoriteObj] = useState([]);
@@ -30,7 +31,11 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
     const [authorId, setAuthorId] = useState(null);
     const [albumId, setAlbumId] = useState(null);
 
+    const {setCurrentPlayMusicList, setCurrentUidMusicList} = useDatabaseContext();
+
     const getMusicByClick = (id) => {
+        setCurrentPlayMusicList(albumMusics);
+        setCurrentUidMusicList(uniqueid);
         console.log(id);
         setPlayed(true);
         setCurrentTime(0);
