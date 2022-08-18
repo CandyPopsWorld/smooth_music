@@ -28,6 +28,7 @@ function MainAudio(props) {
     const [volume, setVolume] = useState(null);
     const [mute, setMute] = useState(false);
     const [favoriteClass, setFavoriteClass] = useState(false);
+    const [banClass, setBanClass] = useState(false);
 
     const {
         setCurrentTime,
@@ -213,7 +214,9 @@ function MainAudio(props) {
             clickNextMusic={clickNextMusic}
             currentIndexMusicListAudio={currentIndexMusicListAudio}
             setRepeatMusicList={setRepeatMusicList}
-            repeatMusicList={repeatMusicList}/>
+            repeatMusicList={repeatMusicList}
+            banClass={banClass}
+            setBanClass={setBanClass}/>
             <div className="audio_player">
                 <ReactAudioPlayer 
                 src={currentAudio !== null ? currentAudio : ''} 
@@ -237,7 +240,7 @@ function MainAudio(props) {
 };
 
 
-const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolume, mute, setMute, uniqueid, favoriteClass, setFavoriteClass, clickBackMusic, clickNextMusic, currentIndexMusicListAudio, setRepeatMusicList, repeatMusicList}) => {
+const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolume, mute, setMute, uniqueid, favoriteClass, setFavoriteClass, clickBackMusic, clickNextMusic, currentIndexMusicListAudio, setRepeatMusicList, repeatMusicList, banClass, setBanClass}) => {
     
     const {auth, db, storage} = useFirebaseContext();
     const [audioData, setAudioData] = useState(null);
@@ -349,6 +352,15 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
             })
         })
 
+        setBanClass(false);
+        getBanAudio().then((res) => {
+            res.forEach(({audioId}) => {
+                if(audioId === uniqueid){
+                    setBanClass(true);
+                }
+            })
+        })
+
         setAlbum(null);
         setAuthor(null);
 
@@ -444,6 +456,45 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
         // addUserFavoriteAudio();
     };
 
+    const onBanAudio = () => {
+        getBanAudio().then((res) => {
+            let bool = false;
+            res.forEach(({audioId}) => {
+                if(uniqueid === audioId){
+                    bool = true;
+                }
+            })
+
+            if(bool === true){
+                setBanClass(false);
+                removeUserBanAudio();
+            } else {
+                setBanClass(true);
+                addUserBanAudio();
+            }
+        });
+    };
+
+    const getBanAudio = async () => {
+        const docRef = doc(db, 'users', auth.currentUser.uid);
+        const docSnap = await getDoc(docRef);
+        return docSnap.data().banAudio;
+    };
+
+    const addUserBanAudio = async () => {
+        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
+        await updateDoc(userDbRef, {
+            banAudio: arrayUnion({audioId: uniqueid})
+        });
+    };
+
+    const removeUserBanAudio = async () => {
+        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
+        await updateDoc(userDbRef, {
+            banAudio: arrayRemove({audioId: uniqueid})
+        });
+    };
+
     const addUserFavoriteAudio = async () => {
         const userDbRef = await doc(db, 'users', auth.currentUser.uid);
         await updateDoc(userDbRef, {
@@ -462,9 +513,7 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
     const getFavoriteMusic = async () => {
         const docRef = doc(db, 'users', auth.currentUser.uid);
         const docSnap = await getDoc(docRef);
-        // await setFavoriteObj(docSnap.data().favoriteAudio);
         return docSnap.data().favoriteAudio;
-        // console.log(docSnap.data().favoriteAudio);
     };
 
     const getAlbumAudio = async () => {
@@ -705,7 +754,7 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
                 }} onMouseOut={() => {
                     setElementHint(null);
                 }}>
-                    <i className="fa-solid fa-ban"></i>
+                    <i onClick={onBanAudio} className="fa-solid fa-ban" style={banClass ? {color: 'red'} : null}></i>
                 </div>
             </div>
         </div>

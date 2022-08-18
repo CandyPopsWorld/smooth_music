@@ -9,18 +9,35 @@ import './MainSectionUser.scss';
 function MainSectionUser(props) {
     const {titleOrigin, titleTranslate, viewTitle} = useAudioContext();
     const {currentAudio, setCurrentAudio, setCurrentTextOfMusic, ids, setIds, setCurrentIdAudio} = useDatabaseContext();
-    const {db, storage} = useFirebaseContext();
+    const {db, storage, auth} = useFirebaseContext();
     const {setPlayed} = useAudioContext();
     const {originalTextMute, translateTextMute} = useAudioContext();
 
-    const onRandomAudio = () => {
-        setPlayed(true);
-        const randId = randomId();
+    const onRandomAudio = async () => {
+        await setPlayed(true);
+        const randId = await randomId();
         console.log(randId);
-        const pathReference = ref(storage, `audio/${randId}`);
-        randomDownloadFile(pathReference);
-        getDataAboutAudio(`${randId}`);
-        setCurrentIdAudio(`${randId}`);
+
+        let bool = false;
+        await getBanAudio().then((res) => {
+            res.forEach(({audioId}) => {
+                if(String(randId) === audioId){
+                    bool = true;
+                }
+            })
+        });
+
+
+        if(bool === true){
+            onRandomAudio();
+            return;
+        } else{
+            const pathReference = ref(storage, `audio/${randId}`);
+            randomDownloadFile(pathReference);
+            getDataAboutAudio(`${randId}`);
+            setCurrentIdAudio(`${randId}`);
+            return;
+        }
     };
 
     const randomId = () => {
@@ -52,6 +69,12 @@ function MainSectionUser(props) {
         const docSnap = await getDoc(docRef);
         setCurrentTextOfMusic(docSnap.data().textOfMusic);
         console.log(docSnap.data());
+    };
+
+    const getBanAudio = async () => {
+        const docRef = doc(db, 'users', auth.currentUser.uid);
+        const docSnap = await getDoc(docRef);
+        return docSnap.data().banAudio;
     };
 
     useEffect(() => {
