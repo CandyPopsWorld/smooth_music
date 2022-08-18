@@ -18,7 +18,7 @@ import { useFirebaseContext } from '../../context/FirebaseContext';
 import { useRef } from 'react';
 import { useTabsContext } from '../../context/TabsContext';
 import Hint from '../hint/Hint';
-import {repeatHint, translateTextHint, originalTextHint} from '../../utils/data/hintData';
+import {repeatHint, translateTextHint, originalTextHint, banTextHint} from '../../utils/data/hintData';
 import { localSettings } from '../../utils/data/localStorage';
 
 function MainAudio(props) {
@@ -303,9 +303,34 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
         if(localStorage.getItem(auth.currentUser.uid)){
             const id = JSON.parse(localStorage.getItem(auth.currentUser.uid)).currentAudio;
             const list = JSON.parse(localStorage.getItem(auth.currentUser.uid)).currentPlayMusicList;
-            if(id !== null && list !== null){
+            const volume = JSON.parse(localStorage.getItem(auth.currentUser.uid)).volume;
+            const translateText = JSON.parse(localStorage.getItem(auth.currentUser.uid)).translateText;
+            const originalText = JSON.parse(localStorage.getItem(auth.currentUser.uid)).originalText;
+            const repeatMusicList = JSON.parse(localStorage.getItem(auth.currentUser.uid)).repeatMusicList;
+            
+            if(list !== null){
                 setCurrentPlayMusicList(list);
+            }
+            
+            if(id !== null){
                 getMusicLocalStorage(id);
+            }
+
+            if(volume !== null){
+                setVolume(+volume);
+                setVolumeInput(+volume);
+            }
+
+            if(translateText !== null){
+                setTranslateTextMute(translateText);
+            }
+
+            if(originalText !== null){
+                setOriginalTextMute(originalText);
+            }
+
+            if(repeatMusicList !== null){
+                setRepeatMusicList(repeatMusicList);
             }
         }
         getAlbumAudio();
@@ -616,12 +641,24 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
                         if(audioRef !== null){
                             setVolume(e.target.value);
                             audioRef.volume = e.target.value;
+
+                            let object = null;
+                            if(localStorage.getItem(auth.currentUser.uid)){
+                                object = JSON.parse(localStorage.getItem(auth.currentUser.uid));
+                                object.volume = e.target.value;
+                                localStorage.setItem(auth.currentUser.uid, JSON.stringify(object));
+                            }
                         }
                     }}/>
                 </div>
 
-                <div className="controls_original_text_block" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={() => {
-                    setOriginalTextMute(prev => !prev);
+                <div className="controls_original_text_block" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={ async () => {
+                    await setOriginalTextMute(prev => !prev);
+                    if(localStorage.getItem(auth.currentUser.uid)){
+                        let object = JSON.parse(localStorage.getItem(auth.currentUser.uid));
+                        object.originalText = !originalTextMute;
+                        localStorage.setItem(auth.currentUser.uid, JSON.stringify(object));
+                    }
                 }} onMouseOver={() => {
                     setElementHint(<Hint message={originalTextHint} top={'-20px'} left={'50%'}/>);
                 }} onMouseOut={() => {
@@ -631,6 +668,11 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
                 </div>
 
                  <div className="controls_translate_text_block" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={() => {
+                    if(localStorage.getItem(auth.currentUser.uid)){
+                        let object = JSON.parse(localStorage.getItem(auth.currentUser.uid));
+                        object.translateText = !translateTextMute;
+                        localStorage.setItem(auth.currentUser.uid, JSON.stringify(object));
+                    }
                     setTranslateTextMute(prev => !prev);
                  }} onMouseOver={() => {
                     setElementHint(<Hint message={translateTextHint} top={'-20px'} left={'50%'}/>);
@@ -641,6 +683,11 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
                 </div>
 
                 <div className="controls_repeat_text_block" style={currentIdAudio !== null ? {pointerEvents: 'all', position: 'relative'} : {pointerEvents: 'none', position: 'relative'}} onClick={() => {
+                    if(localStorage.getItem(auth.currentUser.uid)){
+                        let object = JSON.parse(localStorage.getItem(auth.currentUser.uid));
+                        object.repeatMusicList = !repeatMusicList;
+                        localStorage.setItem(auth.currentUser.uid, JSON.stringify(object));
+                    }
                     setRepeatMusicList(prev => !prev);
                 }} onMouseOver={() => {
                     setElementHint(<Hint message={repeatHint} top={'-20px'} left={'50%'}/>);
@@ -649,6 +696,16 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
                 }}>
                     {elementHint}
                     <span style={repeatMusicList === true ? {color: 'orangered'} : {color: 'white'}}>RP</span>
+                </div>
+
+                <div className="controls_ban_text_block" style={currentIdAudio !== null ? {pointerEvents: 'all', position: 'relative'} : {pointerEvents: 'none', position: 'relative'}} onClick={() => {
+                    
+                }} onMouseOver={() => {
+                    setElementHint(<Hint message={banTextHint} top={'-20px'} left={'50%'}/>);
+                }} onMouseOut={() => {
+                    setElementHint(null);
+                }}>
+                    <i className="fa-solid fa-ban"></i>
                 </div>
             </div>
         </div>

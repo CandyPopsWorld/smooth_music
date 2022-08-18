@@ -63,7 +63,8 @@ function SignUpPage(props) {
             music: [],
             favoriteAudio: [],
             favoriteAlbum: [],
-            favoriteAuthor: []
+            favoriteAuthor: [],
+            banAudio: []
         });
     }
 
