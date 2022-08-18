@@ -11,6 +11,7 @@ import {arrayUnion, arrayRemove, updateDoc} from "firebase/firestore";
 import likeSprite from '../../resources/image/like_playlist.png';
 import { useSearchContext } from '../../context/SearchContext';
 import { useTabsContext } from '../../context/TabsContext';
+import Skeleton from '../skeleton/Skeleton';
 
 const nav_data = [
     {active: false, title: 'Альбомы', id: 1},
@@ -202,7 +203,12 @@ const Author_Block = () => {
     return (
         <div className='favorite_section_tabs_block_authors'>
             <div className="favorite_section_tabs_block_authors_list">
-                {elements_authors}
+                {
+                    favoriteAuthors !== null && favoriteAuthors.length > 0 ?
+                    elements_authors
+                    :
+                    (favoriteAuthors !== null ? <h2 className='not_found_elements'>Вы ещё не добавили ни одного альбма в коллекцию!</h2> : null)   
+                }
             </div>
         </div>
     )
@@ -214,6 +220,8 @@ const Author = ({image, id, description, title, albums, musics}) => {
     const {setSearchInfoAboutItem, setShowModal} = useSearchContext();
     const {setActiveSlide, setSearchTab} = useTabsContext();
     const [favoriteClass, setFavoriteClass] = useState(false);
+
+    const [loadImage, setLoadImage] = useState(false);
 
     const onFavoriteAuthor = () => {
         getFavoriteAuthor().then((res) => {
@@ -274,8 +282,13 @@ const Author = ({image, id, description, title, albums, musics}) => {
 
     return(
         <div className="favorite_section_author_block">
-            <div className="favorite_section_author_block_image">
-                <img src={image} alt="" onClick={getSingleAuthorPage}/>
+            <div className="favorite_section_author_block_image" style={{position: 'relative'}}>
+                <img src={image} alt="" onClick={getSingleAuthorPage} onLoad={() => {
+                    setLoadImage(true);
+                }}/>
+                {
+                    loadImage === false ? <Skeleton position={'absolute'} variant={'circular'}/> : null
+                }
                 <span style={{textAlign: 'center'}}>{title}</span>
                 <div className="favorite_section_author_block_favorite">
                     <i className="fa-solid fa-heart favorite_album_control" onClick={onFavoriteAuthor} style={favoriteClass ? {color: 'orangered'} : null}></i>
@@ -356,14 +369,21 @@ const Album_Block = () => {
         });
     }
 
-    console.log(elements_albums);
+    console.log(favoriteAlbums);
+
+    const favoriteCount = () => {
+
+    };
 
     return (
         <div className='favorite_section_tabs_block_albums'>
             <div className='albums_section'>
                 <div className="albums_section_item_albums_block">
                     {
+                        favoriteAlbums.length !== 0 || favoriteAlbums === null ?
                         elements_albums
+                        :
+                        <h2 className='not_found_elements'>Вы ещё не добавили ни одного альбма в коллекцию!</h2>
                     }
                 </div>
                 <div className="albums_section_item_music_block">

@@ -7,6 +7,7 @@ import { useAlbumContext } from '../../context/AlbumContext';
 import {arrayUnion, arrayRemove, updateDoc} from "firebase/firestore";
 import { useTabsContext } from '../../context/TabsContext';
 import { useSearchContext } from '../../context/SearchContext';
+import Skeleton from '../skeleton/Skeleton';
 
 export const Album = ({image, uid, title, musics, setAlbumMusics, year, authorId, genreId}) => {
     const {setSearchInfoAboutItem} = useSearchContext();
@@ -14,6 +15,8 @@ export const Album = ({image, uid, title, musics, setAlbumMusics, year, authorId
     const {db, auth} = useFirebaseContext();
     const {active, setActive} = useAlbumContext();
     const [favoriteClass, setFavoriteClass] = useState(false);
+
+    const [loadImage, setLoadImage] = useState(false);
 
     const getMusicFromAlbum = async () => {
         setAlbumMusics([]);
@@ -85,6 +88,8 @@ export const Album = ({image, uid, title, musics, setAlbumMusics, year, authorId
         // eslint-disable-next-line
     }, [])
 
+    console.log('idsdada:', image);
+
     return (
         <div className="albums_section_item_albums_block_item">
             <div className={clazz}>
@@ -92,7 +97,10 @@ export const Album = ({image, uid, title, musics, setAlbumMusics, year, authorId
                     await setSearchInfoAboutItem({image, uid, title, musics, year, authorId, genreId});
                     await setSearchTab(1);
                     await setActiveSlide(6);
-                }}/>
+                }} onLoad={() => setLoadImage(true)}/>
+                {
+                    loadImage === false ? <Skeleton/> : null
+                }
                 <div className="albums_section_item_albums_block_item_bg_controls">
                     <i onClick={getMusicFromAlbum} className="fa-solid fa-circle-play play_album_control"></i>
                     <i className="fa-solid fa-heart favorite_album_control" onClick={onFavoriteAlbum} style={favoriteClass ? {color: 'orangered'} : null}></i>
