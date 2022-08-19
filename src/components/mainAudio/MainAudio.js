@@ -21,6 +21,8 @@ import Hint from '../hint/Hint';
 import {repeatHint, translateTextHint, originalTextHint, banTextHint} from '../../utils/data/hintData';
 import { localSettings } from '../../utils/data/localStorage';
 
+import { Slider } from '@mui/material';
+
 function MainAudio(props) {
     const {storage} = useFirebaseContext();
     const {currentAudio, currentIdAudio} = useDatabaseContext();
@@ -611,15 +613,35 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
         return urlExport;
     };
 
+    const transformVolumeLabelValue = (value) => {
+        const volume = value * 100;
+        return `${volume}%`;
+    };
+
     return (
         <div className="controls">
             <div className="line">
                 <span className='current_time_audio'>{duration !== null  ? transformCurrentTime() : null}</span>
-                <input type={'range'} min={0} max={duration} className="controls_line" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} value={currentTime !== null ? currentTime : 0} onChange={(e) => {
-                   if(audioRef !== null){
-                       audioRef.currentTime = e.target.value;
-                       setPlayed(true);
-                   }
+                <Slider
+                    color="warning"
+                    disabled={false}
+                    marks={false}
+                    orientation="horizontal"
+                    size="md"
+                    min={0}
+                    max={duration}
+                    className="controls_line"
+                    style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}}
+                    value={currentTime !== null ? currentTime : 0}
+                    valueLabelFormat={(value) => {
+                        return transformCurrentTime();
+                    }}
+                    valueLabelDisplay="auto"
+                    onChange={(e) => {
+                        if(audioRef !== null){
+                            audioRef.currentTime = e.target.value;
+                            setPlayed(true);
+                    }
                 }}/>
                 <span className='duration_time_audio'>{duration !== null ? transformDurationTime() : null}</span>
             </div>
@@ -674,31 +696,50 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
 
                 <div className="controls_volume_block">
                     {
-                        mute === false ?
+                        volume !== null && (volume > 0) ?
                         <i className="fa-solid fa-volume-high" style={currentIdAudio !== null ? {color: 'white', pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={() => {
                             setVolume(0);
                             setMute(true);
                         }}></i>
                         :
+                        volume !== null && (volume === 0) ?
                         <i className="fa-solid fa-volume-xmark" style={currentIdAudio !== null ? {color: 'white', pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={() => {
                             setVolume(1);
                             setMute(false);
                         }}></i>
+                        :
+                        null
                     }
-                    {/* <i className="fa-solid fa-volume-high" style={{color: 'white'}}></i> */}
-                    <input type="range" min={0} max={1} step={0.1} value={volume !== null ? volume : 0} style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}}  onChange={(e) => {
-                        if(audioRef !== null){
-                            setVolume(e.target.value);
-                            audioRef.volume = e.target.value;
-
-                            let object = null;
-                            if(localStorage.getItem(auth.currentUser.uid)){
-                                object = JSON.parse(localStorage.getItem(auth.currentUser.uid));
-                                object.volume = e.target.value;
-                                localStorage.setItem(auth.currentUser.uid, JSON.stringify(object));
+                    <Slider
+                        className="volume_line"
+                        color="warning"
+                        disabled={false}
+                        marks={false}
+                        orientation="horizontal"
+                        size="sm"
+                        valueLabelDisplay="auto"
+                        valueLabelFormat={(value) => {
+                            return transformVolumeLabelValue(value);
+                        }}
+                        min={0}
+                        max={1}
+                        step={0.1}
+                        value={volume !== null ? volume : 0}
+                        style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}}
+                        onChange={(e) => {
+                            if(audioRef !== null){
+                                setVolume(e.target.value);
+                                audioRef.volume = e.target.value;
+    
+                                let object = null;
+                                if(localStorage.getItem(auth.currentUser.uid)){
+                                    object = JSON.parse(localStorage.getItem(auth.currentUser.uid));
+                                    object.volume = e.target.value;
+                                    localStorage.setItem(auth.currentUser.uid, JSON.stringify(object));
+                                }
                             }
-                        }
-                    }}/>
+                        }}
+                    />
                 </div>
 
                 <div className="controls_original_text_block" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={ async () => {
