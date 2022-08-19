@@ -10,6 +10,8 @@ import { useState } from 'react';
 
 import logoSprite from '../../../resources/image/logo.png';
 import { Link, NavLink } from 'react-router-dom';
+import Alert from '../../alert/Alert';
+import { errorsAlert } from '../../../utils/data/alert';
 
 function LoginPage(props) {
     const {auth} = useFirebaseContext();
@@ -18,23 +20,48 @@ function LoginPage(props) {
     const [password, setPassword] = useState('');
     const [visibleContent, setVisibleContent] = useState(true);
 
+    const [showAlert, setShowAlert] = useState(false);
+    const [textAlert, setTextAlert] = useState(undefined);
+    const [severityAlert, setSeverityAlert] = useState(null);
+
     const SignInUser = () => {
         signInWithEmailAndPassword(auth, email, password)
         .then(() => {
+            getSuccessAlert('Вы вошли в систему!')
         })
         .catch((error) => {
-
+            getErrorAlert(error);
         })
     };
 
     const forgotPassword = (email) => {
         sendPasswordResetEmail(auth, email)
         .then(() => {
-
+            getSuccessAlert('Ссылка для сброса пароля отправлена на вашу почту!');
+            setTimeout(() => {
+                setVisibleContent(true);
+                setShowAlert(false);
+            }, 3000)
         })
-        .catch(() => {
-
+        .catch((error) => {
+            getErrorAlert(error);
         })
+    };
+
+    const getErrorAlert = (error) => {
+        setSeverityAlert('error');
+        setShowAlert(true);
+        errorsAlert.forEach(item => {
+            if(error.code === item.code){
+                setTextAlert(item.message);
+            }
+        })
+    };
+
+    const getSuccessAlert = (text) => {
+        setSeverityAlert('success');
+        setShowAlert(true);
+        setTextAlert(text);
     };
 
     return (
@@ -61,6 +88,12 @@ function LoginPage(props) {
                 :
                 <ForgotLogin setVisibleContent={setVisibleContent} forgotPassword={forgotPassword}/>
             }
+
+            <div className="login_alert">
+                {
+                    showAlert ? <Alert severity={severityAlert} text={textAlert} setShowAlert={setShowAlert}/> : null
+                }
+            </div>
         </div>
     );
 };
@@ -125,10 +158,9 @@ const ForgotLogin = ({setVisibleContent, forgotPassword}) => {
     const [forgotEmail, setForgotEmail] = useState('');
 
     const getForgotPassword = () => {
-        forgotPassword(forgotEmail);
-        setTimeout(() => {
-            setVisibleContent(true);
-        }, 1000)
+        if(forgotEmail !== ''){
+            forgotPassword(forgotEmail);
+        }
     };
 
     return (

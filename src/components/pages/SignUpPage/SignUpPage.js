@@ -10,6 +10,8 @@ import { Link, NavLink } from 'react-router-dom';
 
 import './SignUpPage.scss';
 import { useState } from 'react';
+import Alert from '../../alert/Alert';
+import { errorsAlert } from '../../../utils/data/alert';
 function SignUpPage(props) {
     const {auth, db} = useFirebaseContext();
 
@@ -18,25 +20,61 @@ function SignUpPage(props) {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    const [showAlert, setShowAlert] = useState(false);
+    const [textAlert, setTextAlert] = useState(undefined);
+    const [severityAlert, setSeverityAlert] = useState(null);
+
     const registerUser = () => {
         if(validateData()){
             createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
+                getSuccessAlert('Вы зарегистрировались в системе!');
                 updateDataUser();
                 mailVerification();
                 addDatabaseData();
             })
             .catch(error => {
-                let message = 'Произошла ошибка!';
+                getErrorAlert(error);
             })
         }
     };
 
     const validateData = () => {
-        if(username.length > 3 && password === confirmPassword){
-            return true;
+        let validate = 0;
+        if(username.length > 3){
+            validate = 1;
+        } else{
+            getErrorAlertWithText('Никнейм должен быть больше 3 символов!');
+            return false;
         }
-        return false;
+
+        if(password.length > 5){
+            validate = 2;
+        } else {
+            getErrorAlertWithText('Пароль должен быть длиннее 5 символов!');
+            return false;
+        }
+
+        if(password === confirmPassword){
+            validate = 3;
+        } else {
+            getErrorAlertWithText('Пароли должны совпадать');
+            return false;
+        }
+
+        if(email.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)){
+            validate = 4;
+        } else {
+            getErrorAlertWithText('Некорретно введена почта!');
+            return false;
+        }
+
+        if(validate === 4){
+            setShowAlert(false);
+            return true;
+        } else{
+            return false;
+        }
     };
 
     const mailVerification = () => {
@@ -44,8 +82,8 @@ function SignUpPage(props) {
         .then(() => {
 
         })
-        .catch(() => {
-
+        .catch((error) => {
+            getErrorAlert(error);
         })
     };
 
@@ -66,7 +104,29 @@ function SignUpPage(props) {
             favoriteAuthor: [],
             banAudio: []
         });
-    }
+    };
+
+    const getErrorAlert = (error) => {
+        setSeverityAlert('error');
+        setShowAlert(true);
+        errorsAlert.forEach(item => {
+            if(error.code === item.code){
+                setTextAlert(item.message);
+            }
+        })
+    };
+
+    const getErrorAlertWithText = (text) => {
+        setSeverityAlert('error');
+        setShowAlert(true);
+        setTextAlert(text);
+    };
+
+    const getSuccessAlert = (text) => {
+        setSeverityAlert('success');
+        setShowAlert(true);
+        setTextAlert(text);
+    };
 
     return (
         <div>
@@ -143,6 +203,12 @@ function SignUpPage(props) {
                 </div>
             </div>
                 
+            </div>
+            
+            <div className="signup_alert">
+                {
+                    showAlert ? <Alert severity={severityAlert} text={textAlert} setShowAlert={setShowAlert}/> : null
+                }
             </div>
         </div>
     );
