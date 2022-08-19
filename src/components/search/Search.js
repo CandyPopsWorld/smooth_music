@@ -6,6 +6,7 @@ import './Search.scss';
 import { useSearchContext } from '../../context/SearchContext';
 import { AudioItem } from '../collectionsSection/CollectionsSection';
 import { useTabsContext } from '../../context/TabsContext';
+import SearchIcon from '@mui/icons-material/Search';
 
 function Search(props) {
 
@@ -166,6 +167,9 @@ function Search(props) {
 
     return (
         <div className="search_panel">
+            <label htmlFor="search">
+                <SearchIcon style={{color: 'white', marginRight: '10px', marginTop: '5px', cursor: 'pointer'}}/>
+            </label>
             <input 
             type="text" 
             placeholder="Трек, Альбом, Исполнитель"

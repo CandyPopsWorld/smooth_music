@@ -5,6 +5,9 @@ import { useEffect, useState } from 'react';
 import { updateProfile } from "firebase/auth";
 import {ref, uploadBytes, getDownloadURL} from "firebase/storage";
 import Loader from '../loader/Loader';
+import avatarSprite from '../../resources/image/avatar.png';
+
+import { Tabs, Tab } from '@mui/material';
 
 function SettingsSection(props) {
     const [username, setUsername] = useState('');
@@ -73,7 +76,38 @@ function SettingsSection(props) {
 
     return (
         <div className='user_settings'>
-            <div className="user_settings_item">
+            <div className="user_settings_nav">
+
+                <div className="user_settings_nav_info">
+                    <div className="user_settings_nav_info_photo">
+                        <img src={avatarSprite} alt="" />
+                    </div>
+
+                    <div className="user_settings_nav_info_about">
+                        <div className="user_settings_nav_info_about_name">CandyPopsWorld</div>
+                        <div className="user_settings_nav_info_about_text">Ваш аккаунт</div>
+                    </div>
+                </div>
+
+                <div className="user_settings_nav_tabs">
+                    <div className="user_settings_nav_tabs_item">
+                        Основные
+                    </div>
+
+                    <div className="user_settings_nav_tabs_item">
+                        Аккаунт
+                    </div>
+
+                    <div className="user_settings_nav_tabs_item">
+                        Прочее
+                    </div>
+                </div>
+            </div>
+
+            <div className="user_settings_tabs_block">
+                
+            </div>
+            {/* <div className="user_settings_item">
                 {
                     loading === false ?
                     <>
@@ -110,10 +144,10 @@ function SettingsSection(props) {
 
                     <Loader/>
                 }
-            </div>
-            <div className="user_settings_item">
+            </div> */}
+            {/* <div className="user_settings_item">
                 <button className='sign_out_account' onClick={() => signOut(auth)}>Выйти из аккаунта</button>
-            </div>
+            </div> */}
         </div>
     );
 }

@@ -50,7 +50,7 @@ function MainAudio(props) {
     const {setCurrentAudio, setCurrentTextOfMusic,setCurrentIdAudio} = useDatabaseContext();
 
     const [repeatMusicList, setRepeatMusicList] = useState(true);
-    const [autoPlay, setAutoPlay] = useState(true);
+    const {autoPlay, setAutoPlay} = useAudioContext();
 
     let audioRef = useRef(null);
 

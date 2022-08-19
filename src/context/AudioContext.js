@@ -13,6 +13,7 @@ export function AudioContext({children}){
 
     const [originalTextMute, setOriginalTextMute] = useState(true);
     const [translateTextMute, setTranslateTextMute] = useState(true);
+    const [autoPlay, setAutoPlay] = useState(true);
 
     const value = {
         currentTime,
@@ -30,7 +31,9 @@ export function AudioContext({children}){
         originalTextMute,
         setOriginalTextMute,
         translateTextMute,
-        setTranslateTextMute
+        setTranslateTextMute,
+        autoPlay,
+        setAutoPlay
     }
 
     return (

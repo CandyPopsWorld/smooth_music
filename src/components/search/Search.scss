@@ -3,6 +3,9 @@
 
 .search_panel{
     // position: relative;
+    @include flex;
+    // align-content: center;
+    // align-items: center;
     input{
         border-radius: 2px solid white;
         border-color: white;

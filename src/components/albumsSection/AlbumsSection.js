@@ -150,8 +150,7 @@ export const MusicsList = ({albumMusics, title = null}) => {
                     elements_audio_items
                     :
                     <div style={{margin: 'auto auto'}}>
-                        <h2>Выберите Альбом</h2>
-                        <h3>Слушайте и вдохновляйтесь</h3>
+                        <h2 style={{textAlign: 'center'}}>Выберите Альбом</h2>
                     </div>
                 }
             </div>

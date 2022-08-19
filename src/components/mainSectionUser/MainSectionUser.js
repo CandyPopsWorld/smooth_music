@@ -12,8 +12,10 @@ function MainSectionUser(props) {
     const {db, storage, auth} = useFirebaseContext();
     const {setPlayed} = useAudioContext();
     const {originalTextMute, translateTextMute} = useAudioContext();
+    const {setAutoPlay} = useAudioContext();
 
     const onRandomAudio = async () => {
+        await setAutoPlay(true);
         await setPlayed(true);
         const randId = await randomId();
         console.log(randId);
