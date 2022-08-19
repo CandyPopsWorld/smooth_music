@@ -10,6 +10,8 @@ function AppRouter(props) {
     const {auth} = useFirebaseContext();
     const [user] = useAuthState(auth);
 
+    console.log(user);
+
     return user ?
     (
         <Routes>
