@@ -48,9 +48,10 @@ function LoginPage(props) {
         })
     };
 
-    const getErrorAlert = (error) => {
+    const getErrorAlert = async (error) => {
+        await setShowAlert(false);
         setSeverityAlert('error');
-        setShowAlert(true);
+        await setShowAlert(true);
         errorsAlert.forEach(item => {
             if(error.code === item.code){
                 setTextAlert(item.message);
@@ -58,9 +59,10 @@ function LoginPage(props) {
         })
     };
 
-    const getSuccessAlert = (text) => {
+    const getSuccessAlert = async (text) => {
+        await setShowAlert(false);
         setSeverityAlert('success');
-        setShowAlert(true);
+        await setShowAlert(true);
         setTextAlert(text);
     };
 
@@ -91,7 +93,7 @@ function LoginPage(props) {
 
             <div className="login_alert">
                 {
-                    showAlert ? <Alert severity={severityAlert} text={textAlert} setShowAlert={setShowAlert}/> : null
+                    showAlert ? <Alert severity={severityAlert} text={textAlert} setShowAlert={setShowAlert} showAlert={showAlert}/> : null
                 }
             </div>
         </div>

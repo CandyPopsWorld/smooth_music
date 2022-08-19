@@ -106,9 +106,10 @@ function SignUpPage(props) {
         });
     };
 
-    const getErrorAlert = (error) => {
+    const getErrorAlert = async (error) => {
+        await setShowAlert(false);
         setSeverityAlert('error');
-        setShowAlert(true);
+        await setShowAlert(true);
         errorsAlert.forEach(item => {
             if(error.code === item.code){
                 setTextAlert(item.message);
@@ -116,15 +117,17 @@ function SignUpPage(props) {
         })
     };
 
-    const getErrorAlertWithText = (text) => {
+    const getErrorAlertWithText = async (text) => {
+        await setShowAlert(false);
         setSeverityAlert('error');
-        setShowAlert(true);
+        await setShowAlert(true);
         setTextAlert(text);
     };
 
-    const getSuccessAlert = (text) => {
+    const getSuccessAlert = async (text) => {
+        await setShowAlert(false);
         setSeverityAlert('success');
-        setShowAlert(true);
+        await setShowAlert(true);
         setTextAlert(text);
     };
 
@@ -207,7 +210,7 @@ function SignUpPage(props) {
             
             <div className="signup_alert">
                 {
-                    showAlert ? <Alert severity={severityAlert} text={textAlert} setShowAlert={setShowAlert}/> : null
+                    showAlert ? <Alert severity={severityAlert} text={textAlert} setShowAlert={setShowAlert} showAlert={showAlert}/> : null
                 }
             </div>
         </div>
