@@ -12,6 +12,7 @@ import logoSprite from '../../../resources/image/logo.png';
 import { Link, NavLink } from 'react-router-dom';
 import Alert from '../../alert/Alert';
 import { errorsAlert } from '../../../utils/data/alert';
+import MainLoader from '../../mainLoader/MainLoader';
 
 function LoginPage(props) {
     const {auth} = useFirebaseContext();
@@ -24,12 +25,16 @@ function LoginPage(props) {
     const [textAlert, setTextAlert] = useState(undefined);
     const [severityAlert, setSeverityAlert] = useState(null);
 
+    const [loading, setLoading] = useState(false); 
+
     const SignInUser = () => {
+        setLoading(true);
         signInWithEmailAndPassword(auth, email, password)
         .then(() => {
             getSuccessAlert('Вы вошли в систему!')
         })
         .catch((error) => {
+            setLoading(false);
             getErrorAlert(error);
         })
     };
@@ -67,36 +72,40 @@ function LoginPage(props) {
     };
 
     return (
-        <div className='login'>
-            <Helmet title={LOGIN_HELMET.title} description={LOGIN_HELMET.description}/>
-            <div className="login_navbar">
-                <NavLink to={'/login'} style={({ isActive }) =>
-              isActive ? {color: 'orangered'} : null
-            }>Вход</NavLink>
-                <span>/</span>
-                <NavLink to={'/signup'} style={({ isActive }) =>
-              isActive ? {color: 'orangered'} : null
-            }>Регистрация</NavLink>
-            </div>
-            {
-                visibleContent ?
-                <LoginMain 
-                email={email}
-                password={password}
-                setEmail={setEmail}
-                setPassword={setPassword}
-                setVisibleContent={setVisibleContent}
-                SignInUser={SignInUser}/>
-                :
-                <ForgotLogin setVisibleContent={setVisibleContent} forgotPassword={forgotPassword}/>
-            }
-
-            <div className="login_alert">
+            loading === false ?
+            <div className='login'>
+                <Helmet title={LOGIN_HELMET.title} description={LOGIN_HELMET.description}/>
+                <div className="login_navbar">
+                    <NavLink to={'/login'} style={({ isActive }) =>
+                isActive ? {color: 'orangered'} : null
+                }>Вход</NavLink>
+                    <span>/</span>
+                    <NavLink to={'/signup'} style={({ isActive }) =>
+                isActive ? {color: 'orangered'} : null
+                }>Регистрация</NavLink>
+                </div>
                 {
-                    showAlert ? <Alert severity={severityAlert} text={textAlert} setShowAlert={setShowAlert} showAlert={showAlert}/> : null
+                    visibleContent ?
+                    <LoginMain 
+                    email={email}
+                    password={password}
+                    setEmail={setEmail}
+                    setPassword={setPassword}
+                    setVisibleContent={setVisibleContent}
+                    SignInUser={SignInUser}/>
+                    :
+                    <ForgotLogin setVisibleContent={setVisibleContent} forgotPassword={forgotPassword}/>
                 }
+
+                <div className="login_alert">
+                    {
+                        showAlert ? <Alert severity={severityAlert} text={textAlert} setShowAlert={setShowAlert} showAlert={showAlert}/> : null
+                    }
+                </div>
             </div>
-        </div>
+            :
+            <MainLoader/>
+
     );
 };
 

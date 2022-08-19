@@ -12,6 +12,7 @@ import './SignUpPage.scss';
 import { useState } from 'react';
 import Alert from '../../alert/Alert';
 import { errorsAlert } from '../../../utils/data/alert';
+import MainLoader from '../../mainLoader/MainLoader';
 function SignUpPage(props) {
     const {auth, db} = useFirebaseContext();
 
@@ -24,8 +25,11 @@ function SignUpPage(props) {
     const [textAlert, setTextAlert] = useState(undefined);
     const [severityAlert, setSeverityAlert] = useState(null);
 
+    const [loading, setLoading] = useState(false);
+
     const registerUser = () => {
         if(validateData()){
+            setLoading(true);
             createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 getSuccessAlert('Вы зарегистрировались в системе!');
@@ -34,6 +38,7 @@ function SignUpPage(props) {
                 addDatabaseData();
             })
             .catch(error => {
+                setLoading(false);
                 getErrorAlert(error);
             })
         }
@@ -132,6 +137,7 @@ function SignUpPage(props) {
     };
 
     return (
+        loading === false ?
         <div>
             <Helmet title={SIGNUP_HELMET.title} description={SIGNUP_HELMET.description}/>
             <div className="login_navbar">
@@ -214,6 +220,10 @@ function SignUpPage(props) {
                 }
             </div>
         </div>
+
+        :
+
+        <MainLoader/>
     );
 }
 
