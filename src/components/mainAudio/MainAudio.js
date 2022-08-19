@@ -50,6 +50,7 @@ function MainAudio(props) {
     const {setCurrentAudio, setCurrentTextOfMusic,setCurrentIdAudio} = useDatabaseContext();
 
     const [repeatMusicList, setRepeatMusicList] = useState(true);
+    const [autoPlay, setAutoPlay] = useState(true);
 
     let audioRef = useRef(null);
 
@@ -218,12 +219,14 @@ function MainAudio(props) {
             setRepeatMusicList={setRepeatMusicList}
             repeatMusicList={repeatMusicList}
             banClass={banClass}
-            setBanClass={setBanClass}/>
+            setBanClass={setBanClass}
+            setAutoPlay={setAutoPlay}
+            autoPlay={autoPlay}/>
             <div className="audio_player">
                 <ReactAudioPlayer 
                 src={currentAudio !== null ? currentAudio : ''} 
                 controls
-                autoPlay={true} 
+                autoPlay={autoPlay} 
                 onLoadedMetadata={loadMetadata} 
                 listenInterval={1000} 
                 onListen={currentTimeAudio}
@@ -242,7 +245,7 @@ function MainAudio(props) {
 };
 
 
-const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolume, mute, setMute, uniqueid, favoriteClass, setFavoriteClass, clickBackMusic, clickNextMusic, currentIndexMusicListAudio, setRepeatMusicList, repeatMusicList, banClass, setBanClass}) => {
+const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolume, mute, setMute, uniqueid, favoriteClass, setFavoriteClass, clickBackMusic, clickNextMusic, currentIndexMusicListAudio, setRepeatMusicList, repeatMusicList, banClass, setBanClass, setAutoPlay, autoPlay}) => {
     
     const {auth, db, storage} = useFirebaseContext();
     const [audioData, setAudioData] = useState(null);
@@ -318,6 +321,7 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
             }
             
             if(id !== null){
+                setAutoPlay(false);
                 getMusicLocalStorage(id);
             }
 
@@ -651,11 +655,15 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
                 </div>
                 <div className="controls_buttons_item play_video">
                     <img src={played === true ? pause : play} alt="" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={() => {
+                        
                         if(audioRef !== null){
                             if(played === true){
                                 audioRef.pause();
                                 setPlayed(false);
                             } else {
+                                if(autoPlay === false){
+                                    setAutoPlay(true);
+                                }
                                 audioRef.play();
                                 setPlayed(true);
                             }

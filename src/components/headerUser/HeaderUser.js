@@ -29,7 +29,11 @@ function Header(props) {
 
             <div className="user_header_item">
                 <div className="user_header_item_user">
-                    <img className='user_avatar_header' src={auth.currentUser.photoURL !== null ? auth.currentUser.photoURL : avatarSprite} alt="user" />
+                    <img onClick={() => {
+                        if(activeSlide !== 5){
+                            setActiveSlide(5);
+                        }
+                    }} className='user_avatar_header' src={auth.currentUser.photoURL !== null ? auth.currentUser.photoURL : avatarSprite} alt="user" />
                 </div>
             </div>
         </div>
