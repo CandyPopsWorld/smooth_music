@@ -1,7 +1,7 @@
 @import '../../../style/mixin.scss';
 
 .user_page{
-    width: 100%;
+    width: 100vw;
     max-height: 100vh;
     overflow: hidden;
     @include flex($justifyContent: space-between, $flexDirection: column);

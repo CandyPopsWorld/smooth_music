@@ -92,3 +92,39 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+@media(max-width: 810px){
+    .signup_container_item_header{
+        position: relative;
+        font-size: 1.1em!important;
+
+        &::before{
+            width: 150px!important;
+        }
+
+        &::after{
+            width: 150px!important;
+        }
+    }
+
+    .signup_container_item_input{
+        input{
+            width: 300px!important;
+        }
+    }
+}
+
+@media(max-width: 570px){
+    .signup_container_item_header{
+        position: relative;
+        font-size: 1em!important;
+
+        &::before{
+            width: 110px!important;
+        }
+
+        &::after{
+            width: 110px!important;
+        }
+    }
+}

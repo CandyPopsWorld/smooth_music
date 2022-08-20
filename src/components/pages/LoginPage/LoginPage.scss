@@ -216,3 +216,132 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+
+@media(max-width: 715px){
+    .login_header{
+        font-size: 0.8em;
+        &_logo{
+            img{
+                width: 32px!important;
+                height: 32px!important;
+            }
+        }
+    }
+
+    .login_navbar{
+        a{
+            font-size: 0.8em!important;
+        }
+
+        span{
+            font-size: 0.8em!important;
+        }
+    }
+
+    .login_container{
+        &_item{
+            &_header{
+                position: relative;
+                font-size: 1.1em!important;
+        
+                &::before{
+                    content:" ";
+                    display: inline-block;
+                    height: 1px;
+                    width: 150px!important;
+                    margin-bottom: 5px;
+                    margin-right: 20px;
+                    background: orangered;
+                }
+        
+                &::after{
+                    content:" ";
+                    display: inline-block;
+                    height: 1px;
+                    width: 150px!important;
+                    margin-bottom: 5px;
+                    margin-left: 20px;
+                    background: orangered;
+                }
+            }
+
+            &_input{
+                input{
+                    width: 300px!important;
+                }
+            }
+        }
+    }
+
+    .forgot_login_container{
+        &_form{
+            &_btns{
+                width: 300px!important;
+                margin-top: 20px;
+                @include flex($justifyContent: space-between, $alignItems: center);
+            }
+    
+            input{
+                width: 300px!important;
+            }
+        }
+    }
+}
+
+@media(max-width: 570px){
+    .login_header{
+        font-size: 0.5em;
+        &_logo{
+            img{
+                width: 28px!important;
+                height: 28px!important;
+            }
+        }
+    }
+
+    .login_navbar{
+        a{
+            font-size: 0.7em!important;
+        }
+
+        span{
+            font-size: 0.7em!important;
+        }
+    }
+
+    .login_container{
+        &_item{
+            &_header{
+                position: relative;
+                font-size: 1em!important;
+        
+                &::before{
+                    content:" ";
+                    display: inline-block;
+                    height: 1px;
+                    width: 110px!important;
+                    margin-bottom: 5px;
+                    margin-right: 20px;
+                    background: orangered;
+                }
+        
+                &::after{
+                    content:" ";
+                    display: inline-block;
+                    height: 1px;
+                    width: 110px!important;
+                    margin-bottom: 5px;
+                    margin-left: 20px;
+                    background: orangered;
+                }
+            }
+
+            &_input{
+                input{
+                    width: 300px!important;
+                }
+            }
+        }
+    }
+}

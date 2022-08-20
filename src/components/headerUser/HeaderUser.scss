@@ -2,7 +2,7 @@
 @import '../../style/mixin.scss';
 
 .user_header{
-    width: 100%;
+    width: 100vw;
     height: 8vh;
     background-color: $user_header_dark_color;
     @include flex($justifyContent: space-around);
@@ -48,4 +48,54 @@
 
 .user_avatar_header{
     border-radius: 50%;
+}
+
+@media(max-width: 1059px){
+    .user_header{
+        @include flex($justifyContent: center, $flexWrap: wrap!important);
+        &_item{
+            &_logo{
+                font-size: 1em!important;
+                margin-left: 10px!important;
+            }
+        }
+
+        &_item{
+            &_list{
+                margin-left: 10px;
+                width: 300px!important;
+                @include flex($justifyContent: space-around!important);
+            }
+        }
+    }
+    
+}
+
+
+@media(max-width: 920px){
+    .user_header{
+        @include flex($justifyContent: center!important);
+        &_item{
+            &_logo{
+                font-size: 0.8em!important;
+                margin-top: 10px!important;
+            }
+
+            &_list{
+                margin-left: 10px;
+                width: 300px!important;
+                @include flex($justifyContent: center!important);
+            }
+
+            &_user{
+                width: 28px!important;
+                height: 28px!important;
+                margin-left: 10px!important;
+                img{
+                    width: inherit;
+                    height: inherit;
+                }
+            }
+        }
+    }
 }
