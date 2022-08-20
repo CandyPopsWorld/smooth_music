@@ -14,6 +14,7 @@ import { DatabaseContext } from './context/DatabaseContext';
 import { AlbumContext } from './context/AlbumContext';
 import { FavoritesContext } from './context/FavoritesContext';
 import { SearchContext } from './context/SearchContext';
+import { SettingContext } from './context/SettingContext';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -26,7 +27,9 @@ root.render(
             <TabsContext>
               <AudioContext>
                 <SearchContext>
-                  <App/>
+                  <SettingContext>
+                    <App/>
+                  </SettingContext>
                 </SearchContext>
               </AudioContext>
             </TabsContext>

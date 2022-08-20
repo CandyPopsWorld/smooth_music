@@ -651,7 +651,7 @@ const View = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolum
             </div>
             <div className="controls_buttons">
                 <div className="controls_buttons_item arrow_back">
-                    <img onClick={clickBackMusic} src={arrow} alt="" style={currentIndexMusicListAudio === 0 ? {pointerEvents: 'none'} : currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}}/>
+                    <img onClick={clickBackMusic} src={arrow} alt="" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}}/>
                 </div>
                 <div className="controls_buttons_item play_video">
                     <img src={played === true ? pause : play} alt="" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} onClick={() => {
