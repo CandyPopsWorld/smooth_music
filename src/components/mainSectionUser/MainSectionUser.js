@@ -1,14 +1,16 @@
 import React, { useEffect } from 'react';
-import spriteVideo from '../../resources/video/animation.gif';
+import {doc, getDoc} from 'firebase/firestore';
+import {ref} from "firebase/storage";
 import { useAudioContext } from '../../context/AudioContext';
 import {useDatabaseContext} from '../../context/DatabaseContext';
-import {doc, getDoc} from 'firebase/firestore';
 import {useFirebaseContext} from '../../context/FirebaseContext';
-import {ref,getDownloadURL } from "firebase/storage";
+import {AUDIO_STORAGE} from '../../utils/data/storageId';
+import {IDS, AUDIO, USERS} from '../../utils/data/collectionsId';
+import { downloadFile } from '../../utils/functions/db';
 import './MainSectionUser.scss';
 function MainSectionUser(props) {
     const {titleOrigin, titleTranslate, viewTitle} = useAudioContext();
-    const {currentAudio, setCurrentAudio, setCurrentTextOfMusic, ids, setIds, setCurrentIdAudio} = useDatabaseContext();
+    const {setCurrentAudio, setCurrentTextOfMusic, ids, setIds, setCurrentIdAudio} = useDatabaseContext();
     const {db, storage, auth} = useFirebaseContext();
     const {setPlayed} = useAudioContext();
     const {originalTextMute, translateTextMute} = useAudioContext();
@@ -18,8 +20,6 @@ function MainSectionUser(props) {
         await setAutoPlay(true);
         await setPlayed(true);
         const randId = await randomId();
-        console.log(randId);
-
         let bool = false;
         await getBanAudio().then((res) => {
             res.forEach(({audioId}) => {
@@ -28,14 +28,12 @@ function MainSectionUser(props) {
                 }
             })
         });
-
-
         if(bool === true){
             onRandomAudio();
             return;
         } else{
-            const pathReference = ref(storage, `audio/${randId}`);
-            randomDownloadFile(pathReference);
+            const pathReference = ref(storage, `${AUDIO_STORAGE}/${randId}`);
+            downloadFile(pathReference, setCurrentAudio);
             getDataAboutAudio(`${randId}`);
             setCurrentIdAudio(`${randId}`);
             return;
@@ -49,40 +47,29 @@ function MainSectionUser(props) {
         return randId;
     };
 
-    const randomDownloadFile = (pathReference) => {
-        getDownloadURL(pathReference)
-        .then((url) => {
-            setCurrentAudio(url);
-        })
-        .catch(() => {
-
-        })
-    }
-
     const getDataIdByDatabase = async () => {
-        const docRef = doc(db, 'ids', 'ids');
+        const docRef = doc(db,IDS,IDS);
         const docSnap = await getDoc(docRef);
         await setIds(docSnap.data());
     };
 
     const getDataAboutAudio = async (pathReference) => {
         console.log(pathReference);
-        const docRef = doc(db, 'audio', pathReference);
+        const docRef = doc(db, AUDIO, pathReference);
         const docSnap = await getDoc(docRef);
         setCurrentTextOfMusic(docSnap.data().textOfMusic);
-        console.log(docSnap.data());
     };
 
     const getBanAudio = async () => {
-        const docRef = doc(db, 'users', auth.currentUser.uid);
+        const docRef = doc(db, USERS, auth.currentUser.uid);
         const docSnap = await getDoc(docRef);
         return docSnap.data().banAudio;
     };
 
     useEffect(() => {
         getDataIdByDatabase();
+        // eslint-disable-next-line
     }, [])
-
     return (
         <div className='user_main'>
             {
@@ -90,9 +77,7 @@ function MainSectionUser(props) {
                 <div className="user_main_animation">
                     <h1 className='user_volna' style={{userSelect: 'none'}} onClick={onRandomAudio}>Моя Волна</h1>
                 </div>
-
                 :
-
                 <div className="user_main_text">
                     <h2 className='title_origin'>{originalTextMute === true ? titleOrigin : null}</h2>
                     <h2 className='title_translate'>{translateTextMute === true ? titleTranslate : null}</h2>
@@ -101,5 +86,4 @@ function MainSectionUser(props) {
         </div>
     );
 }
-
 export default MainSectionUser;

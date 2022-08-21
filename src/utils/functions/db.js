@@ -103,6 +103,16 @@ const getImageStorage = async (storage, collection, id) => {
     return urlExport;
 };
 
+const downloadFile = async (pathReference, setFunc) => {
+    getDownloadURL(pathReference)
+    .then((url) => {
+        setFunc(url);
+    })
+    .catch(() => {
+
+    })
+};
+
 export {
     //General
     getDocDbAndSetState,
@@ -121,5 +131,6 @@ export {
     getAuthorId,
     getAlbumId,
     //storage
-    getImageStorage
+    getImageStorage,
+    downloadFile
 }

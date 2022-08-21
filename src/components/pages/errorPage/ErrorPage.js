@@ -1,11 +1,7 @@
 import logoSprite from '../../../resources/image/logo.png';
+import { refreshPage } from '../../../utils/functions/helper';
 import './ErrorPage.scss';
 function ErrorPage(props) {
-
-    const refreshPage = () => {
-        window.location.reload();
-    };
-
     return (
         <div className='error_page'>
             <div className="error_page_wrapper">

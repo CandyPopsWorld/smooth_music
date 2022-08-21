@@ -6,8 +6,8 @@ import Helmet from '../../helmet/Helmet';
 import Alert from '../../alert/Alert';
 import MainLoader from '../../mainLoader/MainLoader';
 import { LOGIN_HELMET } from '../../../utils/data/seoHelmet';
-import logoSprite from '../../../resources/image/logo.png';
 import { errorsAlert } from '../../../utils/data/alert';
+import logoSprite from '../../../resources/image/logo.png';
 import './LoginPage.scss';
 function LoginPage(props) {
     const {auth} = useFirebaseContext();
@@ -159,13 +159,11 @@ const LoginMain = ({email, password, setEmail, setPassword,setVisibleContent,Sig
 
 const ForgotLogin = ({setVisibleContent, forgotPassword}) => {
     const [forgotEmail, setForgotEmail] = useState('');
-
     const getForgotPassword = () => {
         if(forgotEmail !== ''){
             forgotPassword(forgotEmail);
         }
     };
-
     return (
         <div className='forgot_login_container'>
             <div className="login_header">
