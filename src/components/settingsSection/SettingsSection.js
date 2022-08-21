@@ -91,7 +91,7 @@ function SettingsSection(props) {
         }
 
         return (
-            <div className={clazz} onClick={() => clickBtn(item.id)}>
+            <div className={clazz} onClick={() => clickBtn(item.id)} key={item.id}>
                 {item.title}
             </div>
         )
