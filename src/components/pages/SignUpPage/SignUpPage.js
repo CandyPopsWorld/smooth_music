@@ -1,30 +1,24 @@
-import Helmet from '../../helmet/Helmet';
-import { SIGNUP_HELMET } from '../../../utils/data/seoHelmet';
-
-import {useFirebaseContext} from '../../../context/FirebaseContext';
-
+import { useState } from 'react';
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile} from 'firebase/auth';
 import { doc, setDoc } from "firebase/firestore"; 
-import logoSprite from '../../../resources/image/logo.png';
-import { Link, NavLink } from 'react-router-dom';
-
-import './SignUpPage.scss';
-import { useState } from 'react';
+import {useFirebaseContext} from '../../../context/FirebaseContext';
+import { NavLink } from 'react-router-dom';
+import Helmet from '../../helmet/Helmet';
 import Alert from '../../alert/Alert';
-import { errorsAlert } from '../../../utils/data/alert';
 import MainLoader from '../../mainLoader/MainLoader';
+import { SIGNUP_HELMET } from '../../../utils/data/seoHelmet';
+import logoSprite from '../../../resources/image/logo.png';
+import './SignUpPage.scss';
+import { errorsAlert } from '../../../utils/data/alert';
 function SignUpPage(props) {
     const {auth, db} = useFirebaseContext();
-
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-
     const [showAlert, setShowAlert] = useState(false);
     const [textAlert, setTextAlert] = useState(undefined);
     const [severityAlert, setSeverityAlert] = useState(null);
-
     const [loading, setLoading] = useState(false);
 
     const registerUser = () => {
@@ -220,9 +214,7 @@ function SignUpPage(props) {
                 }
             </div>
         </div>
-
         :
-
         <MainLoader/>
     );
 }

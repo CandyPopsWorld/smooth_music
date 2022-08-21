@@ -1,5 +1,6 @@
 import {Alert as AlertMUI, Box, Slide} from '@mui/material';
-function Alert({severity = 'error', text = 'Произошла ошибка! Попробуйте еще раз!', setShowAlert, showAlert}) {
+import {defaultErrorText} from '../../utils/data/alert';
+function Alert({severity = 'error', text = defaultErrorText, setShowAlert, showAlert}) {
     return (
         <Box sx={{ width: '100%' }}>
             <Slide in={showAlert} direction='down'>
@@ -10,5 +11,4 @@ function Alert({severity = 'error', text = 'Произошла ошибка! П�
         </Box>
     );
 }
-
 export default Alert;

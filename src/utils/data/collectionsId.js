@@ -1,0 +1,9 @@
+export const USERS = process.env.REACT_APP_COLLECTION_USERS;
+export const AUDIO = process.env.REACT_APP_COLLECTION_AUDIO;
+export const ALBUMS = process.env.REACT_APP_COLLECTION_ALBUMS;
+export const AUTHORS = process.env.REACT_APP_COLLECTION_AUTHORS;
+export const GENRES = process.env.REACT_APP_COLLECTION_GENRES;
+export const ALBUMS_IDS = process.env.REACT_APP_COLLECTION_ALBUMS_IDS;
+export const AUTHOR_IDS = process.env.REACT_APP_COLLECTION_AUTHOR_IDS;
+export const GENRE_IDS = process.env.REACT_APP_COLLECTION_GENRE_IDS;
+export const IDS = process.env.REACT_APP_COLLECTION_IDS;

@@ -1,5 +1,4 @@
 import logoSprite from '../../../resources/image/logo.png';
-
 import './ErrorPage.scss';
 function ErrorPage(props) {
 

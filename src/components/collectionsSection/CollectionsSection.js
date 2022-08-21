@@ -1,58 +1,47 @@
-import './CollectionSection.scss';
-import { collection, getDocs, arrayUnion, arrayRemove, updateDoc, doc, getDoc } from "firebase/firestore";
+import { useEffect, useState } from 'react';
+import 
+{
+    addUserFavoriteAudio, 
+    removeUserFavoriteAudio, 
+    getFavoriteMusic, 
+    getDocDbAndSetStateWithoutPrev, 
+    getAudioStorage,
+    getAuthorId,
+    getAlbumId,
+    getImageStorage
+} from '../../utils/functions/db';
 import { useFirebaseContext } from '../../context/FirebaseContext';
 import {useDatabaseContext} from '../../context/DatabaseContext';
-import {ref, uploadBytes,getDownloadURL } from "firebase/storage";
-import { updateProfile } from 'firebase/auth';
-import { useEffect, useState } from 'react';
-import { useFavoritesContext } from '../../context/FavoritesContext';
 import { useSearchContext } from '../../context/SearchContext';
 import { useTabsContext } from '../../context/TabsContext';
 import { useAudioContext } from '../../context/AudioContext';
-
+import {AUTHORS, ALBUMS, AUDIO} from '../../utils/data/collectionsId';
+import {ALBUM_STORAGE, AUTHOR_STORAGE} from '../../utils/data/storageId';
+import './CollectionSection.scss';
 export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duration, albumMusics}) => {
-
-    // console.log('alb:', albumMusics);
     const {storage, auth, db} = useFirebaseContext();
-    const {setCurrentAudio, setCurrentTextOfMusic,setCurrentIdAudio, currentIdAudio} = useDatabaseContext();
-    const [favoriteObj, setFavoriteObj] = useState([]);
-    const [favoriteClass, setFavoriteClass] = useState(false);
-
-    const {setFavoriteAudio, setPlaylistMusic} = useFavoritesContext();
-
-
+    const {setCurrentAudio, setCurrentTextOfMusic,setCurrentIdAudio, currentIdAudio, setCurrentPlayMusicList, setCurrentUidMusicList} = useDatabaseContext();
     const {setSearchInfoAboutItem, setShowModal} = useSearchContext();
     const {setActiveSlide, setSearchTab} = useTabsContext();
-
+    const {setPlayed, setCurrentTime} = useAudioContext();
+    const [favoriteClass, setFavoriteClass] = useState(false);
     const [authorData, setAuthorData] = useState(null);
     const [albumData, setAlbumData] = useState(null);
-    const {setPlayed, setCurrentTime} = useAudioContext();
-
     const [authorId, setAuthorId] = useState(null);
     const [albumId, setAlbumId] = useState(null);
 
-    const {setCurrentPlayMusicList, setCurrentUidMusicList} = useDatabaseContext();
-
-    const getMusicByClick = (id) => {
-        setCurrentPlayMusicList(albumMusics);
-        setCurrentUidMusicList(uniqueid);
-        console.log(id);
-        setPlayed(true);
-        setCurrentTime(0);
-        const pathReference = ref(storage, `audio/${id}`);
-        setCurrentTextOfMusic(textOfMusic);
-        setCurrentIdAudio(id);
-        getDownloadURL(pathReference)
-        .then((url) => {
-            setCurrentAudio(url);
-        })
-        .catch(() => {
-    
-        })
+    const getMusicByClick = async (id) => {
+        await setCurrentPlayMusicList(albumMusics);
+        await setCurrentUidMusicList(uniqueid);
+        await setPlayed(true);
+        await setCurrentTime(0);
+        await setCurrentTextOfMusic(textOfMusic);
+        await setCurrentIdAudio(id);
+        await getAudioStorage(storage, AUDIO, id, setCurrentAudio);
     };
 
     const onFavoriteMusic = () => {
-        getFavoriteMusic().then((res) => {
+        getFavoriteMusic(db, auth.currentUser.uid).then((res) => {
             let bool = false;
             res.forEach(({audioId}) => {
                 if(uniqueid === audioId){
@@ -61,89 +50,12 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
             })
             if(bool === true){
                 setFavoriteClass(false);
-                removeUserFavoriteAudio();
+                removeUserFavoriteAudio(db, auth.currentUser.uid, uniqueid);
             } else{
                 setFavoriteClass(true);
-                addUserFavoriteAudio();
+                addUserFavoriteAudio(db, auth.currentUser.uid, uniqueid);
             }
         });
-        // addUserFavoriteAudio();
-    };
-
-    const addUserFavoriteAudio = async () => {
-        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
-        await updateDoc(userDbRef, {
-            favoriteAudio: arrayUnion({audioId: uniqueid})
-        });
-    };
-
-    const removeUserFavoriteAudio = async () => {
-        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
-        await updateDoc(userDbRef, {
-            favoriteAudio: arrayRemove({audioId: uniqueid})
-        });
-    };
-
-
-    const getFavoriteMusic = async () => {
-        const docRef = doc(db, 'users', auth.currentUser.uid);
-        const docSnap = await getDoc(docRef);
-        // await setFavoriteObj(docSnap.data().favoriteAudio);
-        return docSnap.data().favoriteAudio;
-        // console.log(docSnap.data().favoriteAudio);
-    };
-
-    const getAuthorMusic = async (id) => {
-        console.log('IDIDID:', id);
-        const docRef = doc(db, 'authors', id);
-        const docSnap = await getDoc(docRef);
-        await setAuthorData(docSnap.data());
-    };
-
-    const getAlbumMusic = async (id) => {
-        console.log('IDIDID:', id);
-        const docRef = doc(db, 'albums', id);
-        const docSnap = await getDoc(docRef);
-        await setAlbumData(docSnap.data());
-    };
-
-    if(uniqueid === currentIdAudio){
-
-    };
-
-    useEffect(() => {
-        getFavoriteMusic().then((res) => {
-            res.forEach(({audioId}) => {
-                if(audioId === uniqueid){
-                    console.log('совпадение:', uniqueid);
-                    setFavoriteClass(true);
-                }
-            })
-        })
-        
-        getAuthorId().then((authorId) => {
-            getAuthorMusic(authorId);
-        });
-        getAlbumId().then((albumId) => {
-            getAlbumMusic(albumId);
-        });
-
-        // getAuthorMusic(authorId);
-        // getAlbumMusic(albumId);
-        // console.log(authorId);
-    }, [])
-
-    const getImageAlbumStorage = async (id) => {
-        const pathReference = ref(storage, `album/${id}`);
-        let urlExport = '';
-        await getDownloadURL(pathReference)
-        .then((url) => {
-            urlExport = url;
-        })
-        .catch((error) => {
-            // console.log(error);
-        })
-        return urlExport;
     };
 
     const getSingleAuthorPage = async () => {
@@ -152,7 +64,7 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
         }
         setActiveSlide(1);
         setShowModal(false);
-        await getImageAuthorStorage(authorId).then((image) => {
+        await getImageStorage(storage, AUTHOR_STORAGE, authorId).then((image) => {
             console.log(image);
             if(authorData !== null){
                 setAuthorData(prev => [{image, uid: prev.id, title: prev.title, description: prev.description, albums: prev.albums, musics: prev.musics}]);
@@ -163,26 +75,13 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
         await setActiveSlide(6);
     };
 
-    const getImageAuthorStorage = async (id) => {
-        const pathReference = ref(storage, `author/${id}`);
-        let urlExport = '';
-        await getDownloadURL(pathReference)
-        .then((url) => {
-            urlExport = url;
-        })
-        .catch((error) => {
-            // console.log(error);
-        })
-        return urlExport;
-    };
-
     const getSingleAlbumPage = async () => {
         if(albumId === null || albumData === null){
             return;
         }
         setActiveSlide(1);
         setShowModal(false);
-        await getImageAlbumStorage(albumId).then((image) => {
+        await getImageStorage(storage, ALBUM_STORAGE, albumId).then((image) => {
             if(albumData !== null){
                 setAlbumData(prev => [{image, uid: prev.id, title: prev.title, musics: prev.musics, year: prev.year, authorId, genreId: prev.genreId}]);
                 setSearchInfoAboutItem({image,...albumData});
@@ -192,19 +91,22 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
         await setActiveSlide(6);
     };
 
-    const getAuthorId = async () => {
-        const docRef = doc(db, 'audio', uniqueid);
-        const docSnap = await getDoc(docRef);
-        await setAuthorId(docSnap.data().authorId);
-        return docSnap.data().authorId;
-    };
-
-    const getAlbumId = async () => {
-        const docRef = doc(db, 'audio', uniqueid);
-        const docSnap = await getDoc(docRef);
-        await setAlbumId(docSnap.data().albumId);
-        return docSnap.data().albumId;
-    };
+    useEffect(() => {
+        getFavoriteMusic(db, auth.currentUser.uid).then((res) => {
+            res.forEach(({audioId}) => {
+                if(audioId === uniqueid){
+                    setFavoriteClass(true);
+                }
+            })
+        })
+        getAuthorId(db, AUDIO, uniqueid, setAuthorId).then((authorId) => {
+            getDocDbAndSetStateWithoutPrev(db, AUTHORS, authorId, setAuthorData);
+        });
+        getAlbumId(db, AUDIO, uniqueid, setAlbumId).then((albumId) => {
+            getDocDbAndSetStateWithoutPrev(db, ALBUMS, albumId, setAlbumData);
+        });
+        //eslint-disable-next-line
+    }, [])
 
     return (
         <div className="user_collection_list_all_music_item">

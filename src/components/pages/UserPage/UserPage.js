@@ -1,16 +1,12 @@
-import Helmet from '../../helmet/Helmet';
-import { USERPAGE_HELMET } from '../../../utils/data/seoHelmet';
-
-import './UserPage.scss';
+import { useEffect } from 'react';
+import {useFirebaseContext} from '../../../context/FirebaseContext';
 import Header from '../../headerUser/HeaderUser';
-import MainSectionUser from '../../mainSectionUser/MainSectionUser';
 import MainAudio from '../../mainAudio/MainAudio';
 import Sections from '../../sections/Sections';
-
-import {useFirebaseContext} from '../../../context/FirebaseContext';
-import { useEffect } from 'react';
+import Helmet from '../../helmet/Helmet';
+import { USERPAGE_HELMET } from '../../../utils/data/seoHelmet';
 import { localSettings } from '../../../utils/data/localStorage';
-
+import './UserPage.scss';
 function UserPage(props) {
     const {auth} = useFirebaseContext();
 
@@ -26,7 +22,6 @@ function UserPage(props) {
         <div className='user_page'>
             <Helmet title={USERPAGE_HELMET.title} description={USERPAGE_HELMET.description}/>
             <Header/>
-            {/* <MainSectionUser/> */}
             <Sections/>
             <MainAudio/>
         </div>

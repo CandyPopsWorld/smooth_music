@@ -3,7 +3,6 @@ import ReactAudioPlayer from 'react-audio-player';
 
 import {doc, getDoc, updateDoc, arrayUnion, arrayRemove} from 'firebase/firestore';
 
-import spriteAudio from '../../resources/audio/come.mp3';
 import play from '../../resources/image/controls/play.png';
 import pause from '../../resources/image/controls/pause.png';
 import arrow from '../../resources/image/controls/arrow.png';

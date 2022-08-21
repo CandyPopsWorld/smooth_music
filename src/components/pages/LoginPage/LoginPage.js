@@ -1,30 +1,22 @@
-import Helmet from '../../helmet/Helmet';
-import { LOGIN_HELMET } from '../../../utils/data/seoHelmet';
-
-import {useFirebaseContext} from '../../../context/FirebaseContext';
-
-import {signInWithEmailAndPassword, sendPasswordResetEmail} from 'firebase/auth';
-
-import './LoginPage.scss';
 import { useState } from 'react';
-
-import logoSprite from '../../../resources/image/logo.png';
-import { Link, NavLink } from 'react-router-dom';
+import {signInWithEmailAndPassword, sendPasswordResetEmail} from 'firebase/auth';
+import { NavLink } from 'react-router-dom';
+import {useFirebaseContext} from '../../../context/FirebaseContext';
+import Helmet from '../../helmet/Helmet';
 import Alert from '../../alert/Alert';
-import { errorsAlert } from '../../../utils/data/alert';
 import MainLoader from '../../mainLoader/MainLoader';
-
+import { LOGIN_HELMET } from '../../../utils/data/seoHelmet';
+import logoSprite from '../../../resources/image/logo.png';
+import { errorsAlert } from '../../../utils/data/alert';
+import './LoginPage.scss';
 function LoginPage(props) {
     const {auth} = useFirebaseContext();
-
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [visibleContent, setVisibleContent] = useState(true);
-
     const [showAlert, setShowAlert] = useState(false);
     const [textAlert, setTextAlert] = useState(undefined);
     const [severityAlert, setSeverityAlert] = useState(null);
-
     const [loading, setLoading] = useState(false); 
 
     const SignInUser = () => {

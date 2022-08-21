@@ -1,5 +1,4 @@
 import loaderSprite from '../../resources/image/mainLoader.gif';
-
 import './MainLoader.scss';
 function MainLoader(props) {
     return (
@@ -8,5 +7,4 @@ function MainLoader(props) {
         </div>
     );
 }
-
 export default MainLoader;

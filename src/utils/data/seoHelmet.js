@@ -1,25 +1,25 @@
 const HOMEPAGE_HELMET = {
-    title: 'Плавная музыка - Главная',
-    description: 'Плавная музыка - сервис для удобного прослушивания музыки'
+    title: 'Smooth Music - Главная',
+    description: 'Smooth Music - сервис для удобного прослушивания музыки'
 };
 
 const LOGIN_HELMET = {
-    title: 'Плавная музыка - Вход',
+    title: 'Smooth Music - Вход',
     description: 'Вход'
 };
 
 const SIGNUP_HELMET = {
-    title: 'Плавная музыка - Регистрация',
+    title: 'Smooth Music - Регистрация',
     description: 'Регистрация'
 };
 
 const USERPAGE_HELMET = {
-    title: 'Плавная музыка - Собираем музыку для вас',
-    description: 'Плавная музыка - страница пользователя'
+    title: 'Smooth Music - Собираем музыку для вас',
+    description: 'Smooth Music - страница пользователя'
 };
 
 const SETTINGSPAGE_HELMET = {
-    title: 'Плавная музыка - Настройки пользователя',
+    title: 'Smooth Music - Настройки пользователя',
     description: 'Настройки пользователя'
 };
 

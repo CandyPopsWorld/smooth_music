@@ -1,45 +1,32 @@
 import { useEffect, useState } from 'react';
 import { useFirebaseContext } from '../../context/FirebaseContext';
-import { doc, getDoc } from "firebase/firestore";
-import { AudioItem } from '../collectionsSection/CollectionsSection';
-import './AlbumSection.scss';
 import { useAlbumContext } from '../../context/AlbumContext';
-import {arrayUnion, arrayRemove, updateDoc} from "firebase/firestore";
 import { useTabsContext } from '../../context/TabsContext';
 import { useSearchContext } from '../../context/SearchContext';
+import { AudioItem } from '../collectionsSection/CollectionsSection';
 import Skeleton from '../skeleton/Skeleton';
-
+import {addUserFavoriteAlbum, removeUserFavoriteAlbum, getFavoriteAlbum, getDocDbAndSetState} from '../../utils/functions/db';
+import { AUDIO } from '../../utils/data/collectionsId';
+import { albumClass } from '../../utils/data/classNames';
+import './AlbumSection.scss';
 export const Album = ({image, uid, title, musics, setAlbumMusics, year, authorId, genreId}) => {
     const {setSearchInfoAboutItem} = useSearchContext();
     const {setActiveSlide, setSearchTab} = useTabsContext();
     const {db, auth} = useFirebaseContext();
     const {active, setActive} = useAlbumContext();
     const [favoriteClass, setFavoriteClass] = useState(false);
-
     const [loadImage, setLoadImage] = useState(false);
 
     const getMusicFromAlbum = async () => {
-        setAlbumMusics([]);
-        setActive(uid);
+        await setAlbumMusics([]);
+        await setActive(uid);
         await musics.forEach(item => {
-            getDataIdByDatabase(item.idAudio);
+            getDocDbAndSetState(db, AUDIO, item.idAudio, setAlbumMusics);
         })
     };
 
-    const getDataIdByDatabase = async (id) => {
-        const docRef = doc(db, 'audio', id);
-        const docSnap = await getDoc(docRef);
-        console.log(docSnap.data());
-        setAlbumMusics(prev => [...prev, docSnap.data()]);
-    };
-
-    let clazz = 'albums_section_item_albums_block_item_bg';
-    if(active === uid){
-        clazz+= ' active';
-    }
-
-    const onFavoriteAlbum = () => {
-        getFavoriteAlbum().then((res) => {
+    const onFavoriteAlbum = async () => {
+        await getFavoriteAlbum(db, auth.currentUser.uid).then((res) => {
             let bool = false;
             res.forEach(({albumId}) => {
                 if(uid === albumId){
@@ -48,37 +35,16 @@ export const Album = ({image, uid, title, musics, setAlbumMusics, year, authorId
             })
             if(bool === true){
                 setFavoriteClass(false);
-                removeUserFavoriteAlbum();
+                removeUserFavoriteAlbum(db, auth.currentUser.uid, uid);
             } else{
                 setFavoriteClass(true);
-                addUserFavoriteAlbum();
+                addUserFavoriteAlbum(db, auth.currentUser.uid, uid);
             }
         });
     };
 
-    const addUserFavoriteAlbum = async () => {
-        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
-        await updateDoc(userDbRef, {
-            favoriteAlbum: arrayUnion({albumId: uid})
-        });
-    };
-
-    const removeUserFavoriteAlbum = async () => {
-        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
-        await updateDoc(userDbRef, {
-            favoriteAlbum: arrayRemove({albumId: uid})
-        });
-    };
-
-
-    const getFavoriteAlbum = async () => {
-        const docRef = doc(db, 'users', auth.currentUser.uid);
-        const docSnap = await getDoc(docRef);
-        return docSnap.data().favoriteAlbum;
-    };
-
     useEffect(() => {
-        getFavoriteAlbum().then((res) => {
+        getFavoriteAlbum(db, auth.currentUser.uid).then((res) => {
             res.forEach(({albumId}) => {
                 if(albumId === uid){
                     setFavoriteClass(true);
@@ -88,11 +54,9 @@ export const Album = ({image, uid, title, musics, setAlbumMusics, year, authorId
         // eslint-disable-next-line
     }, [])
 
-    console.log('idsdada:', image);
-
     return (
         <div className="albums_section_item_albums_block_item">
-            <div className={clazz}>
+            <div className={albumClass(active, uid)}>
                 <img src={image} alt="" onClick={async () => {
                     await setSearchInfoAboutItem({image, uid, title, musics, year, authorId, genreId});
                     await setSearchTab(1);
@@ -134,8 +98,6 @@ export const MusicsList = ({albumMusics, title = null}) => {
             )
         });
     }
-
-    console.log('albMusc:', albumMusics);
     return (
         <div className='music_list_albums'>
             {
@@ -149,9 +111,7 @@ export const MusicsList = ({albumMusics, title = null}) => {
                     albumMusics.length > 0 && albumName.length > 0 ?
                     elements_audio_items
                     :
-                    <div style={{margin: 'auto auto'}}>
-                        <h2 style={{textAlign: 'center'}}>Выберите Альбом</h2>
-                    </div>
+                    null
                 }
             </div>
         </div>

@@ -1,17 +1,13 @@
 import React from 'react';
-import Navbar from '../navbar/Navbar';
 import {useFirebaseContext} from '../../context/FirebaseContext';
-import avatarSprite from '../../resources/image/avatar.png';
-
-import './HeaderUser.scss';
-import Search from '../search/Search';
-import { useSearchContext } from '../../context/SearchContext';
 import { useTabsContext } from '../../context/TabsContext';
-import { useAudioContext } from '../../context/AudioContext';
+import Navbar from '../navbar/Navbar';
+import Search from '../search/Search';
+import avatarSprite from '../../resources/image/avatar.png';
+import './HeaderUser.scss';
 function Header(props) {
     const {auth} = useFirebaseContext();
     const {activeSlide, setActiveSlide} = useTabsContext();
-
     return (
         <div className='user_header'>
             <div className="user_header_item">
@@ -23,10 +19,8 @@ function Header(props) {
                     ПЛАВНАЯ МУЗЫКА
                 </div>
             </div>
-
             <Navbar/>
             <Search/>
-
             <div className="user_header_item">
                 <div className="user_header_item_user">
                     <img onClick={() => {

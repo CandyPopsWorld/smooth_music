@@ -1,41 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './components/app/App';
-
-import { AudioContext } from './context/AudioContext';
-import { FirebaseContext, useFirebaseContext } from './context/FirebaseContext';
-import { TabsContext } from './context/TabsContext';
-
+import Contexts from './components/contexts/Contexts';
 import './global.scss';
-
-import {ref, uploadBytes,getDownloadURL } from "firebase/storage";
-import { UploadContext } from './context/UploadContext';
-import { DatabaseContext } from './context/DatabaseContext';
-import { AlbumContext } from './context/AlbumContext';
-import { FavoritesContext } from './context/FavoritesContext';
-import { SearchContext } from './context/SearchContext';
-import { SettingContext } from './context/SettingContext';
-
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <FirebaseContext>
-    <FavoritesContext>
-      <AlbumContext>
-        <DatabaseContext>
-          <UploadContext>
-            <TabsContext>
-              <AudioContext>
-                <SearchContext>
-                  <SettingContext>
-                    <App/>
-                  </SettingContext>
-                </SearchContext>
-              </AudioContext>
-            </TabsContext>
-          </UploadContext>
-        </DatabaseContext>
-      </AlbumContext>
-    </FavoritesContext>
-  </FirebaseContext>
+  <Contexts>
+    <App/>
+  </Contexts>
 );

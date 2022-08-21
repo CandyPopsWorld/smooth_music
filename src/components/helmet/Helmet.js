@@ -1,6 +1,5 @@
 import React from 'react';
 import { Helmet as HelmetComponent } from 'react-helmet';
-
 function Helmet({title, description}) {
     return (
         <HelmetComponent>
@@ -9,5 +8,4 @@ function Helmet({title, description}) {
         </HelmetComponent>
     );
 }
-
 export default Helmet;
