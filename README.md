@@ -19,3 +19,5 @@ Single Author page
 ![alt text](./src/resources/image/overview/Author_Page.PNG "Author page")
 Single Album page
 ![alt text](./src/resources/image/overview/Album_Page.PNG "Album page")
+
+---
