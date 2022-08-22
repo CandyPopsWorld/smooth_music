@@ -1,5 +1,8 @@
 # Smooth Music
-![alt text](./src/resources/image/logo.png "Smooth Music(test logo)")
+![logo](https://img.shields.io/github/languages/code-size/CandyPopsWorld/smooth_music?color=orangered)
+![logo](https://img.shields.io/github/v/release/CandyPopsWorld/smooth_music?color=orangered)
+![logo](https://img.shields.io/github/last-commit/CandyPopsWorld/smooth_music?color=orangered)  
+![logo](./src/resources/image/logo.png "Smooth Music(test logo)")  
 ## Overview
 ---
 Smooth music - Стриминговый сервис с огромным количеством треков в библиотеке, музыкальными подборками и рекомендациями. Поддерживает синхронизацию текста с аудио. Также поддерживает перевод текста на русский язык.
