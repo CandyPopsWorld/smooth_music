@@ -6,7 +6,8 @@ import Helmet from '../../helmet/Helmet';
 import Alert from '../../alert/Alert';
 import MainLoader from '../../mainLoader/MainLoader';
 import { LOGIN_HELMET } from '../../../utils/data/seoHelmet';
-import { errorsAlert } from '../../../utils/data/alert';
+import {getSuccessAlert, getErrorAlert} from '../../../utils/functions/alert';
+import {forgotPasswordText} from '../../../utils/data/alert';
 import logoSprite from '../../../resources/image/logo.png';
 import './LoginPage.scss';
 function LoginPage(props) {
@@ -23,18 +24,17 @@ function LoginPage(props) {
         setLoading(true);
         signInWithEmailAndPassword(auth, email, password)
         .then(() => {
-            getSuccessAlert('Вы вошли в систему!')
         })
         .catch((error) => {
             setLoading(false);
-            getErrorAlert(error);
+            getErrorAlert(error, setShowAlert, setSeverityAlert, setTextAlert);
         })
     };
 
     const forgotPassword = (email) => {
         sendPasswordResetEmail(auth, email)
         .then(() => {
-            getSuccessAlert('Ссылка для сброса пароля отправлена на вашу почту!');
+            getSuccessAlert(forgotPasswordText);
             setTimeout(() => {
                 setVisibleContent(true);
                 setShowAlert(false);
@@ -43,24 +43,6 @@ function LoginPage(props) {
         .catch((error) => {
             getErrorAlert(error);
         })
-    };
-
-    const getErrorAlert = async (error) => {
-        await setShowAlert(false);
-        setSeverityAlert('error');
-        await setShowAlert(true);
-        errorsAlert.forEach(item => {
-            if(error.code === item.code){
-                setTextAlert(item.message);
-            }
-        })
-    };
-
-    const getSuccessAlert = async (text) => {
-        await setShowAlert(false);
-        setSeverityAlert('success');
-        await setShowAlert(true);
-        setTextAlert(text);
     };
 
     return (

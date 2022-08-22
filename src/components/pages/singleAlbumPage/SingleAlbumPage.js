@@ -1,7 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useFirebaseContext } from '../../../context/FirebaseContext';
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { MusicsList } from '../../albumsSection/AlbumsSection';
+import 
+{
+    addUserFavoriteAlbum, 
+    removeUserFavoriteAlbum, 
+    getFavoriteAlbum,
+    getAuthorNameById,
+    getGenreNameById,
+    getAudioByid
+} from '../../../utils/functions/db';
 import './SingleAlbumPage.scss';
 function SingleAlbumPage({image, uid, title, musics, year, authorId, genreId}) {
     const {db, auth} = useFirebaseContext();
@@ -10,33 +18,8 @@ function SingleAlbumPage({image, uid, title, musics, year, authorId, genreId}) {
     const [genre, setGenre] = useState(null);
     const [favoriteClass, setFavoriteClass] = useState(false);
 
-    const getAudioByid = async (id) => {
-        const docRef = await doc(db, 'audio',id);
-        const docSnap = await getDoc(docRef);
-        await setAudioList(prev => [...prev,docSnap.data()]);
-        // return docSnap.data().favoriteAlbum;
-    };
-
-    const getAuthorById = async (id) => {
-        const docRef = doc(db, 'authors', id);
-        const docSnap = await getDoc(docRef);
-        await setAuthor(docSnap.data().title);
-    };
-
-    const getGenreById = async (id) => {
-        const docRef = doc(db, 'genres', id);
-        const docSnap = await getDoc(docRef);
-        await setGenre(docSnap.data().genre);
-    };
-
-    const getFavoriteAlbum = async () => {
-        const docRef = doc(db, 'users', auth.currentUser.uid);
-        const docSnap = await getDoc(docRef);
-        return docSnap.data().favoriteAlbum;
-    };
-
     const onFavoriteAlbum = () => {
-        getFavoriteAlbum().then((res) => {
+        getFavoriteAlbum(db, auth.currentUser.uid).then((res) => {
             let bool = false;
             res.forEach(({albumId}) => {
                 if(uid === albumId){
@@ -45,43 +28,29 @@ function SingleAlbumPage({image, uid, title, musics, year, authorId, genreId}) {
             })
             if(bool === true){
                 setFavoriteClass(false);
-                removeUserFavoriteAlbum();
+                removeUserFavoriteAlbum(db, auth.currentUser.uid, uid);
             } else{
                 setFavoriteClass(true);
-                addUserFavoriteAlbum();
+                addUserFavoriteAlbum(db, auth.currentUser.uid, uid);
             }
         });
     };
 
-    const addUserFavoriteAlbum = async () => {
-        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
-        await updateDoc(userDbRef, {
-            favoriteAlbum: arrayUnion({albumId: uid})
-        });
-    };
-
-    const removeUserFavoriteAlbum = async () => {
-        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
-        await updateDoc(userDbRef, {
-            favoriteAlbum: arrayRemove({albumId: uid})
-        });
-    };
-
-
     useEffect(() => {
         musics.forEach(({idAudio}) => {
-            getAudioByid(idAudio);
+            getAudioByid(db, idAudio, setAudioList);
         })
-        getAuthorById(authorId);
-        getGenreById(genreId);
+        getAuthorNameById(db, authorId, setAuthor);
+        getGenreNameById(db, genreId, setGenre);
 
-        getFavoriteAlbum().then((res) => {
+        getFavoriteAlbum(db, auth.currentUser.uid).then((res) => {
             res.forEach(({albumId}) => {
                 if(albumId === uid){
                     setFavoriteClass(true);
                 }
             })
         })
+        // eslint-disable-next-line
     }, [])
 
     return (
@@ -97,7 +66,6 @@ function SingleAlbumPage({image, uid, title, musics, year, authorId, genreId}) {
                     </div>
                     <div className="single_album_page_about_text_title">
                         {author !== null ? author : null}
-                        {/* {author} */}
                     </div>
                     <div className="single_album_page_about_text_title">
                         {year} * {genre !== null ? genre : null}

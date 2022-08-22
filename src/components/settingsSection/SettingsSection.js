@@ -10,9 +10,8 @@ import { Tabs, Tab } from '@mui/material';
 import { useSettingContext } from '../../context/SettingContext';
 
 const tabs = [
-    {active: false, title: 'Основные', id: 1},
-    {active: false, title: 'Аккаунт', id: 2},
-    {active: false, title: 'Прочее', id: 3},
+    {active: false, title: 'Аккаунт', id: 1},
+    {active: false, title: 'Прочее', id: 2},
 ];
 
 function SettingsSection(props) {
@@ -101,9 +100,6 @@ function SettingsSection(props) {
 
     switch(activeSlide){
         case 1:
-            elements_block = <BasicSettings/>
-            break;
-        case 2:
             elements_block = 
             <AccountSettings
             username={username}
@@ -113,7 +109,7 @@ function SettingsSection(props) {
             updateUserProfile={updateUserProfile}
             loading={loading}/>
             break;
-        case 3:
+        case 2:
             elements_block = <OtherSettings/>
             break;
         default:
@@ -145,15 +141,6 @@ function SettingsSection(props) {
         </div>
     );
 }
-
-
-const BasicSettings = () => {
-    return (
-        <div className="basic_settings block_setting">
-            <h2>Основные настройки</h2>
-        </div>
-    )
-};
 
 const AccountSettings = ({username, setUsername, avatar, uploadAvatar, updateUserProfile, loading}) => {
 
@@ -204,7 +191,20 @@ const AccountSettings = ({username, setUsername, avatar, uploadAvatar, updateUse
 const OtherSettings = () => {
     return (
         <div className="other_settings block_setting">
-            <h2>Прочее</h2>
+            <div className="other_settings_header">
+                <h2>Прочее</h2>
+            </div>
+            <div className="other_settings_form">
+                <div className="other_settings_form_item">
+                    <label htmlFor="browser_setting">Сохранять настройки в браузере:</label>
+                    <input type="checkbox" id='browser_setting' name='browser_setting'/>
+                </div>
+
+                <div className="other_settings_form_item">
+                    <label htmlFor="hint_setting">Показывать подсказки в приложении:</label>
+                    <input type="checkbox" id='hint_setting' name='hint_setting'/>
+                </div>
+            </div>
         </div>
     )
 };

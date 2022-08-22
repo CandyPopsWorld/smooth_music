@@ -16,6 +16,7 @@ function UserPage(props) {
         } else{
             localStorage.setItem(auth.currentUser.uid,JSON.stringify(localSettings));
         }
+        // eslint-disable-next-line
     }, [])
 
     return (

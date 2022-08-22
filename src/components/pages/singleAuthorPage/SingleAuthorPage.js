@@ -1,10 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useFirebaseContext } from '../../../context/FirebaseContext';
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
-import {ref,getDownloadURL } from "firebase/storage";
-import './SingleAuthorPage.scss';
 import { MusicsList } from '../../albumsSection/AlbumsSection';
 import { Album } from '../../albumsSection/AlbumsSection';
+import 
+{
+    addUserFavoriteAuthor,
+    removeUserFavoriteAuthor,
+    getFavoriteAuthor,
+    getAudioByid,
+    getAlbumsByid
+} from '../../../utils/functions/db';
+import './SingleAuthorPage.scss';
 function SingleAuthorPage({image, uid, title, description, albums, musics}) {
 
     const {db, auth, storage} = useFirebaseContext();
@@ -13,14 +19,8 @@ function SingleAuthorPage({image, uid, title, description, albums, musics}) {
     const [allAlbumList, setAllAlbumList] = useState([]);
     const [albumMusics, setAlbumMusics] = useState(null);
 
-    const getFavoriteAuthor = async () => {
-        const docRef = doc(db, 'users', auth.currentUser.uid);
-        const docSnap = await getDoc(docRef);
-        return docSnap.data().favoriteAuthor;
-    };
-
     const onFavoriteAuthor = () => {
-        getFavoriteAuthor().then((res) => {
+        getFavoriteAuthor(db, auth.currentUser.uid).then((res) => {
             let bool = false;
             res.forEach(({authorId}) => {
                 if(uid === authorId){
@@ -29,71 +29,31 @@ function SingleAuthorPage({image, uid, title, description, albums, musics}) {
             })
             if(bool === true){
                 setFavoriteClass(false);
-                removeUserFavoriteAuthor();
+                removeUserFavoriteAuthor(db, auth.currentUser.uid, uid);
             } else{
                 setFavoriteClass(true);
-                addUserFavoriteAuthor();
+                addUserFavoriteAuthor(db, auth.currentUser.uid, uid);
             }
         });
     };
 
-    const addUserFavoriteAuthor = async () => {
-        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
-        await updateDoc(userDbRef, {
-            favoriteAuthor: arrayUnion({authorId: uid})
-        });
-    };
-
-    const removeUserFavoriteAuthor = async () => {
-        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
-        await updateDoc(userDbRef, {
-            favoriteAuthor: arrayRemove({authorId: uid})
-        });
-    };
-
-    const getAudioByid = async (id) => {
-        const docRef = await doc(db, 'audio',id);
-        const docSnap = await getDoc(docRef);
-        await setAllAudioList(prev => [...prev,docSnap.data()]);
-    };
-
-    const getAlbumsByid = async (id) => {
-        const docRef = await doc(db, 'albums',String(id));
-        const docSnap = await getDoc(docRef);
-        await getImageAlbumStorage(id).then((image) => {
-            setAllAlbumList(prev => [...prev,{...docSnap.data(), image}]);
-        });
-    };
-
-    const getImageAlbumStorage = async (id) => {
-        const pathReference = ref(storage, `album/${id}`);
-        let urlExport = '';
-        await getDownloadURL(pathReference)
-        .then((url) => {
-            urlExport = url;
-        })
-        .catch((error) => {
-            // console.log(error);
-        })
-        return urlExport;
-    };
-
     useEffect(() => {
         musics.forEach(({idAudio}) => {
-            getAudioByid(idAudio);
+            getAudioByid(db,idAudio,setAllAudioList);
         });
 
         albums.forEach(({idAlbum}) => {
-            getAlbumsByid(idAlbum);
+            getAlbumsByid(db, storage, idAlbum, setAllAlbumList);
         })
 
-        getFavoriteAuthor().then((res) => {
+        getFavoriteAuthor(db, auth.currentUser.uid).then((res) => {
             res.forEach(({authorId}) => {
                 if(authorId === uid){
                     setFavoriteClass(true);
                 }
             })
         })
+        // eslint-disable-next-line
     }, [])
 
     let elements_albums = null;

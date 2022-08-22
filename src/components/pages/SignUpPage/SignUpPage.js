@@ -1,15 +1,19 @@
 import { useState } from 'react';
-import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile} from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile} from 'firebase/auth';
 import { doc, setDoc } from "firebase/firestore"; 
-import {useFirebaseContext} from '../../../context/FirebaseContext';
 import { NavLink } from 'react-router-dom';
+import {useFirebaseContext} from '../../../context/FirebaseContext';
 import Helmet from '../../helmet/Helmet';
 import Alert from '../../alert/Alert';
 import MainLoader from '../../mainLoader/MainLoader';
 import { SIGNUP_HELMET } from '../../../utils/data/seoHelmet';
+import { mailVerification } from '../../../utils/functions/auth';
+import { getErrorAlert, getSuccessAlert } from '../../../utils/functions/alert';
+import { validateUserSignUp} from '../../../utils/functions/validate';
+import { errorsAlert } from '../../../utils/data/alert';
+import {USERS} from '../../../utils/data/collectionsId';
 import logoSprite from '../../../resources/image/logo.png';
 import './SignUpPage.scss';
-import { errorsAlert } from '../../../utils/data/alert';
 function SignUpPage(props) {
     const {auth, db} = useFirebaseContext();
     const [username, setUsername] = useState('');
@@ -22,78 +26,30 @@ function SignUpPage(props) {
     const [loading, setLoading] = useState(false);
 
     const registerUser = () => {
-        if(validateData()){
+        if(validateUserSignUp(username, password, confirmPassword, email, setShowAlert, setSeverityAlert, setTextAlert)){
             setLoading(true);
             createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                getSuccessAlert('Вы зарегистрировались в системе!');
-                updateDataUser();
-                mailVerification();
-                addDatabaseData();
+                getSuccessAlert('Вы зарегистрировались в системе!', setShowAlert, setSeverityAlert, setTextAlert);
+                updateDispayName();
+                mailVerification(auth.currentUser, errorsAlert, setShowAlert, setSeverityAlert, setTextAlert);
+                addDefaultDatabaseData();
             })
             .catch(error => {
                 setLoading(false);
-                getErrorAlert(error);
+                getErrorAlert(error, setShowAlert, setSeverityAlert, setTextAlert);
             })
         }
     };
 
-    const validateData = () => {
-        let validate = 0;
-        if(username.length > 3){
-            validate = 1;
-        } else{
-            getErrorAlertWithText('Никнейм должен быть больше 3 символов!');
-            return false;
-        }
-
-        if(password.length > 5){
-            validate = 2;
-        } else {
-            getErrorAlertWithText('Пароль должен быть длиннее 5 символов!');
-            return false;
-        }
-
-        if(password === confirmPassword){
-            validate = 3;
-        } else {
-            getErrorAlertWithText('Пароли должны совпадать');
-            return false;
-        }
-
-        if(email.match(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/)){
-            validate = 4;
-        } else {
-            getErrorAlertWithText('Некорретно введена почта!');
-            return false;
-        }
-
-        if(validate === 4){
-            setShowAlert(false);
-            return true;
-        } else{
-            return false;
-        }
-    };
-
-    const mailVerification = () => {
-        sendEmailVerification(auth.currentUser)
-        .then(() => {
-
-        })
-        .catch((error) => {
-            getErrorAlert(error);
-        })
-    };
-
-    const updateDataUser = () => {
+    const updateDispayName = () => {
         updateProfile(auth.currentUser, {
             displayName: username
         })
     };
 
-    const addDatabaseData = async () => {
-        await setDoc(doc(db, 'users', auth.currentUser.uid), {
+    const addDefaultDatabaseData = async () => {
+        await setDoc(doc(db, USERS, auth.currentUser.uid), {
             id: auth.currentUser.uid,
             username: username,
             email: auth.currentUser.email,
@@ -104,32 +60,7 @@ function SignUpPage(props) {
             banAudio: []
         });
     };
-
-    const getErrorAlert = async (error) => {
-        await setShowAlert(false);
-        setSeverityAlert('error');
-        await setShowAlert(true);
-        errorsAlert.forEach(item => {
-            if(error.code === item.code){
-                setTextAlert(item.message);
-            }
-        })
-    };
-
-    const getErrorAlertWithText = async (text) => {
-        await setShowAlert(false);
-        setSeverityAlert('error');
-        await setShowAlert(true);
-        setTextAlert(text);
-    };
-
-    const getSuccessAlert = async (text) => {
-        await setShowAlert(false);
-        setSeverityAlert('success');
-        await setShowAlert(true);
-        setTextAlert(text);
-    };
-
+ 
     return (
         loading === false ?
         <div>
