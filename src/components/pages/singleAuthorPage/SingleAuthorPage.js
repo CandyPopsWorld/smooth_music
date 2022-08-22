@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useFirebaseContext } from '../../../context/FirebaseContext';
-import { MusicsList } from '../../albumsSection/AlbumsSection';
-import { Album } from '../../albumsSection/AlbumsSection';
+import MusicList from '../../musicList/MusicList';
+import Album from '../../album/Album';
 import 
 {
     addUserFavoriteAuthor,
@@ -100,12 +100,12 @@ function SingleAuthorPage({image, uid, title, description, albums, musics}) {
                 </div>
 
                 <div className="single_author_page_about_all_music_list">
-                    <MusicsList albumMusics={allAudioList} title={'Все треки'}/>
+                    <MusicList albumMusics={allAudioList} title={'Все треки'}/>
                 </div>
             </div>
 
             <div className="albums_section_item_music_block">
-                <MusicsList albumMusics={albumMusics !== null ? albumMusics : []}/>
+                <MusicList albumMusics={albumMusics !== null ? albumMusics : []}/>
             </div>
         </div>
     );

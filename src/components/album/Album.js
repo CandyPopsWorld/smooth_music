@@ -3,13 +3,12 @@ import { useFirebaseContext } from '../../context/FirebaseContext';
 import { useAlbumContext } from '../../context/AlbumContext';
 import { useTabsContext } from '../../context/TabsContext';
 import { useSearchContext } from '../../context/SearchContext';
-import { AudioItem } from '../collectionsSection/CollectionsSection';
 import Skeleton from '../skeleton/Skeleton';
 import {addUserFavoriteAlbum, removeUserFavoriteAlbum, getFavoriteAlbum, getDocDbAndSetState} from '../../utils/functions/db';
 import { AUDIO } from '../../utils/data/collectionsId';
 import { albumClass } from '../../utils/data/classNames';
-import './AlbumSection.scss';
-export const Album = ({image, uid, title, musics, setAlbumMusics, year, authorId, genreId}) => {
+
+const Album = ({image, uid, title, musics, setAlbumMusics, year, authorId, genreId}) => {
     const {setSearchInfoAboutItem} = useSearchContext();
     const {setActiveSlide, setSearchTab} = useTabsContext();
     const {db, auth} = useFirebaseContext();
@@ -77,43 +76,4 @@ export const Album = ({image, uid, title, musics, setAlbumMusics, year, authorId
     )
 };
 
-export const MusicsList = ({albumMusics, title = null}) => {
-    let albumName = '';
-    let elements_audio_items = null;
-    if(albumMusics.length > 0){
-        elements_audio_items = albumMusics.map(({album, author, name, id, textOfMusic, duration}, i) => {
-            albumName = album;
-            return (
-                <AudioItem 
-                idkey={id}
-                uniqueid={id} 
-                key={id} 
-                album={album} 
-                author={author} 
-                name={name} 
-                i={i}
-                textOfMusic={textOfMusic}
-                duration={duration}
-                albumMusics={albumMusics}/>
-            )
-        });
-    }
-    return (
-        <div className='music_list_albums'>
-            {
-                albumMusics.length > 0 && albumName.length > 0 ?
-                <h2>{title === null ? `Альбом ${albumName}` : title}</h2>
-                :
-                null
-            }
-            <div className="music_list_albums_wrapper">
-                {
-                    albumMusics.length > 0 && albumName.length > 0 ?
-                    elements_audio_items
-                    :
-                    null
-                }
-            </div>
-        </div>
-    )
-}
+export default Album;

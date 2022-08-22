@@ -1,12 +1,9 @@
-import { useSearchContext } from '../../context/SearchContext';
-import {useTabsContext} from '../../context/TabsContext';
 import MainSectionUser from '../mainSectionUser/MainSectionUser';
 import SearchSection from '../searchSection/SearchSection';
 import SettingsSection from '../settingsSection/SettingsSection';
 import UserFavoritesSection from '../userFavoritesSection/UserFavoritesSection';
-
+import {useTabsContext} from '../../context/TabsContext';
 import './Sections.scss';
-
 function Sections(props) {
     const {activeSlide} = useTabsContext();
 

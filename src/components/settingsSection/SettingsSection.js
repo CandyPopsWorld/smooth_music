@@ -1,13 +1,13 @@
-import './SettingsSection.scss';
-import {useFirebaseContext} from '../../context/FirebaseContext';
-import { signOut } from 'firebase/auth';
-import { useEffect, useState } from 'react';
-import { updateProfile } from "firebase/auth";
+import { useState } from 'react';
+import { signOut, updateProfile } from 'firebase/auth';
 import {ref, uploadBytes, getDownloadURL} from "firebase/storage";
-import Loader from '../loader/Loader';
-import avatarSprite from '../../resources/image/avatar.png';
-import { Tabs, Tab } from '@mui/material';
+import {useFirebaseContext} from '../../context/FirebaseContext';
 import { useSettingContext } from '../../context/SettingContext';
+import Loader from '../loader/Loader';
+import {refreshPage} from '../../utils/functions/helper';
+import avatarSprite from '../../resources/image/avatar.png';
+import { AVATAR_STORAGE } from '../../utils/data/storageId';
+import './SettingsSection.scss';
 
 const tabs = [
     {active: false, title: 'Аккаунт', id: 1},
@@ -15,12 +15,11 @@ const tabs = [
 ];
 
 function SettingsSection(props) {
+    const {auth,storage} = useFirebaseContext();
+    const {activeSlide, setActiveSlide} = useSettingContext();
     const [username, setUsername] = useState('');
     const [avatar, setAvatar] = useState(null);
     const [loading,setLoading] = useState(false);
-    const {auth,storage} = useFirebaseContext();
-
-    const {activeSlide, setActiveSlide} = useSettingContext();
 
     const updateUserProfile = async (e) => {
         if(username.length > 0){
@@ -41,14 +40,9 @@ function SettingsSection(props) {
     const uploadAvatar = (e) => {
         setLoading(true);
         const file = e.target.files[0];
-        console.log('file:',file);
-        // const blob = window.URL || window.webkitURL;
-        // const fileURL = blob.createObjectURL(file);
-        const storageRef = ref(storage, `avatar/${auth.currentUser.uid}`);
-        console.log(storageRef);
+        const storageRef = ref(storage, `${AVATAR_STORAGE}/${auth.currentUser.uid}`);
         uploadBytes(storageRef, file)
         .then(() => {
-          console.log('File Upload!');
         })
         .catch(() => {
     
@@ -57,7 +51,7 @@ function SettingsSection(props) {
     };
 
     const updateAvatar = () => {
-        const avatarRef = ref(storage, `avatar/${auth.currentUser.uid}`);
+        const avatarRef = ref(storage, `${AVATAR_STORAGE}/${auth.currentUser.uid}`);
         getDownloadURL(avatarRef)
         .then((url) => {
             updateProfile(auth.currentUser, {
@@ -65,7 +59,7 @@ function SettingsSection(props) {
             })
             clearSettings();
             setLoading(false);
-            reloadPage();
+            refreshPage();
         })
         .catch(() => {
     
@@ -75,10 +69,6 @@ function SettingsSection(props) {
     const clearSettings = () => {
         setAvatar(null);
         setUsername('');
-    };
-
-    const reloadPage = () => {
-        window.location.reload();
     };
 
     const elements_nav = tabs.map(item => {

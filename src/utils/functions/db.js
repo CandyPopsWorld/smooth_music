@@ -1,7 +1,7 @@
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { doc, getDoc, updateDoc, arrayUnion, arrayRemove, getDocs, collection } from "firebase/firestore";
 import {ref,getDownloadURL } from "firebase/storage";
 import { ALBUMS, AUDIO, AUTHORS, GENRES, USERS } from "../data/collectionsId";
-import { ALBUM_STORAGE } from "../data/storageId";
+import { ALBUM_STORAGE, AUTHOR_STORAGE } from "../data/storageId";
 
 //Doc and Docs (General Function)
 export const getDocDbAndSetState = async (db, collection, id, setFunc) => {
@@ -20,6 +20,27 @@ export const getDocDbAndReturn = async (db, collection, id) => {
     const docRef = doc(db, collection, id);
     const docSnap = await getDoc(docRef);
     return await docSnap.data();
+};
+
+export const getAllDocument = async (db, storage, collect, setFunc) => {
+    const querySnapshot = await getDocs(collection(db, collect));
+    let arr = [];
+    await querySnapshot.forEach((doc) => {
+        if(collect === 'albums'){
+            getImageStorage(storage, ALBUM_STORAGE , doc.data().id).then(resImg => {
+                arr.push({...doc.data(), image: resImg});
+            })
+        } else if(collect === 'authors'){
+            getImageStorage(storage, AUTHOR_STORAGE, doc.data().id).then(resImg => {
+                arr.push({...doc.data(), image: resImg});
+            })
+        } 
+        else {
+            arr.push(doc.data());
+        }
+    });
+    setFunc(arr);
+    return arr;
 };
 
 // Album Db
@@ -77,6 +98,13 @@ export const getAudioStorage = async (storage, collection, id, setFunc) => {
 };
 
 //Author
+
+export const getAuthor = async (db, id) => {
+    const docRef = await doc(db, AUTHORS, id);
+    const docSnap = await getDoc(docRef);
+    return await docSnap.data();
+};
+
 export const addUserFavoriteAuthor = async (db, id, uid) => {
     const userDbRef = await doc(db, USERS, id);
     await updateDoc(userDbRef, {

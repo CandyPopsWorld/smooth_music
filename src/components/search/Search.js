@@ -1,19 +1,18 @@
 import { useEffect, useState } from 'react';
 import {useFirebaseContext} from '../../context/FirebaseContext';
-import {getDocs, collection, doc, getDoc, arrayUnion, arrayRemove, updateDoc} from 'firebase/firestore';
-import {ref,getDownloadURL } from "firebase/storage";
-import './Search.scss';
 import { useSearchContext } from '../../context/SearchContext';
 import { AudioItem } from '../collectionsSection/CollectionsSection';
-import { useTabsContext } from '../../context/TabsContext';
+import {getFindItemsAudio, getFindItemsAlbumAndAuthor} from '../../utils/functions/search';
+import {getAllDocument,} from '../../utils/functions/db';
+import { ALBUMS, AUDIO, AUTHORS } from '../../utils/data/collectionsId';
 import SearchIcon from '@mui/icons-material/Search';
-
+import AlbumItem from '../searchAlbumItem/SearchAlbumItem';
+import AuthorItem from '../searchAuthorItem/SearchAuthorItem';
+import './Search.scss';
 function Search(props) {
 
     const {db, storage} = useFirebaseContext();
     const {audios, setAudios, albums, setAlbums, authors, setAuthors, showModal, setShowModal, search, setSearch} = useSearchContext();
-    // const [search, setSearch] = useState('');
-
     const [shortAudioFind, setShortAudioFind] = useState(null);
     const [shortAlbumFind, setShortAlbumFind] = useState(null);
     const [shortAuthorFind, setShortAuthorFind] = useState(null);
@@ -22,85 +21,21 @@ function Search(props) {
         const searchTerm = e.target.value;
         setSearch(searchTerm);
         if(searchTerm !== ''){
-            console.log('search:', searchTerm);
-    
             const audiosFind = getFindItemsAudio(audios, searchTerm);
-            console.log('Найденные песни:', audiosFind);
             setShortAudioFind(audiosFind);
             const albumsFind = getFindItemsAlbumAndAuthor(albums, searchTerm);
-            console.log('Найденные альбомы:', albumsFind);
             setShortAlbumFind(albumsFind);
             const authorsFind = getFindItemsAlbumAndAuthor(authors, searchTerm);
-            console.log('Найденные авторы:', authorsFind);
             setShortAuthorFind(authorsFind);
         }
         setShowModal(true);
     };
 
-    const getFindItemsAudio = (arr, searchTerm) => {
-        let findArray = [];
-        arr.forEach(item => {
-            if(item.name.toLowerCase().includes(searchTerm.toLowerCase())){
-                if(findArray.length < 10){
-                    findArray.push(item);
-                }
-            }
-        });
-        return findArray;
-    };
-
-    const getFindItemsAlbumAndAuthor = (arr, searchTerm) => {
-        let findArray = [];
-        arr.forEach(item => {
-            if(item.title.toLowerCase().includes(searchTerm.toLowerCase())){
-                if(findArray.length < 4){
-                    findArray.push(item);
-                }
-            }
-        });
-        return findArray;
-    };
-
-    const getAllDocument = async (collect, func) => {
-        const querySnapshot = await getDocs(collection(db, collect));
-        let arr = [];
-        await querySnapshot.forEach((doc) => {
-            if(collect === 'albums'){
-                getImageAlbumStorage(doc.data().id, 'album').then(resImg => {
-                    console.log('resImg:', resImg);
-                    arr.push({...doc.data(), image: resImg});
-                })
-            } else if(collect === 'authors'){
-                getImageAlbumStorage(doc.data().id, 'author').then(resImg => {
-                    console.log('resImg:', resImg);
-                    arr.push({...doc.data(), image: resImg});
-                })
-            } 
-            else {
-                arr.push(doc.data());
-            }
-        });
-        func(arr);
-        return arr;
-    };
-
-    const getImageAlbumStorage = async (id, str) => {
-        const pathReference = ref(storage, `${str}/${id}`);
-        let urlExport = '';
-        await getDownloadURL(pathReference)
-        .then((url) => {
-            urlExport = url;
-        })
-        .catch((error) => {
-            // console.log(error);
-        })
-        return urlExport;
-    };
-
     useEffect(() => {
-        getAllDocument('audio', setAudios);
-        getAllDocument('albums', setAlbums);
-        getAllDocument('authors', setAuthors);
+        getAllDocument(db, storage, AUDIO, setAudios);
+        getAllDocument(db, storage, ALBUMS, setAlbums);
+        getAllDocument(db, storage, AUTHORS, setAuthors);
+        // eslint-disable-next-line
     }, [])
 
     let elements_search_audio = null;
@@ -218,172 +153,6 @@ function Search(props) {
             </div>
             </div>
     );
-};
-
-
-const AlbumItem = ({image, title, author, id, musics, year, authorId, genreId, setShowModal}) => {
-    const {db, auth} = useFirebaseContext();
-    const {setSearchInfoAboutItem} = useSearchContext();
-    const {setActiveSlide, setSearchTab} = useTabsContext();
-    const [favoriteClass, setFavoriteClass] = useState(false);
-    
-    const onFavoriteAlbum = () => {
-        getFavoriteAlbum().then((res) => {
-            let bool = false;
-            res.forEach(({albumId}) => {
-                if(+id === +albumId){
-                    bool = true;
-                }
-            })
-            if(bool === true){
-                setFavoriteClass(false);
-                removeUserFavoriteAlbum(id);
-            } else{
-                setFavoriteClass(true);
-                addUserFavoriteAlbum(id);
-            }
-        });
-        // addUserFavoriteAudio();
-    };
-
-    const getFavoriteAlbum = async () => {
-        const docRef = doc(db, 'users', auth.currentUser.uid);
-        const docSnap = await getDoc(docRef);
-        return docSnap.data().favoriteAlbum;
-    };
-
-    const addUserFavoriteAlbum = async (id) => {
-        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
-        await updateDoc(userDbRef, {
-            favoriteAlbum: arrayUnion({albumId: id})
-        });
-    };
-
-    const removeUserFavoriteAlbum = async (id) => {
-        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
-        await updateDoc(userDbRef, {
-            favoriteAlbum: arrayRemove({albumId: id})
-        });
-    };
-
-    useEffect(() => {
-        getFavoriteAlbum().then((res) => {
-            res.forEach(({albumId}) => {
-                if(+albumId === +id){
-                    setFavoriteClass(true);
-                }
-            })
-        })
-    }, [])
-
-
-    const getSingleAlbumPage = async () => {
-        setActiveSlide(1);
-        setShowModal(false);
-        await setSearchInfoAboutItem({image, uid: id, title, musics, year, authorId, genreId});
-        await setSearchTab(1);
-        await setActiveSlide(6);
-    };
-
-    return (
-        <div className="album_item">
-            <div className="album_item_image">
-                <img src={image} alt="" onClick={getSingleAlbumPage}/>
-            </div>
-            <div className="album_item_text">
-                <div className="album_item_text_title" onClick={getSingleAlbumPage}>
-                    {title}
-                </div>
-                <div className="album_item_text_author">
-                    {author}
-                </div>
-            </div>
-            <div className="album_item_favorite">
-                <i className="fa-solid fa-heart favorite_album_control" onClick={onFavoriteAlbum} style={favoriteClass ? {color: 'orangered'} : null}></i>
-            </div>
-        </div>
-    )
-};
-
-const AuthorItem = ({image, title, description, albums, musics, id, setShowModal}) => {
-
-    const {db, auth} = useFirebaseContext();
-    const {setSearchInfoAboutItem} = useSearchContext();
-    const {setActiveSlide, setSearchTab} = useTabsContext();
-    const [favoriteClass, setFavoriteClass] = useState(false);
-    
-    const onFavoriteAlbum = () => {
-        getFavoriteAlbum().then((res) => {
-            let bool = false;
-            res.forEach(({authorId}) => {
-                if(+id === +authorId){
-                    bool = true;
-                }
-            })
-            if(bool === true){
-                setFavoriteClass(false);
-                removeUserFavoriteAlbum(id);
-            } else{
-                setFavoriteClass(true);
-                addUserFavoriteAlbum(id);
-            }
-        });
-        // addUserFavoriteAudio();
-    };
-
-    const getFavoriteAlbum = async () => {
-        const docRef = doc(db, 'users', auth.currentUser.uid);
-        const docSnap = await getDoc(docRef);
-        return docSnap.data().favoriteAuthor;
-    };
-
-    const addUserFavoriteAlbum = async (id) => {
-        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
-        await updateDoc(userDbRef, {
-            favoriteAuthor: arrayUnion({authorId: id})
-        });
-    };
-
-    const removeUserFavoriteAlbum = async (id) => {
-        const userDbRef = await doc(db, 'users', auth.currentUser.uid);
-        await updateDoc(userDbRef, {
-            favoriteAuthor: arrayRemove({authorId: id})
-        });
-    };
-
-    useEffect(() => {
-        getFavoriteAlbum().then((res) => {
-            res.forEach(({authorId}) => {
-                if(+authorId === +id){
-                    setFavoriteClass(true);
-                }
-            })
-        })
-    }, [])
-
-    const getSingleAuthorPage = async () => {
-        setActiveSlide(1);
-        setShowModal(false);
-        await setSearchInfoAboutItem({image, uid: id, title, description, albums, musics});
-        await setSearchTab(2);
-        await setActiveSlide(6);
-    };
-
-    return (
-        <div className="album_item">
-            <div className="album_item_image" onClick={getSingleAuthorPage}>
-                <img src={image} alt="" />
-            </div>
-            <div className="album_item_text">
-                <div className="album_item_text_author" onClick={getSingleAuthorPage}>
-                    {title}
-                </div>
-            </div>
-            <div className="album_item_favorite">
-                <i className="fa-solid fa-heart favorite_album_control" onClick={onFavoriteAlbum} style={favoriteClass ? {color: 'orangered'} : null}></i>
-            </div>
-        </div>
-    )
 };
 
 export default Search;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useFirebaseContext } from '../../../context/FirebaseContext';
-import { MusicsList } from '../../albumsSection/AlbumsSection';
+import MusicList from '../../musicList/MusicList';
 import 
 {
     addUserFavoriteAlbum, 
@@ -79,7 +79,7 @@ function SingleAlbumPage({image, uid, title, musics, year, authorId, genreId}) {
             </div>
 
             <div className="single_album_page_audio_list">
-                <MusicsList albumMusics={audioList}/>
+                <MusicList albumMusics={audioList}/>
             </div>
         </div>
     );

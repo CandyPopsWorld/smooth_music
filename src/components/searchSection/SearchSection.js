@@ -1,12 +1,11 @@
-import './SearchSection.scss';
 import SingleAlbumPage from '../pages/singleAlbumPage/SingleAlbumPage';
+import SingleAuthorPage from '../pages/singleAuthorPage/SingleAuthorPage';
 import { useTabsContext } from '../../context/TabsContext';
 import { useSearchContext } from '../../context/SearchContext';
-import SingleAuthorPage from '../pages/singleAuthorPage/SingleAuthorPage';
-
+import './SearchSection.scss';
 function SearchSection(props) {
+    
     const {searchInfoAboutItem} = useSearchContext();
-    console.log(searchInfoAboutItem);
     const {searchTab} = useTabsContext();
     let search_section = null;
     switch(searchTab){
