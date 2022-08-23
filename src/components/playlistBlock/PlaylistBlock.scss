@@ -1,0 +1,23 @@
+@import '../../style/mixin.scss';
+.create_playlist{
+    @include flex;
+    width: 200px;
+    height: 200px;
+    background-color: gray;
+    opacity: 0.5;
+    margin: 10px;
+    cursor: pointer;
+    user-select: none;
+    span{
+        color: white;
+        font-size: 3em;
+        transform: scale(1);
+        transition: 0.3s transform;
+    }
+
+    &:hover{
+        span{
+            transform: scale(1.5);
+        }
+    }
+}

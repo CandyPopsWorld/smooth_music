@@ -6,4 +6,5 @@ export const GENRES = process.env.REACT_APP_COLLECTION_GENRES;
 export const ALBUMS_IDS = process.env.REACT_APP_COLLECTION_ALBUMS_IDS;
 export const AUTHOR_IDS = process.env.REACT_APP_COLLECTION_AUTHOR_IDS;
 export const GENRE_IDS = process.env.REACT_APP_COLLECTION_GENRE_IDS;
+export const PLAYLIST_IDS = process.env.REACT_APP_COLLECTION_PLAYLIST_IDS
 export const IDS = process.env.REACT_APP_COLLECTION_IDS;

@@ -1,5 +1,6 @@
 import SingleAlbumPage from '../pages/singleAlbumPage/SingleAlbumPage';
 import SingleAuthorPage from '../pages/singleAuthorPage/SingleAuthorPage';
+import SinglePlaylistPage from '../pages/singlePlaylistPage/SinglePlaylistPage';
 import { useTabsContext } from '../../context/TabsContext';
 import { useSearchContext } from '../../context/SearchContext';
 import './SearchSection.scss';
@@ -14,6 +15,9 @@ function SearchSection(props) {
             break;
         case 2:
             search_section = <SingleAuthorPage {...searchInfoAboutItem}/>
+            break;
+        case 3:
+            search_section = <SinglePlaylistPage {...searchInfoAboutItem}/>
             break;
         default:
             break;

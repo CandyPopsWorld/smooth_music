@@ -57,6 +57,8 @@ function SignUpPage(props) {
             favoriteAudio: [],
             favoriteAlbum: [],
             favoriteAuthor: [],
+            playlists: [],
+            maxIdPlaylist: '0',
             banAudio: []
         });
     };
