@@ -133,9 +133,27 @@ i{
 }
 
 .MuiSlider-valueLabelLabel{
-    background-color: orangered;
+    background-color: orangered!important;
 }
 
 .css-nnid7-MuiSlider-valueLabel{
     background-color: orangered!important;
+}
+
+.MuiSlider-valueLabel{
+    background-color: orangered!important;
+} 
+
+.css-3besu{
+    background-color: orangered!important;
+}
+
+.MuiSlider-valueLabelOpen{
+    background-color: orangered!important;
+}
+
+.controls_text_found_block{
+    color:  white;
+    margin-left: 15px;
+    user-select: none;
 }

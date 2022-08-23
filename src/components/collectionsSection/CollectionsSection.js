@@ -23,7 +23,7 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
     const {setCurrentAudio, setCurrentTextOfMusic,setCurrentIdAudio, currentIdAudio, setCurrentPlayMusicList, setCurrentUidMusicList} = useDatabaseContext();
     const {setSearchInfoAboutItem, setShowModal} = useSearchContext();
     const {setActiveSlide, setSearchTab} = useTabsContext();
-    const {setPlayed, setCurrentTime} = useAudioContext();
+    const {setPlayed, setCurrentTime, setAutoPlay} = useAudioContext();
     const [favoriteClass, setFavoriteClass] = useState(false);
     const [authorData, setAuthorData] = useState(null);
     const [albumData, setAlbumData] = useState(null);
@@ -38,6 +38,7 @@ export const AudioItem = ({uniqueid, i, name, album, author,textOfMusic, duratio
         await setCurrentTextOfMusic(textOfMusic);
         await setCurrentIdAudio(id);
         await getAudioStorage(storage, AUDIO, id, setCurrentAudio);
+        await setAutoPlay(true);
     };
 
     const onFavoriteMusic = () => {

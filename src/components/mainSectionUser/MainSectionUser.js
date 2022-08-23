@@ -10,7 +10,7 @@ import { downloadFile } from '../../utils/functions/db';
 import './MainSectionUser.scss';
 function MainSectionUser(props) {
     const {titleOrigin, titleTranslate, viewTitle} = useAudioContext();
-    const {setCurrentAudio, setCurrentTextOfMusic, ids, setIds, setCurrentIdAudio} = useDatabaseContext();
+    const {setCurrentAudio, setCurrentTextOfMusic, ids, setIds, setCurrentIdAudio, currentTextOfMusic} = useDatabaseContext();
     const {db, storage, auth} = useFirebaseContext();
     const {setPlayed} = useAudioContext();
     const {originalTextMute, translateTextMute} = useAudioContext();
@@ -54,7 +54,6 @@ function MainSectionUser(props) {
     };
 
     const getDataAboutAudio = async (pathReference) => {
-        console.log(pathReference);
         const docRef = doc(db, AUDIO, pathReference);
         const docSnap = await getDoc(docRef);
         setCurrentTextOfMusic(docSnap.data().textOfMusic);
@@ -81,6 +80,7 @@ function MainSectionUser(props) {
                 <div className="user_main_text">
                     <h2 className='title_origin'>{originalTextMute === true ? titleOrigin : null}</h2>
                     <h2 className='title_translate'>{translateTextMute === true ? titleTranslate : null}</h2>
+                    <h2 className='text_not_found'>{currentTextOfMusic.length <= 1 ? 'Текст недоступен!' : null}</h2>
                 </div>
             }
         </div>

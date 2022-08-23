@@ -9,7 +9,7 @@ import { useTabsContext } from '../../context/TabsContext';
 import { localSettings } from '../../utils/data/localStorage';
 import { Slider } from '@mui/material';
 import Hint from '../hint/Hint';
-import {repeatHint, translateTextHint, originalTextHint, banTextHint} from '../../utils/data/hintData';
+import {repeatHint, translateTextHint, originalTextHint, banTextHint, textFoundHint, textNotFoundHint} from '../../utils/data/hintData';
 import arrow from '../../resources/image/controls/arrow.png';
 import pause from '../../resources/image/controls/pause.png';
 import play from '../../resources/image/controls/play.png';
@@ -21,7 +21,7 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
     const {played, setPlayed} = useAudioContext();
 
     const {setOriginalTextMute, setTranslateTextMute, originalTextMute, translateTextMute, setCurrentTime} = useAudioContext();
-    const {setCurrentAudio, setCurrentTextOfMusic,setCurrentIdAudio} = useDatabaseContext();
+    const {setCurrentAudio, setCurrentTextOfMusic,setCurrentIdAudio, currentTextOfMusic} = useDatabaseContext();
 
     const [album, setAlbum] = useState(null);
     const [author, setAuthor] = useState(null);
@@ -567,6 +567,19 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
                     setElementHint(null);
                 }}>
                     <i onClick={onBanAudio} className="fa-solid fa-ban" style={banClass ? {color: 'red'} : null}></i>
+                </div>
+
+                <div className="controls_text_found_block" style={currentIdAudio !== null ? {pointerEvents: 'all', position: 'relative'} : {pointerEvents: 'none', position: 'relative'}} 
+                onMouseOver={() => {
+                    if(currentTextOfMusic.length > 1){
+                        setElementHint(<Hint message={textFoundHint} top={'-20px'} left={'50%'}/>);
+                    } else {
+                        setElementHint(<Hint message={textNotFoundHint} top={'-20px'} left={'50%'}/>);
+                    }
+                }} onMouseOut={() => {
+                    setElementHint(null);
+                }}>
+                    <span style={currentTextOfMusic.length > 1 ? {color: 'green'} : {color: 'red'}}>TXT</span>
                 </div>
             </div>
         </div>

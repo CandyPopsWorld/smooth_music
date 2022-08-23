@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { doc, getDoc } from "firebase/firestore";
 import Author from '../author/Author';
 import { useFavoritesContext } from '../../context/FavoritesContext';
@@ -14,6 +14,7 @@ const Author_Block = () => {
 
     const {db,auth, storage} = useFirebaseContext();
     const {authors, setAuthors, favoriteAuthors, setFavoriteAuthors} = useFavoritesContext();
+    const [countFavorite, setCountFavorite] = useState(null);
 
     const getFavoriteAuthors = async () => {
         const docRef = doc(db, 'users', auth.currentUser.uid);
@@ -34,6 +35,14 @@ const Author_Block = () => {
     };
 
     useEffect(() => {
+        const data = async () => {
+            await getFavoriteAuthorTest().then(res => {
+                setCountFavorite(res.length);
+            });
+        };
+
+        data();
+
         if(authors.length === 0){
             getFavoriteAuthors();
         }
@@ -55,16 +64,27 @@ const Author_Block = () => {
         });
     }
 
+    const getFavoriteAuthorTest = async () => {
+        const docRef = await doc(db, 'users', auth.currentUser.uid);
+        const docSnap = await getDoc(docRef);
+        return await docSnap.data().favoriteAuthor;
+    };
+
     return (
         <div className='favorite_section_tabs_block_authors'>
-            <div className="favorite_section_tabs_block_authors_list">
-                {
-                    favoriteAuthors !== null && favoriteAuthors.length > 0 ?
-                    elements_authors
-                    :
-                    (favoriteAuthors !== null ? <h2 className='not_found_elements'>Вы ещё не добавили ни одного альбма в коллекцию!</h2> : null)   
-                }
-            </div>
+            {
+                countFavorite !== null && countFavorite !== 0 ? 
+                <div className="favorite_section_tabs_block_authors_list">
+                    {
+                        favoriteAuthors !== null && favoriteAuthors.length > 0 ?
+                        elements_authors
+                        :
+                        null  
+                    }
+                </div>   
+                : 
+                <h2 className='not_found_elements'>Вы ещё не добавили ни одного исполнителя в коллекцию!</h2> 
+            }
         </div>
     )
 };

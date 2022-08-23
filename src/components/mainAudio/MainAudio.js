@@ -42,22 +42,18 @@ function MainAudio(props) {
         const durationFloor = Math.floor(duration);
         setDuration(durationFloor);
         setVolume(volume);
-        // console.log(currentTime);
-        // console.log(durationFloor);
     };
     
     const currentTimeAudio = (currentTime) => {
         let currentTimeFloor = Math.floor(currentTime);
         setCurrentTime(currentTimeFloor);
         currentText(currentTimeFloor);
-        // currentTextAudio(currentTimeFloor);
     };
 
     const currentText = (currentTime) => {
         console.log('time:', currentTime);
         if(+currentTextOfMusic[0].timeStart >= 4){
             if(+currentTextOfMusic[0].timeStart - currentTime <= 3 && +currentTextOfMusic[0].timeStart - currentTime > 0){
-                // setTitleOrigin(+currentTextOfMusic[0].timeStart - currentTime);
                 setTitleOrigin(<span style={{opacity: '0.1', fontSize: '2em'}}>{+currentTextOfMusic[0].timeStart - currentTime}</span>)
                 setTitleTranslate('');
                 return;
@@ -94,13 +90,8 @@ function MainAudio(props) {
             setTitleOrigin(<span style={{opacity: '0.1'}}>{currentTextOfMusic !== null ? currentTextOfMusic[0].titleOrigin : null}</span>);
             setTitleTranslate(<span style={{opacity: '0.1'}}>{currentTextOfMusic !== null ? currentTextOfMusic[0].titleTranslate : null}</span>);
             e.target.play();
-            console.log("Можно играть!");
         }
     };
-
-    if(audioRef !== null && audioRef.current !== null){
-        // console.log(audioRef.current.audioEl.current);
-    }
 
     const clickBackMusic = async () => {
         if(currentPlayMusicList === null || currentUidMusicList === null){
