@@ -7,6 +7,7 @@ import Alert from '../../alert/Alert';
 import MainLoader from '../../mainLoader/MainLoader';
 import { LOGIN_HELMET } from '../../../utils/data/seoHelmet';
 import {getSuccessAlert, getErrorAlert} from '../../../utils/functions/alert';
+import { errorsAlert } from '../../../utils/data/alert';
 import {forgotPasswordText} from '../../../utils/data/alert';
 import logoSprite from '../../../resources/image/logo.png';
 import './LoginPage.scss';
@@ -27,21 +28,21 @@ function LoginPage(props) {
         })
         .catch((error) => {
             setLoading(false);
-            getErrorAlert(error, setShowAlert, setSeverityAlert, setTextAlert);
+            getErrorAlert(error, errorsAlert, setShowAlert, setSeverityAlert, setTextAlert);
         })
     };
 
     const forgotPassword = (email) => {
         sendPasswordResetEmail(auth, email)
         .then(() => {
-            getSuccessAlert(forgotPasswordText);
+            getSuccessAlert(forgotPasswordText, setShowAlert, setSeverityAlert, setTextAlert);
             setTimeout(() => {
                 setVisibleContent(true);
                 setShowAlert(false);
             }, 3000)
         })
         .catch((error) => {
-            getErrorAlert(error);
+            getErrorAlert(error, errorsAlert, setShowAlert, setSeverityAlert, setTextAlert);
         })
     };
 

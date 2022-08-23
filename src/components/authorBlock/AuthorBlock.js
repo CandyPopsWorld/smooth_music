@@ -9,19 +9,20 @@ import
     getAuthor,
 } from '../../utils/functions/db';
 import { AUTHOR_STORAGE } from '../../utils/data/storageId';
+import Loader from '../loader/Loader';
 
 const Author_Block = () => {
 
     const {db,auth, storage} = useFirebaseContext();
     const {authors, setAuthors, favoriteAuthors, setFavoriteAuthors} = useFavoritesContext();
-    const [countFavorite, setCountFavorite] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const getFavoriteAuthors = async () => {
-        const docRef = doc(db, 'users', auth.currentUser.uid);
+        const docRef = await doc(db, 'users', auth.currentUser.uid);
         const docSnap = await getDoc(docRef);
-        console.log(docSnap.data().favoriteAuthor);
-        setFavoriteAuthors(docSnap.data().favoriteAuthor);
-        getAuthorsForFavorite(docSnap.data().favoriteAuthor);
+        await setFavoriteAuthors(docSnap.data().favoriteAuthor);
+        await getAuthorsForFavorite(docSnap.data().favoriteAuthor);
+        await setLoading(false);
     };
 
     const getAuthorsForFavorite = async (arr) => {
@@ -35,15 +36,8 @@ const Author_Block = () => {
     };
 
     useEffect(() => {
-        const data = async () => {
-            await getFavoriteAuthorTest().then(res => {
-                setCountFavorite(res.length);
-            });
-        };
-
-        data();
-
         if(authors.length === 0){
+            setLoading(true);
             getFavoriteAuthors();
         }
         // eslint-disable-next-line
@@ -64,27 +58,18 @@ const Author_Block = () => {
         });
     }
 
-    const getFavoriteAuthorTest = async () => {
-        const docRef = await doc(db, 'users', auth.currentUser.uid);
-        const docSnap = await getDoc(docRef);
-        return await docSnap.data().favoriteAuthor;
-    };
-
     return (
         <div className='favorite_section_tabs_block_authors'>
-            {
-                countFavorite !== null && countFavorite !== 0 ? 
                 <div className="favorite_section_tabs_block_authors_list">
                     {
+                        loading ? <Loader/>
+                        :
                         favoriteAuthors !== null && favoriteAuthors.length > 0 ?
                         elements_authors
                         :
-                        null  
+                        <h2 className='not_found_elements'>Вы ещё не добавили ни одного исполнителя в коллекцию!</h2>
                     }
                 </div>   
-                : 
-                <h2 className='not_found_elements'>Вы ещё не добавили ни одного исполнителя в коллекцию!</h2> 
-            }
         </div>
     )
 };

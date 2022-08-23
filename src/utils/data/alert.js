@@ -5,7 +5,7 @@ export const errorsAlert = [
     {code: 'auth/too-many-requests', message: 'Произошла ошибка! Слишком много запросов! Попробуйте позднее!'},
     {code: 'auth/weak-password', message: 'Ваш пароль очень слабый!'},
     {code: '"auth/user-not-found"', message: 'Пользователь не найден!'},
-    {code: 'auth/email-already-in-use', message: 'Электронная почта уже используется!'},
+    {code: 'auth/email-already-in-use', message: 'Электронная почта уже используется!'}
 ];
 
 export const defaultErrorText = 'Произошла ошибка! Попробуйте еще раз!';

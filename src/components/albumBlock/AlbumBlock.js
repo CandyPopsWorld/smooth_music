@@ -1,4 +1,4 @@
-import { useEffect} from 'react';
+import { useEffect, useState} from 'react';
 import { doc, getDoc } from "firebase/firestore";
 import Album from '../album/Album';
 import MusicList from '../musicList/MusicList';
@@ -11,16 +11,19 @@ import
 } from '../../utils/functions/db';
 import { ALBUM_STORAGE } from '../../utils/data/storageId';
 import { ALBUMS } from '../../utils/data/collectionsId';
+import Loader from '../loader/Loader';
 
 const Album_Block = () => {
     const {auth, db, storage} = useFirebaseContext();
     const {favoriteAlbums, setFavoriteAlbums, albumMusics, setAlbumMusics, albums, setAlbums} = useFavoritesContext();
+    const [loading, setLoading] = useState(false);
 
     const getFavoriteAlbum = async () => {
-        const docRef = doc(db, 'users', auth.currentUser.uid);
+        const docRef = await doc(db, 'users', auth.currentUser.uid);
         const docSnap = await getDoc(docRef);
-        setFavoriteAlbums(docSnap.data().favoriteAlbum);
-        getAlbumsForFavorite(docSnap.data().favoriteAlbum);
+        await setFavoriteAlbums(docSnap.data().favoriteAlbum);
+        await getAlbumsForFavorite(docSnap.data().favoriteAlbum);
+        setLoading(false);
     };
 
     const getAlbumsForFavorite = async (arr) => {
@@ -35,6 +38,7 @@ const Album_Block = () => {
 
     useEffect(() => {
         if(albums.length === 0){
+            setLoading(true);
             getFavoriteAlbum();
         }
         // eslint-disable-next-line
@@ -43,6 +47,7 @@ const Album_Block = () => {
     useEffect(() => {
         if(albums.length > 0){
             setAlbums([]);
+            setLoading(true);
             getFavoriteAlbum();
         }
         // eslint-disable-next-line
@@ -69,10 +74,12 @@ const Album_Block = () => {
             <div className='albums_section'>
                 <div className="albums_section_item_albums_block">
                     {
+                        loading ? <Loader/>
+                        :
                         favoriteAlbums.length !== 0 || favoriteAlbums === null ?
                         elements_albums
                         :
-                        <h2 className='not_found_elements'>Вы ещё не добавили ни одного альбма в коллекцию!</h2>
+                        <h2 className='not_found_elements'>Вы ещё не добавили ни одного альбома в коллекцию!</h2>
                     }
                 </div>
                 <div className="albums_section_item_music_block">
