@@ -16,7 +16,7 @@ function Header(props) {
                         setActiveSlide(1);
                     }
                 }}>
-                    ПЛАВНАЯ МУЗЫКА
+                    SMOOTH MUSIC
                 </div>
             </div>
             <Navbar/>

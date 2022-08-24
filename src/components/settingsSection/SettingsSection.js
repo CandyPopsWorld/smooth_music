@@ -8,6 +8,8 @@ import {refreshPage} from '../../utils/functions/helper';
 import avatarSprite from '../../resources/image/avatar.png';
 import { AVATAR_STORAGE } from '../../utils/data/storageId';
 import './SettingsSection.scss';
+import Helmet from '../helmet/Helmet';
+import { SETTINGS_ACCOUNT_PAGE_HELMET, SETTINGS_OTHER_PAGE_HELMET } from '../../utils/data/seoHelmet';
 
 const tabs = [
     {active: false, title: 'Аккаунт', id: 1},
@@ -139,6 +141,9 @@ const AccountSettings = ({username, setUsername, avatar, uploadAvatar, updateUse
     return (
         loading === false ?
         <div className="account_settings block_setting">
+            <Helmet 
+            title={SETTINGS_ACCOUNT_PAGE_HELMET.title}
+            description={SETTINGS_ACCOUNT_PAGE_HELMET.description}/>
             <h2>Настройки аккаунта</h2>
             
             <div className="account_settings_block">
@@ -181,6 +186,9 @@ const AccountSettings = ({username, setUsername, avatar, uploadAvatar, updateUse
 const OtherSettings = () => {
     return (
         <div className="other_settings block_setting">
+            <Helmet 
+            title={SETTINGS_OTHER_PAGE_HELMET.title}
+            description={SETTINGS_OTHER_PAGE_HELMET.description}/>
             <div className="other_settings_header">
                 <h2>Прочее</h2>
             </div>

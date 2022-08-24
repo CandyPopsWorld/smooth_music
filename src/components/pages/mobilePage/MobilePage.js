@@ -1,8 +1,11 @@
+import { Helmet } from 'react-helmet';
 import logoSprite from '../../../resources/image/logo.png';
+import { MOBILE_PAGE_HELMET } from '../../../utils/data/seoHelmet';
 import './MobilePage.scss';
 function MobilePage(props) {
     return (
         <div className='mobile_page'>
+            <Helmet title={MOBILE_PAGE_HELMET.title} description={MOBILE_PAGE_HELMET.description}/>
             <div className="login_header">
                 <div className="login_header_logo">
                     <img src={logoSprite} alt="logo" />

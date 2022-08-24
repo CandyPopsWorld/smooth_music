@@ -8,6 +8,8 @@ import MusicList from '../../musicList/MusicList';
 import Alert from '../../alert/Alert';
 import './SinglePlaylistPage.scss';
 import { useTabsContext } from '../../../context/TabsContext';
+import Helmet from '../../helmet/Helmet';
+import { SINGLE_PLAYLIST_PAGE_HELMET } from '../../../utils/data/seoHelmet';
 function SinglePlaylistPage({title, description, thumbnail, musics, id, playlists}) {
     const {db, auth} = useFirebaseContext();
     const {setActiveSlide} = useTabsContext();
@@ -92,6 +94,9 @@ function SinglePlaylistPage({title, description, thumbnail, musics, id, playlist
 
     return (
         <div className="single_playlist_page">
+            <Helmet 
+            title={title ? SINGLE_PLAYLIST_PAGE_HELMET(title).title : ''}
+            description={title ? SINGLE_PLAYLIST_PAGE_HELMET(title).title : ''}/>
             <div className="single_playlist_page_about">
                 <div className="single_playlist_page_about_thumb">
                     <img src={thumbnail} alt="thumbnail playlist" />

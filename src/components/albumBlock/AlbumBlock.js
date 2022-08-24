@@ -12,6 +12,8 @@ import
 import { ALBUM_STORAGE } from '../../utils/data/storageId';
 import { ALBUMS } from '../../utils/data/collectionsId';
 import Loader from '../loader/Loader';
+import { Helmet } from 'react-helmet';
+import { COLLECTION_ALBUMS_PAGE_HELMET } from '../../utils/data/seoHelmet';
 
 const Album_Block = () => {
     const {auth, db, storage} = useFirebaseContext();
@@ -71,6 +73,9 @@ const Album_Block = () => {
 
     return (
         <div className='favorite_section_tabs_block_albums'>
+            <Helmet 
+            title={auth && auth.currentUser ? COLLECTION_ALBUMS_PAGE_HELMET(auth.currentUser.displayName).title : ''}
+            description={auth && auth.currentUser ? COLLECTION_ALBUMS_PAGE_HELMET(auth.currentUser.displayName).description : ''}/>
             <div className='albums_section'>
                 <div className="albums_section_item_albums_block">
                     {

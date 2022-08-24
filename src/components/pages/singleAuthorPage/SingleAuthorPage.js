@@ -11,6 +11,8 @@ import
     getAlbumsByid
 } from '../../../utils/functions/db';
 import './SingleAuthorPage.scss';
+import Helmet from '../../helmet/Helmet';
+import { SINGLE_AUTHOR_PAGE_HELMET } from '../../../utils/data/seoHelmet';
 function SingleAuthorPage({image, uid, title, description, albums, musics}) {
 
     const {db, auth, storage} = useFirebaseContext();
@@ -74,6 +76,9 @@ function SingleAuthorPage({image, uid, title, description, albums, musics}) {
 
     return (
         <div className='single_author_page'>
+            <Helmet 
+            title={title ? SINGLE_AUTHOR_PAGE_HELMET(title).title : ''}
+            description={title ? SINGLE_AUTHOR_PAGE_HELMET(title).title : ''}/>
             <div className="single_author_page_item_about">
                 <div className="single_author_page_about">
                     <div className="single_author_page_about_image">

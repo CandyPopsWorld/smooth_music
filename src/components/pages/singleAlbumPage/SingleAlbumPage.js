@@ -11,6 +11,8 @@ import
     getAudioByid
 } from '../../../utils/functions/db';
 import './SingleAlbumPage.scss';
+import Helmet from '../../helmet/Helmet';
+import { SINGLE_ALBUM_PAGE_HELMET } from '../../../utils/data/seoHelmet';
 function SingleAlbumPage({image, uid, title, musics, year, authorId, genreId}) {
     const {db, auth} = useFirebaseContext();
     const [audioList, setAudioList] = useState([]);
@@ -55,6 +57,10 @@ function SingleAlbumPage({image, uid, title, musics, year, authorId, genreId}) {
 
     return (
         <div className='single_album_page'>
+            <Helmet 
+            title={author !== null && title ? SINGLE_ALBUM_PAGE_HELMET(author, title).title : ''}
+            description={author !== null && title ? SINGLE_ALBUM_PAGE_HELMET(author, title).description : ''}/>
+            {/* <Helmet title={author !== null && title ? `${author} альбом ${title} слушать онлайн бесплатно на Smooth Music в хорошем качестве` : ''}/> */}
             <div className="single_album_page_about">
                 <div className="single_album_page_about_image">
                     <img src={image} alt="" />

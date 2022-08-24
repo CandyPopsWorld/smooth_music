@@ -10,6 +10,8 @@ import CreatePlaylist from '../createPlaylist/CreatePlaylist';
 import { USERS } from '../../utils/data/collectionsId';
 import { useState } from 'react';
 import LikePlaylist from '../likePlaylist/LikePlaylist';
+import Helmet from '../helmet/Helmet';
+import { COLLECTION_PLAYLISTS_PAGE_HELMET } from '../../utils/data/seoHelmet';
 const Playlist_Block = () => {
 
     const {db, auth} = useFirebaseContext();
@@ -54,6 +56,9 @@ const Playlist_Block = () => {
 
     return (
         <div className='favorite_section_tabs_block_playlists'>
+            <Helmet
+            title={auth && auth.currentUser ? COLLECTION_PLAYLISTS_PAGE_HELMET(auth.currentUser.displayName).title : ''}
+            description={auth && auth.currentUser ? COLLECTION_PLAYLISTS_PAGE_HELMET(auth.currentUser.displayName).description : ''}/>
             <div className='albums_section'>
                 <div className="albums_section_item_albums_block">
                     <LikePlaylist image={likeSprite} title={'Мне нравится'}/>

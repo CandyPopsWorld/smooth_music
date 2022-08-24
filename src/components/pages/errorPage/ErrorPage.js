@@ -1,9 +1,12 @@
 import logoSprite from '../../../resources/image/logo.png';
+import { ERROR_PAGE_HELMET } from '../../../utils/data/seoHelmet';
 import { refreshPage } from '../../../utils/functions/helper';
+import Helmet from '../../helmet/Helmet';
 import './ErrorPage.scss';
 function ErrorPage(props) {
     return (
         <div className='error_page'>
+            <Helmet title={ERROR_PAGE_HELMET.title} description={ERROR_PAGE_HELMET.description}/>
             <div className="error_page_wrapper">
                 <div className="error_page_wrapper_logo">
                     <img src={logoSprite} alt="logo" />

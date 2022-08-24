@@ -10,6 +10,8 @@ import
 } from '../../utils/functions/db';
 import { AUTHOR_STORAGE } from '../../utils/data/storageId';
 import Loader from '../loader/Loader';
+import Helmet from '../helmet/Helmet';
+import { COLLECTION_AUTHORS_PAGE_HELMET } from '../../utils/data/seoHelmet';
 
 const Author_Block = () => {
 
@@ -60,6 +62,9 @@ const Author_Block = () => {
 
     return (
         <div className='favorite_section_tabs_block_authors'>
+            <Helmet 
+            title={auth && auth.currentUser ? COLLECTION_AUTHORS_PAGE_HELMET(auth.currentUser.displayName).title : ''}
+            description={auth && auth.currentUser ? COLLECTION_AUTHORS_PAGE_HELMET(auth.currentUser.displayName).description : ''}/>
                 <div className="favorite_section_tabs_block_authors_list">
                     {
                         loading ? <Loader/>
