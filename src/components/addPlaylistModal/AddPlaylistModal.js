@@ -1,4 +1,4 @@
-import { arrayUnion, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { useAudioContext } from '../../context/AudioContext';

@@ -5,7 +5,7 @@ import { useTabsContext } from "../../context/TabsContext";
 import { USERS } from "../../utils/data/collectionsId";
 import { getImageStorage } from '../../utils/functions/db';
 import { useEffect, useState } from "react";
-import { PLAYLIST_STORAGE } from "../../utils/data/storageId";
+import {PLAYLIST_STORAGE} from '../../utils/data/storageId';
 
 function CreatePlaylist({playlists}) {
     const {db, auth, storage} = useFirebaseContext();
