@@ -132,6 +132,23 @@ i{
     }
 }
 
+.controls_add_playlits{
+    margin-left: 15px;
+    span{
+        color: white;
+        cursor: pointer;
+        font-size: 2em;
+        transition: 0.3s font-size;
+        &:hover{
+            color: gray;
+        }
+    }
+}
+
+.controls_add_playlits{
+    position: relative;
+}
+
 .MuiSlider-valueLabelLabel{
     background-color: orangered!important;
 }

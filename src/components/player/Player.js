@@ -9,10 +9,11 @@ import { useTabsContext } from '../../context/TabsContext';
 import { localSettings } from '../../utils/data/localStorage';
 import { Slider } from '@mui/material';
 import Hint from '../hint/Hint';
-import {repeatHint, translateTextHint, originalTextHint, banTextHint, textFoundHint, textNotFoundHint} from '../../utils/data/hintData';
+import {repeatHint, translateTextHint, originalTextHint, banTextHint, textFoundHint, textNotFoundHint,addPlaylistHint} from '../../utils/data/hintData';
 import arrow from '../../resources/image/controls/arrow.png';
 import pause from '../../resources/image/controls/pause.png';
 import play from '../../resources/image/controls/play.png';
+import AddPlaylistModal from '../addPlaylistModal/AddPlaylistModal';
 
 const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolume, mute, setMute, uniqueid, favoriteClass, setFavoriteClass, clickBackMusic, clickNextMusic, currentIndexMusicListAudio, setRepeatMusicList, repeatMusicList, banClass, setBanClass, setAutoPlay, autoPlay}) => {
     
@@ -36,6 +37,8 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
     const [volumeInput, setVolumeInput] = useState(volume);
 
     const [elementHint, setElementHint] = useState(null);
+
+    const {showModalPlaylist, setShowModalPlaylist} = useAudioContext(false);
 
     const getAudioData = async () => {
         if(currentIdAudio === null){
@@ -465,6 +468,16 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
                     <i onClick={onFavoriteMusic} className="fa-solid fa-heart" style={favoriteClass ? {color: 'orangered'} : null}></i>
                 </div>
 
+                <div className="controls_add_playlits" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} 
+                onClick={() => setShowModalPlaylist(true)} 
+                onMouseOver={() => {
+                    setElementHint(<Hint message={addPlaylistHint} top={'-30px'} left={'-1100%'}/>);
+                }} onMouseOut={() => {
+                    setElementHint(null);
+                }}>
+                    <span>+</span>
+                </div>
+
                 <div className="controls_volume_block">
                     {
                         volume !== null && (volume > 0) ?
@@ -582,6 +595,11 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
                     <span style={currentTextOfMusic.length > 1 ? {color: 'green'} : {color: 'red'}}>TXT</span>
                 </div>
             </div>
+
+            {
+                showModalPlaylist ? <AddPlaylistModal/> : null
+            }
+
         </div>
     )
 };

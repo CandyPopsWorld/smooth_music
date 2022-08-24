@@ -2,20 +2,24 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useEffect, useRef } from 'react';
 import { useState } from 'react';
 import { useFirebaseContext } from '../../../context/FirebaseContext';
-import { USERS } from '../../../utils/data/collectionsId';
+import { AUDIO, USERS } from '../../../utils/data/collectionsId';
 import { getSuccessAlert } from '../../../utils/functions/alert';
 import MusicList from '../../musicList/MusicList';
 import Alert from '../../alert/Alert';
 import './SinglePlaylistPage.scss';
+import { useTabsContext } from '../../../context/TabsContext';
 function SinglePlaylistPage({title, description, thumbnail, musics, id, playlists}) {
     const {db, auth} = useFirebaseContext();
+    const {setActiveSlide} = useTabsContext();
     const [titleInput, setTitleInput] = useState(title);
-    const [descriptionInput, setDescriptionInput] = useState('Добавить описание...');
+    const [descriptionInput, setDescriptionInput] = useState(description);
     const [currentPlaylists, setCurrentPlaylists] = useState(null);
 
     const [showAlert, setShowAlert] = useState(false);
     const [textAlert, setTextAlert] = useState(undefined);
     const [severityAlert, setSeverityAlert] = useState(null);
+
+    const [playlistMusics, setPlaylistMusics] = useState([]);
 
     let titleInputRef = useRef(null);
     let descriptionInputRef = useRef(null);
@@ -59,13 +63,33 @@ function SinglePlaylistPage({title, description, thumbnail, musics, id, playlist
         await setCurrentPlaylists(docSnap.data().playlists)
     };
 
+    const getAudioById = async (id) => {
+        const docRef = await doc(db, AUDIO, id);
+        const docSnap = await getDoc(docRef);
+        await setPlaylistMusics(prev => [...prev, docSnap.data()]);
+    };
+
+    const deletePlaylist = async () => {
+        if(currentPlaylists === null){
+            return;
+        }
+        const index = await currentPlaylists.findIndex(item => item.id === id);
+        const newArray = await [...currentPlaylists.slice(0, index), ...currentPlaylists.slice(index + 1)];
+        const docRef = await doc(db, USERS, auth.currentUser.uid);
+        await updateDoc(docRef, {
+            playlists: newArray
+        });
+        await setActiveSlide(1);
+    };
+
     useEffect(() => {
         getPlaylists();
+        musics.forEach(item => {
+            getAudioById(item.idAudio);
+        });
         // eslint-disable-next-line
     }, [])
 
-    console.log(titleInputRef);
-    console.log(descriptionInputRef);
     return (
         <div className="single_playlist_page">
             <div className="single_playlist_page_about">
@@ -81,14 +105,17 @@ function SinglePlaylistPage({title, description, thumbnail, musics, id, playlist
                         <input type="text" value={titleInput} onChange={(e) => setTitleInput(e.target.value)} onKeyDown={changeTitleInput} ref={titleInputRef}/>
                     </div>
                     <div className="single_playlist_page_about_text_description">
-                        <textarea name="" id="" cols="70" rows="5" value={descriptionInput} onChange={(e) => setDescriptionInput(e.target.value)} onKeyDown={changeDescriptionInput} ref={descriptionInputRef}/>
+                        <textarea name="" id="" cols="70" rows="5" placeholder='Добавить описание...' value={descriptionInput} onChange={(e) => setDescriptionInput(e.target.value)} onKeyDown={changeDescriptionInput} ref={descriptionInputRef}/>
+                    </div>
+                    <div className="single_playlist_page_about_text_controls">
+                        <button className='delete_playlist' onClick={deletePlaylist}>Удалить плейлист</button>
                     </div>
                 </div>
             </div>
 
             <div className="single_playlist_page_list">
                 <h2>Треки</h2>
-                <MusicList albumMusics={musics}/>
+                <MusicList albumMusics={playlistMusics} title=''/>
             </div>
             
             {

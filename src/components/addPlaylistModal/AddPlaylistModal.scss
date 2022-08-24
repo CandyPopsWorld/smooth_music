@@ -1,0 +1,51 @@
+@import '../../style/mixin.scss';
+.add_playlist_modal{
+    @include flex($flexDirection: column, $justifyContent: center, $alignItems: center);
+    position: absolute;
+    z-index: 10;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(14, 15, 15, 0.6);
+    color: white;
+    transform: translate(-50%, -50%);
+    &_wrapper{
+        @include flex($flexDirection: row, $justifyContent: center, $alignItems: flex-start, $flexWrap: wrap);
+        align-content: flex-start;
+        background-color: rgb(14, 15, 15);
+        width: 300px;
+        height: 400px;
+        color: white;
+        overflow-x: auto;
+        &_header{
+            color: gray;
+        }
+
+        &::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        &::-webkit-scrollbar-track {
+            background: black;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background-color: gray;
+        }
+    }
+}
+
+.add_audio_playlist{
+    margin: 10px;
+    background-color: transparent;
+    width: 250px;
+    height: 40px;
+    // border: 1px solid gray;
+    border: 1px solid transparent;
+    color: white;
+    cursor: pointer;
+    &:hover{
+        border: 1px solid white;
+    }
+}

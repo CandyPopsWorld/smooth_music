@@ -43,6 +43,21 @@
                     border: 1px solid orangered;
                 }
             }
+
+            &_controls{
+                .delete_playlist{
+                    background-color: transparent;
+                    border: 1px solid red;
+                    color: white;
+                    outline: none;
+                    padding: 10px 15px;
+                    cursor: pointer;
+                    &:hover{
+                        background-color: red;
+                        color: white;
+                    }
+                }
+            }
         }
 
         &_thumb{

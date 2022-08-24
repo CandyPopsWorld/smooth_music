@@ -4,3 +4,4 @@ export const translateTextHint = 'Показать переведенный те
 export const banTextHint = 'Нажмите, и мы больше не будем рекомендовать этот трек';
 export const textFoundHint = 'Текст доступен для этого трека!';
 export const textNotFoundHint = 'Текст для этого трека недоступен!';
+export const addPlaylistHint = 'Добавить/удалить аудио в плейлист!';

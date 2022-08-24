@@ -46,7 +46,7 @@ const Playlist_Block = () => {
     }, [])
 
     let elements_playlists = null;
-    if(playlists !== null){
+    if(playlists !== null && playlists.length > 0){
         elements_playlists = playlists.map(item => {
             return <Playlist image={item.thumbnail} title={item.title} key={item.id} id={item.id} data={item}/>
         });
