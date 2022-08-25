@@ -16,10 +16,10 @@ const Playlist = ({image, getMusicFromPlaylist, title, id, data}) => {
 
     return (
     <div className="albums_section_item_albums_block_item" onClick={getSinglePlaylistPage}>
-        <div className={'albums_section_item_albums_block_item_bg'}>
-            <img src={image} alt="" onLoad={() => setLoadImage(true)}/>
+        <div className={'albums_section_item_albums_block_item_bg'} style={{position: 'relative'}}>
+            <img src={image} alt="" onLoad={() => setLoadImage(true)} style={{width: '200px', height: '200px'}}/>
             {
-                loadImage === false ? <Skeleton/> : null
+                loadImage === false ? <Skeleton position={'absolute'} top={0}/> : null
             }
             <div className="albums_section_item_albums_block_item_bg_controls"></div>
         </div>

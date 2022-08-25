@@ -10,9 +10,15 @@ import './SinglePlaylistPage.scss';
 import { useTabsContext } from '../../../context/TabsContext';
 import Helmet from '../../helmet/Helmet';
 import { SINGLE_PLAYLIST_PAGE_HELMET } from '../../../utils/data/seoHelmet';
+import { deleteObject, ref, uploadBytes } from 'firebase/storage';
+import { PLAYLIST_STORAGE } from '../../../utils/data/storageId';
+import { getImageStorage } from '../../../utils/functions/db';
+import Loader from '../../loader/Loader';
+import { useSearchContext } from '../../../context/SearchContext';
 function SinglePlaylistPage({title, description, thumbnail, musics, id, playlists}) {
-    const {db, auth} = useFirebaseContext();
-    const {setActiveSlide} = useTabsContext();
+    const {db, auth, storage} = useFirebaseContext();
+    const {setActiveSlide, setSearchTab} = useTabsContext();
+    const {setSearchInfoAboutItem} = useSearchContext();
     const [titleInput, setTitleInput] = useState(title);
     const [descriptionInput, setDescriptionInput] = useState(description);
     const [currentPlaylists, setCurrentPlaylists] = useState(null);
@@ -23,8 +29,15 @@ function SinglePlaylistPage({title, description, thumbnail, musics, id, playlist
 
     const [playlistMusics, setPlaylistMusics] = useState([]);
 
+    // eslint-disable-next-line
+    const [imagePlaylist, setImagePlaylist] = useState(null);
+
+    const [loadingImage, setLoadingImage] = useState(false);
+
     let titleInputRef = useRef(null);
     let descriptionInputRef = useRef(null);
+
+    let imageInputRef = useRef(null);
 
 
     const changeTitleInput = async (e) => {
@@ -81,6 +94,14 @@ function SinglePlaylistPage({title, description, thumbnail, musics, id, playlist
         await updateDoc(docRef, {
             playlists: newArray
         });
+
+        const imageRef = ref(storage, `${PLAYLIST_STORAGE}/${String(auth.currentUser.uid) + String(id)}`);
+        deleteObject(imageRef).then(() => {
+
+        }).catch(() => {
+
+        }) 
+
         await setActiveSlide(1);
     };
 
@@ -89,8 +110,60 @@ function SinglePlaylistPage({title, description, thumbnail, musics, id, playlist
         musics.forEach(item => {
             getAudioById(item.idAudio);
         });
+        const imageRef = ref(storage, `${PLAYLIST_STORAGE}/${String(auth.currentUser.uid) + String(id + 100)}`);
+        console.log(imageRef);
         // eslint-disable-next-line
     }, [])
+
+    const addCustomImagePlaylist = () => {
+        imageInputRef.current.click();
+        console.log(imageInputRef);
+    };
+
+    const getFileInput = async (e) => {
+        let file = await e.target.files[0];
+        if(file.type === 'image/jpeg' || file.type === 'image/png'){
+            await setLoadingImage(true);
+            await setImagePlaylist(file);
+            await uploadFileImagePlaylist(file);
+            const image = await updateThumbnail();
+            await getSinglePlaylistPage(image);
+            return;
+        }
+        console.log('Недопустимый тип файла!');
+    };
+
+    const getSinglePlaylistPage = async (image) => {
+        await setLoadingImage(false);
+        await setSearchInfoAboutItem({title, description, thumbnail: image, musics, id, playlists});
+        await setSearchTab(3);
+        await setActiveSlide(6);
+    };
+
+    const uploadFileImagePlaylist = async (file) => {
+        const storageRef = await ref(storage, `${PLAYLIST_STORAGE}/${String(auth.currentUser.uid) + String(id)}`);
+        await uploadBytes(storageRef, file)
+        .then(() => {
+          console.log('File Upload!');
+        })
+        .catch(() => {
+        })
+    };
+
+    const updateThumbnail = async () => {
+       const image = await getImageStorage(storage, PLAYLIST_STORAGE, String(auth.currentUser.uid) + String(id));
+       
+       const index = await currentPlaylists.findIndex(item => item.id === id);
+       const oldObj = await currentPlaylists[index];
+       const newObj = await {...oldObj, thumbnail: image};
+       const newArray = await [...currentPlaylists.slice(0, index), newObj, ...currentPlaylists.slice(index + 1)];
+
+       const userDbRef = await doc(db, USERS, auth.currentUser.uid);
+       await updateDoc(userDbRef, {
+           playlists: newArray
+       });
+       return await image;
+    };
 
     return (
         <div className="single_playlist_page">
@@ -99,9 +172,19 @@ function SinglePlaylistPage({title, description, thumbnail, musics, id, playlist
             description={title ? SINGLE_PLAYLIST_PAGE_HELMET(title).title : ''}/>
             <div className="single_playlist_page_about">
                 <div className="single_playlist_page_about_thumb">
-                    <img src={thumbnail} alt="thumbnail playlist" />
+                    {
+                        loadingImage ? <Loader/> : <img src={thumbnail} alt="thumbnail playlist" />
+                    }
+                    {/* <img src={thumbnail} alt="thumbnail playlist" /> */}
                     <div className="single_playlist_page_about_thumb_add">
-                        <button>Добавить обложку</button>
+                        <input 
+                        type="file" 
+                        className='playlist_add_image'
+                        id='image_playlist'
+                        name='image_playlist'
+                        onChange={(e) => getFileInput(e)} 
+                        ref={imageInputRef}/>
+                        <button onClick={addCustomImagePlaylist}>Добавить обложку</button>
                     </div>
                 </div>
                 <div className="single_playlist_page_about_text">
