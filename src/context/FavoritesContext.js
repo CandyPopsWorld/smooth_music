@@ -5,7 +5,7 @@ export function FavoritesContext({children}){
     const [activeTab, setActiveTab] = useState(3);
     // Album Tab
     const [favoriteAlbums, setFavoriteAlbums] = useState([]);
-    const [albumMusics, setAlbumMusics] = useState([]);
+    const [albumMusics, setAlbumMusics] = useState(null);
     const [albums, setAlbums] = useState([]);
     //Playlist Tab
     const [playlistMusic, setPlaylistMusic] = useState([]);

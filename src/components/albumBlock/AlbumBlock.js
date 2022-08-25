@@ -88,7 +88,13 @@ const Album_Block = () => {
                     }
                 </div>
                 <div className="albums_section_item_music_block">
-                    <MusicList albumMusics={albumMusics}/>
+                    {
+                        albumMusics === null ?
+                        <h2 style={{marginLeft: '10px', color: 'red', opacity: '0.4'}}>Вы еще не выбрали ни одного альбома</h2>
+                        :
+                        <MusicList albumMusics={albumMusics}/>
+                    }
+                    {/* <MusicList albumMusics={albumMusics}/> */}
                 </div>
             </div>
         </div>

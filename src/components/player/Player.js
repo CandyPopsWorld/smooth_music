@@ -21,7 +21,7 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
     const [audioData, setAudioData] = useState(null);
     const {played, setPlayed} = useAudioContext();
 
-    const {setOriginalTextMute, setTranslateTextMute, originalTextMute, translateTextMute, setCurrentTime} = useAudioContext();
+    const {setOriginalTextMute, setTranslateTextMute, originalTextMute, translateTextMute, setCurrentTime, setTitleTranslate, setTitleOrigin} = useAudioContext();
     const {setCurrentAudio, setCurrentTextOfMusic,setCurrentIdAudio, currentTextOfMusic} = useDatabaseContext();
 
     const [album, setAlbum] = useState(null);
@@ -50,17 +50,17 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
     };
 
     const getMusicLocalStorage = async (id) => {
-        setCurrentUidMusicList(id);
-        setPlayed(false);
-        setCurrentTime(0);
-        const pathReference = ref(storage, `audio/${id}`);
+        await setCurrentUidMusicList(id);
+        await setPlayed(false);
+        await setCurrentTime(0);
+        const pathReference = await ref(storage, `audio/${id}`);
 
         const docRef = await doc(db, 'audio', id);
         const docSnap = await getDoc(docRef);
 
-        setCurrentTextOfMusic(docSnap.data().textOfMusic);
-        setCurrentIdAudio(id);
-        getDownloadURL(pathReference)
+        await setCurrentTextOfMusic(docSnap.data().textOfMusic);
+        await setCurrentIdAudio(id);
+        await getDownloadURL(pathReference)
         .then((url) => {
             setCurrentAudio(url);
         })
@@ -84,7 +84,7 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
             const id = JSON.parse(localStorage.getItem(auth.currentUser.uid)).currentAudio;
             const list = JSON.parse(localStorage.getItem(auth.currentUser.uid)).currentPlayMusicList;
             const volume = JSON.parse(localStorage.getItem(auth.currentUser.uid)).volume;
-            const translateText = JSON.parse(localStorage.getItem(auth.currentUser.uid)).translateText;
+            const translateText = JSON.parse(localStorage.getItem(auth.currentUser.uid)).titleTranslate;
             const originalText = JSON.parse(localStorage.getItem(auth.currentUser.uid)).originalText;
             const repeatMusicList = JSON.parse(localStorage.getItem(auth.currentUser.uid)).repeatMusicList;
             
@@ -102,13 +102,16 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
                 setVolumeInput(+volume);
             }
 
-            if(translateText !== null){
-                setTranslateTextMute(translateText);
-            }
+            // if(currentTextOfMusic && currentTextOfMusic[0] && currentTextOfMusic[0].titleTranslate && currentTextOfMusic[0].titleOriginal){
+            //     // setTranslateTextMute(translateText);
+            //     console.log(currentTextOfMusic[0].titleTranslate);
+            //     // setOriginalTextMute(originalText);
+            //     setOriginalTextMute(currentTextOfMusic[0].titleOriginal);
+            // }
 
-            if(originalText !== null){
-                setOriginalTextMute(originalText);
-            }
+            setTitleTranslate(<span style={{opacity: '0.1'}}>{translateText}</span>);
+            setTitleOrigin(<span style={{opacity: '0.1'}}>{originalText}</span>);
+
 
             if(repeatMusicList !== null){
                 setRepeatMusicList(repeatMusicList);
@@ -151,6 +154,8 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
                 object = JSON.parse(localStorage.getItem(auth.currentUser.uid));
                 object.currentAudio = currentIdAudio;
                 object.currentPlayMusicList = currentPlayMusicList;
+                object.titleTranslate = currentTextOfMusic[0].titleTranslate;
+                object.originalText = currentTextOfMusic[0].titleOrigin;
             } else {
                 localSettings.currentAudio = currentIdAudio;
                 localSettings.currentPlayMusicList = currentPlayMusicList;
@@ -587,7 +592,7 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
                     if(currentTextOfMusic.length > 1){
                         setElementHint(<Hint message={textFoundHint} top={'-20px'} left={'50%'}/>);
                     } else {
-                        setElementHint(<Hint message={textNotFoundHint} top={'-20px'} left={'50%'}/>);
+                        setElementHint(<Hint message={textNotFoundHint} top={'-20px'} left={'350%'}/>);
                     }
                 }} onMouseOut={() => {
                     setElementHint(null);

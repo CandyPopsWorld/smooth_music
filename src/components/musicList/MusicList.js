@@ -2,7 +2,7 @@ import { AudioItem } from '../collectionsSection/CollectionsSection';
 const MusicList = ({albumMusics, title = null}) => {
     let albumName = '';
     let elements_audio_items = null;
-    if(albumMusics.length > 0){
+    if(albumMusics !== null && albumMusics.length > 0){
         elements_audio_items = albumMusics.map(({album, author, name, id, textOfMusic, duration}, i) => {
             albumName = album;
             return (
@@ -23,14 +23,14 @@ const MusicList = ({albumMusics, title = null}) => {
     return (
         <div className='music_list_albums'>
             {
-                albumMusics.length > 0 && albumName.length > 0 ?
+                albumMusics !== null && albumMusics.length > 0 && albumName.length > 0 ?
                 <h2>{title === null ? `Альбом ${albumName}` : title}</h2>
                 :
                 null
             }
             <div className="music_list_albums_wrapper">
                 {
-                    albumMusics.length > 0 && albumName.length > 0 ?
+                    albumMusics !== null && albumMusics.length > 0 && albumName.length > 0 ?
                     elements_audio_items
                     :
                     null

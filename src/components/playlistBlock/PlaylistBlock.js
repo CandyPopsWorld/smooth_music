@@ -12,35 +12,44 @@ import { useState } from 'react';
 import LikePlaylist from '../likePlaylist/LikePlaylist';
 import Helmet from '../helmet/Helmet';
 import { COLLECTION_PLAYLISTS_PAGE_HELMET } from '../../utils/data/seoHelmet';
+import Loader from '../loader/Loader';
 const Playlist_Block = () => {
 
     const {db, auth} = useFirebaseContext();
     const {playlistMusic, setPlaylistMusic, setFavoriteAudio} = useFavoritesContext();
     const [playlists, setPlaylists] = useState(null);
+    const [loadingFavoriteList, setLoadingFavoriteList] = useState(false);
 
     const getFavoriteAudio = async () => {
-        const docRef = doc(db, 'users', auth.currentUser.uid);
+        const docRef = await doc(db, 'users', auth.currentUser.uid);
         const docSnap = await getDoc(docRef);
         setFavoriteAudio(docSnap.data().favoriteAudio);
-        docSnap.data().favoriteAudio.forEach(({audioId}) => {
-            getMusic(audioId);
-        });
+        if(docSnap.data().favoriteAudio.length !== 0){
+            await docSnap.data().favoriteAudio.forEach(({audioId}, i) => {
+                getMusic(audioId);
+            });
+        } else {
+            await setPlaylistMusic('');
+        }
+
     };
 
     const getMusic = async (id) => {
-        const audioRef = doc(db, 'audio', id);
+        const audioRef = await doc(db, 'audio', id);
         const audioSnap = await getDoc(audioRef);
         setPlaylistMusic(prev => [...prev, audioSnap.data()]);
     };
 
     const getPlaylists = async () => {
+        await setLoadingFavoriteList(true);
         const docRef = await doc(db, USERS, auth.currentUser.uid);
         const docSnap = await getDoc(docRef);
-        await setPlaylists(docSnap.data().playlists)
+        await setPlaylists(docSnap.data().playlists);
+        await setLoadingFavoriteList(false);
     };
 
     useEffect(() => {
-        if(playlistMusic.length === 0){
+        if(playlistMusic !== null && playlistMusic.length === 0){
             getFavoriteAudio();
         }
         getPlaylists();
@@ -66,7 +75,16 @@ const Playlist_Block = () => {
                     {elements_playlists}
                 </div>
                 <div className="albums_section_item_music_block">
-                    <MusicList albumMusics={playlistMusic} title={'Мне нравится'}/>
+                    {
+                        loadingFavoriteList ? 
+                        <Loader/>
+                        :
+                        <>
+                        <h2 style={{marginLeft: '10px'}}>Мне нравится</h2>
+                        <p style={{color: 'red', marginLeft: '10px'}}>{playlistMusic !== null &&  playlistMusic === '' ? 'Вам еще не нравится ни один трек' : null}</p>
+                        <MusicList albumMusics={playlistMusic !== null ? playlistMusic : []} title={''}/>   
+                        </> 
+                    }
                 </div>
             </div>
         </div>
