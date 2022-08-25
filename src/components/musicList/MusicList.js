@@ -1,4 +1,5 @@
 import { AudioItem } from '../collectionsSection/CollectionsSection';
+import './MusicList.scss';
 const MusicList = ({albumMusics, title = null}) => {
     let albumName = '';
     let elements_audio_items = null;

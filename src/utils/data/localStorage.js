@@ -4,5 +4,6 @@ export const localSettings = {
     volume: null,
     translateText: null,
     originalText: null,
-    repeatMusicList: null
+    repeatMusicList: null,
+    titleTranslate: null
 };

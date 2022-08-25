@@ -150,11 +150,13 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
         getAuthorAudio();
         if(currentIdAudio !== null){
             let object = null;
-            if(localStorage.getItem(auth.currentUser.uid)){
+            if(localStorage.getItem(auth.currentUser.uid) && currentTextOfMusic && currentTextOfMusic[0]){
                 object = JSON.parse(localStorage.getItem(auth.currentUser.uid));
+                console.log(object);
                 object.currentAudio = currentIdAudio;
                 object.currentPlayMusicList = currentPlayMusicList;
                 object.titleTranslate = currentTextOfMusic[0].titleTranslate;
+                object.translateText = currentTextOfMusic[0].titleTranslate;
                 object.originalText = currentTextOfMusic[0].titleOrigin;
             } else {
                 localSettings.currentAudio = currentIdAudio;

@@ -13,7 +13,7 @@
     }
 
     &_list_inputs{
-        @include flex($flexDirection: column);
+        @include flex($flexDirection: row);
         margin: 10px;
 
         &_item{
@@ -71,12 +71,19 @@
 
 
 .sign_out_account{
+    @include flex;
     background-color: transparent;
+    // position: absolute;
+    // bottom: 100px;
+    // left: 56%;
+    // transform: translate(-50%, -50%);
     color: red;
     border: 1px solid red;
     padding: 7px 14px;
     border-radius: 8px;
     margin-bottom: 10px;
+    margin-top: 10px;
+    margin-left: 10px;
     cursor: pointer;
     
     &:hover{
@@ -121,10 +128,79 @@
     @include flex;
     border: none;
     padding: 15px 15px;
-    border-radius: 20px;
+    border-radius: 5px;
+    margin-left: 15px;
     transform: scale(1);
     transition: transform 0.2s;
     &:hover{
         transform: scale(1.1);
     }
+}
+
+.edit_avatar_btn{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    cursor: pointer;
+    border: 1px solid gray;
+    background-color: rgb(14, 15, 15);
+    color: white;
+    border-radius: 5px;
+    padding: 5px 8px;
+}
+
+.other_settings{
+    &_form{
+        &_item{
+            @include flex($justifyContent: space-between);
+        }
+    }
+}
+
+.user_settings_account_danger_zone{
+    margin-left: 10px;
+    &_wrapper{
+        @include flex($flexDirection: column);
+        width: 650px;
+        border: 1px solid red;
+        border-radius: 7px;
+        padding: 10px;
+        &_item{
+            @include flex($justifyContent: space-between);
+            border-bottom: 1px solid gray;
+            margin-bottom: 10px;
+            &_text{
+                &_header{
+                    font-weight: 600;
+                }
+                &_description{
+                    color: gray;
+                }
+            }
+        }
+    }
+}
+
+.danger_btn{
+    background-color: rgb(14, 15, 15);
+    border: none;
+    border-radius: 7px;
+    color: red;
+    padding: 10px 15px;
+    cursor: pointer;
+    &:hover{
+        background-color: red;
+        color: white;
+    }
+}
+
+.account_settings_block{
+    overflow-y: auto;
+    &::-webkit-scrollbar{
+        width: 0;
+    }
+}
+
+.danger_red_text{
+    color: red!important;
 }

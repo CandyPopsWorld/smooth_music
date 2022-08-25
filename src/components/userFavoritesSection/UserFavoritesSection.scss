@@ -125,6 +125,7 @@
             height: inherit;
             background-color: black;
             overflow-y: auto;
+            overflow-x: auto;
             border-left: 2px solid orangered;
             .music_list_albums{
                 // text-align: center;
@@ -139,9 +140,4 @@
 
 .music_list_albums_wrapper{
     @include flex($flexDirection: column, $justifyContent: flex-start, $alignItems: flex-start);
-    overflow: auto;
-}
-
-.music_list_albums{
-    overflow: auto;
 }
