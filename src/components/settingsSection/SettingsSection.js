@@ -12,6 +12,8 @@ import Helmet from '../helmet/Helmet';
 // eslint-disable-next-line
 import { SETTINGS_ACCOUNT_PAGE_HELMET, SETTINGS_OTHER_PAGE_HELMET } from '../../utils/data/seoHelmet';
 import { dangerZoneElements } from '../../utils/data/setting';
+import defaultLoaderSprite from '../../resources/image/loader.gif';
+import dangerLoaderSprite from '../../resources/image/danger_loader.gif';
 
 const tabs = [
     {active: false, title: 'Аккаунт', id: 1},
@@ -23,6 +25,9 @@ function SettingsSection(props) {
     const [username, setUsername] = useState('');
     const [avatar, setAvatar] = useState(null);
     const [loading,setLoading] = useState(false);
+    // eslint-disable-next-line
+    const [styleLoader, setStyleLoader] = useState({position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'});
+    const [srcLoader, setSrcLoader] = useState(defaultLoaderSprite);
 
     const updateUserProfile = async (e) => {
         if(username.length > 0){
@@ -104,7 +109,11 @@ function SettingsSection(props) {
             avatar={avatar}
             uploadAvatar={uploadAvatar}
             updateUserProfile={updateUserProfile}
-            loading={loading}/>
+            loading={loading}
+            setLoading={setLoading}
+            styleLoader={styleLoader}
+            srcLoader={srcLoader}
+            setSrcLoader={setSrcLoader}/>
             break;
         case 2:
             // elements_block = <OtherSettings/>
@@ -139,7 +148,7 @@ function SettingsSection(props) {
     );
 }
 
-const AccountSettings = ({username, setUsername, avatar, uploadAvatar, updateUserProfile, loading}) => {
+const AccountSettings = ({username, setUsername, avatar, uploadAvatar, updateUserProfile, loading, setLoading, styleLoader, srcLoader, setSrcLoader}) => {
 
     const {auth, db, storage} = useFirebaseContext();
 
@@ -164,7 +173,10 @@ const AccountSettings = ({username, setUsername, avatar, uploadAvatar, updateUse
                     </div>
                 </div>
                 <div className="user_settings_account_danger_zone_wrapper_item_btn">
-                    <button className='danger_btn' onClick={() => action(auth.currentUser, db, storage)}>{btnText}</button>
+                    <button className='danger_btn' onClick={() => {
+                        setSrcLoader(dangerLoaderSprite);
+                        action(auth.currentUser, db, storage, setLoading);
+                    }}>{btnText}</button>
                 </div>
             </div>
         )
@@ -226,7 +238,7 @@ const AccountSettings = ({username, setUsername, avatar, uploadAvatar, updateUse
 
         :
 
-        <Loader style={{position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)'}}/>
+        <Loader style={styleLoader} src={srcLoader}/>
     )
 };
 

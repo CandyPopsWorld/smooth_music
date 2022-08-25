@@ -1,7 +1,7 @@
 import loaderSprite from '../../resources/image/loader.gif';
-function Loader({style = {margin: 'auto auto'}}) {
+function Loader({style = {margin: 'auto auto'}, src = loaderSprite}) {
     return (
-        <img src={loaderSprite} alt="Загрузка" style={style}/>
+        <img src={src} alt="Загрузка" style={style}/>
     );
 }
 export default Loader;

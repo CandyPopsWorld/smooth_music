@@ -7,7 +7,8 @@ import { AVATAR_STORAGE } from "../data/storageId";
 import { localSettings } from "../data/localStorage";
 
 
-export const deleteUserProfile = async (user , db, storage) => {
+export const deleteUserProfile = async (user , db, storage, setLoading) => {
+    await setLoading(true);
     await deleteDoc(doc(db, USERS, user.uid));
 
     if(localStorage.getItem(user.uid)){
@@ -15,9 +16,11 @@ export const deleteUserProfile = async (user , db, storage) => {
     }
     
     const avatarRef = await ref(storage, `${AVATAR_STORAGE}/${user.uid}`);
-    await deleteObject(avatarRef).then(() => {
-    }).catch((error) => {
-    });
+    if(avatarRef){
+        await deleteObject(avatarRef).then(() => {
+        }).catch((error) => {
+        });
+    }
 
     await deleteUser(user).then(() => {
         refreshPage();
@@ -26,8 +29,8 @@ export const deleteUserProfile = async (user , db, storage) => {
     });
 };
 
-export const clearAllDataUser = async (user, db, storage) => {
-
+export const clearAllDataUser = async (user, db, storage, setLoading) => {
+    await setLoading(true)
     await updateProfile(user, {
         photoURL: ''
     }).then(() =>{
@@ -68,9 +71,11 @@ export const clearAllDataUser = async (user, db, storage) => {
     }
     
     const avatarRef = await ref(storage, `${AVATAR_STORAGE}/${user.uid}`);
-    await deleteObject(avatarRef).then(() => {
-    }).catch((error) => {
-    });
+    if(avatarRef){
+        await deleteObject(avatarRef).then(() => {
+        }).catch((error) => {
+        });
+    }
 
     await refreshPage();
 };
