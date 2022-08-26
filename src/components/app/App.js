@@ -10,6 +10,7 @@ function App(props) {
     const {auth} = useFirebaseContext();
     //eslint-disable-next-line
     const [user,loading, error] = useAuthState(auth);
+
     return(
         loading ? <MainLoader/> 
         :

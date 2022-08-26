@@ -12,12 +12,16 @@ import { AUTHOR_STORAGE } from '../../utils/data/storageId';
 import Loader from '../loader/Loader';
 import Helmet from '../helmet/Helmet';
 import { COLLECTION_AUTHORS_PAGE_HELMET } from '../../utils/data/seoHelmet';
+import { useSettingContext } from '../../context/SettingContext';
+import localization from '../../utils/data/localization/index';
+import { keys } from '../../utils/data/localization/keys';
 
 const Author_Block = () => {
 
     const {db,auth, storage} = useFirebaseContext();
     const {authors, setAuthors, favoriteAuthors, setFavoriteAuthors} = useFavoritesContext();
     const [loading, setLoading] = useState(false);
+    const {currentLocalization} = useSettingContext();
 
     const getFavoriteAuthors = async () => {
         const docRef = await doc(db, 'users', auth.currentUser.uid);
@@ -72,7 +76,7 @@ const Author_Block = () => {
                         favoriteAuthors !== null && favoriteAuthors.length > 0 ?
                         elements_authors
                         :
-                        <h2 className='not_found_elements'>Вы ещё не добавили ни одного исполнителя в коллекцию!</h2>
+                        <h2 className='not_found_elements'>{currentLocalization !== null ? localization[currentLocalization][keys.collectionAuthorsBlockTextError] : ''}</h2>
                     }
                 </div>   
         </div>

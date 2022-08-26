@@ -8,6 +8,9 @@ import { ALBUMS, AUDIO, AUTHORS } from '../../utils/data/collectionsId';
 import SearchIcon from '@mui/icons-material/Search';
 import AlbumItem from '../searchAlbumItem/SearchAlbumItem';
 import AuthorItem from '../searchAuthorItem/SearchAuthorItem';
+import { useSettingContext } from '../../context/SettingContext';
+import localization from '../../utils/data/localization/index';
+import { keys } from '../../utils/data/localization/keys';
 import './Search.scss';
 function Search(props) {
 
@@ -16,6 +19,7 @@ function Search(props) {
     const [shortAudioFind, setShortAudioFind] = useState(null);
     const [shortAlbumFind, setShortAlbumFind] = useState(null);
     const [shortAuthorFind, setShortAuthorFind] = useState(null);
+    const {currentLocalization} = useSettingContext();
     
     const getSearchResults = async (e) => {
         const searchTerm = e.target.value;
@@ -107,7 +111,7 @@ function Search(props) {
             </label>
             <input 
             type="text" 
-            placeholder="Трек, Альбом, Исполнитель"
+            placeholder={currentLocalization !== null ? localization[currentLocalization][keys.searchPlaceholder] : ''}
             name='search'
             id='search'
             onChange={getSearchResults}
@@ -120,34 +124,34 @@ function Search(props) {
             }}>
             
             </div>
-            <div className="search_panel_modal" style={{display: styleModal}}>
+            <div className="search_panel_modal" style={{display: styleModal, zIndex: 100}}>
                 <div className="search_panel_modal_audio">
                     <div className="search_panel_modal_audio_header">
-                        <h4>Треки</h4>
+                        <h4>{currentLocalization !== null ? localization[currentLocalization][keys.searchHeaderAudio] : ''}</h4>
                     </div>
                     <div className="search_panel_modal_audio_list">
                         {elements_search_audio}
-                        {shortAudioFind !== null && shortAudioFind.length === 0 ?  <span style={{color: 'red'}}>Треки по вашему запросу не найдены</span> : null}
+                        {shortAudioFind !== null && shortAudioFind.length === 0 ?  <span style={{color: 'red'}}>{currentLocalization !== null ? localization[currentLocalization][keys.searchErrorHeaderAudio] : ''}</span> : null}
                     </div>
                 </div>
 
                 <div className="search_panel_album_album">
                     <div className="search_panel_modal_album_header">
-                        <h4>Альбомы</h4>
+                        <h4>{currentLocalization !== null ? localization[currentLocalization][keys.searchHeaderAlbum] : ''}</h4>
                     </div>
                     <div className="search_panel_modal_album_list">
                         {elements_search_album}
-                        {shortAlbumFind !== null && shortAlbumFind.length === 0 ? <span style={{color: 'red'}}>Альбомы по вашему запросу не найдены</span> : null}
+                        {shortAlbumFind !== null && shortAlbumFind.length === 0 ? <span style={{color: 'red'}}>{currentLocalization !== null ? localization[currentLocalization][keys.searchErrorHeaderAlbum] : ''}</span> : null}
                     </div>
                 </div>
 
                 <div className="search_panel_author_album">
                     <div className="search_panel_modal_author_header">
-                        <h4>Исполнители</h4>
+                        <h4>{currentLocalization !== null ? localization[currentLocalization][keys.searchHeaderAuthor] : ''}</h4>
                     </div>
                     <div className="search_panel_modal_author_list">
                         {elements_search_author}
-                        {shortAuthorFind !== null && shortAuthorFind.length === 0 ? <span style={{color: 'red'}}>Исполнители по вашему запросу не найдены</span> : null}
+                        {shortAuthorFind !== null && shortAuthorFind.length === 0 ? <span style={{color: 'red'}}>{currentLocalization !== null ? localization[currentLocalization][keys.searchErrorHeaderAuthor] : ''}</span> : null}
                     </div>
                 </div>
             </div>

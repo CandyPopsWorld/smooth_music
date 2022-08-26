@@ -6,12 +6,16 @@ import { useDatabaseContext } from '../../context/DatabaseContext';
 import { useFirebaseContext } from '../../context/FirebaseContext';
 import { USERS } from '../../utils/data/collectionsId';
 import MainLoader from '../mainLoader/MainLoader';
+import { useSettingContext } from '../../context/SettingContext';
+import localization from '../../utils/data/localization/index';
+import { keys } from '../../utils/data/localization/keys';
 import './AddPlaylistModal.scss';
 function AddPlaylistModal(props) {
     const {db, auth} = useFirebaseContext();
     // eslint-disable-next-line
     const {showModalPlaylist, setShowModalPlaylist} = useAudioContext();
     const [playlists, setPlaylists] = useState(null);
+    const {currentLocalization} = useSettingContext();
 
     const getPlaylists = async () => {
         const docRef = await doc(db, USERS, auth.currentUser.uid);
@@ -35,11 +39,11 @@ function AddPlaylistModal(props) {
         <div className='add_playlist_modal' onClick={() => setShowModalPlaylist(false)}>
             <div className={`add_playlist_modal_wrapper`}>
                 <div className="add_playlist_modal_wrapper_header">
-                    <h3>Добавить в плейлист</h3>
+                    <h3>{currentLocalization !== null ? localization[currentLocalization][keys.modalAddAudioPlaylistsHeader] : ''}</h3>
                 </div>
                 {playlists === null ? <MainLoader size={'100px'}/> : null}
                 {elements_playlists ? elements_playlists : null}
-                {playlists !== null && playlists.length === 0 ? <span style={{color: 'red'}}>Плейлисты не найдены!</span> : null}
+                {playlists !== null && playlists.length === 0 ? <span style={{color: 'red'}}>{currentLocalization !== null ? localization[currentLocalization][keys.modalAddAudioPlaylistsError] : ''}</span> : null}
             </div>
         </div>
     );

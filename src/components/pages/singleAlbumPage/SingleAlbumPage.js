@@ -13,7 +13,11 @@ import
 import './SingleAlbumPage.scss';
 import Helmet from '../../helmet/Helmet';
 import { SINGLE_ALBUM_PAGE_HELMET } from '../../../utils/data/seoHelmet';
+import { useSettingContext } from '../../../context/SettingContext';
+import localization from '../../../utils/data/localization/index';
+import { keys } from '../../../utils/data/localization/keys';
 function SingleAlbumPage({image, uid, title, musics, year, authorId, genreId}) {
+    const {currentLocalization} = useSettingContext();
     const {db, auth} = useFirebaseContext();
     const [audioList, setAudioList] = useState([]);
     const [author, setAuthor] = useState(null);
@@ -66,7 +70,7 @@ function SingleAlbumPage({image, uid, title, musics, year, authorId, genreId}) {
                     <img src={image} alt="" />
                 </div>
                 <div className="single_album_page_about_text">
-                    <span>Альбом</span>
+                    <span>{currentLocalization !== null ? localization[currentLocalization][keys.collectionAlbumsBlockMusicListText] : ''}</span>
                     <div className="single_album_page_about_text_title">
                         <h2>{title}</h2>
                     </div>

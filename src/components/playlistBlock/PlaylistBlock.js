@@ -13,12 +13,16 @@ import LikePlaylist from '../likePlaylist/LikePlaylist';
 import Helmet from '../helmet/Helmet';
 import { COLLECTION_PLAYLISTS_PAGE_HELMET } from '../../utils/data/seoHelmet';
 import Loader from '../loader/Loader';
+import { useSettingContext } from '../../context/SettingContext';
+import localization from '../../utils/data/localization/index';
+import { keys } from '../../utils/data/localization/keys';
 const Playlist_Block = () => {
 
     const {db, auth} = useFirebaseContext();
     const {playlistMusic, setPlaylistMusic, setFavoriteAudio} = useFavoritesContext();
     const [playlists, setPlaylists] = useState(null);
     const [loadingFavoriteList, setLoadingFavoriteList] = useState(false);
+    const {currentLocalization} = useSettingContext();
 
     const getFavoriteAudio = async () => {
         const docRef = await doc(db, 'users', auth.currentUser.uid);
@@ -70,7 +74,7 @@ const Playlist_Block = () => {
             description={auth && auth.currentUser ? COLLECTION_PLAYLISTS_PAGE_HELMET(auth.currentUser.displayName).description : ''}/>
             <div className='albums_section'>
                 <div className="albums_section_item_albums_block">
-                    <LikePlaylist image={likeSprite} title={'Мне нравится'}/>
+                    <LikePlaylist image={likeSprite} title={currentLocalization !== null ? localization[currentLocalization][keys.collectionLikePlaylistText] : ''}/>
                     <CreatePlaylist playlists={playlists !== null ? playlists : null}/>
                     {elements_playlists}
                 </div>
@@ -80,8 +84,8 @@ const Playlist_Block = () => {
                         <Loader/>
                         :
                         <>
-                        <h2 style={{marginLeft: '10px'}}>Мне нравится</h2>
-                        <p style={{color: 'red', marginLeft: '10px'}}>{playlistMusic !== null &&  playlistMusic === '' ? 'Вам еще не нравится ни один трек' : null}</p>
+                        <h2 style={{marginLeft: '10px'}}>{currentLocalization !== null ? localization[currentLocalization][keys.collectionLikePlaylistText] : ''}</h2>
+                        <p style={{color: 'red', marginLeft: '10px'}}>{playlistMusic !== null &&  playlistMusic === '' ? currentLocalization !== null ? localization[currentLocalization][keys.collectionLikePlaylistErrorText] : '' : null}</p>
                         <MusicList albumMusics={playlistMusic !== null ? playlistMusic : []} title={''}/>   
                         </> 
                     }

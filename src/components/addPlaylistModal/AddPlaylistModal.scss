@@ -11,8 +11,8 @@
     color: white;
     transform: translate(-50%, -50%);
     &_wrapper{
-        @include flex($flexDirection: row, $justifyContent: center, $alignItems: flex-start, $flexWrap: wrap);
-        align-content: flex-start;
+        @include flex($flexDirection: column, $justifyContent: flex-start, $alignItems: center, $flexWrap: wrap);
+        align-content: center;
         background-color: rgb(14, 15, 15);
         width: 300px;
         height: 400px;

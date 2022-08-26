@@ -204,3 +204,7 @@
 .danger_red_text{
     color: red!important;
 }
+
+.btns_account_manipulation{
+    @include flex($justifyContent: space-between);
+}

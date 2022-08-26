@@ -3,14 +3,20 @@ import Author_Block from '../authorBlock/AuthorBlock';
 import Album_Block from '../albumBlock/AlbumBlock';
 import { useFavoritesContext } from '../../context/FavoritesContext';
 import './UserFavoritesSection.scss';
-
-const nav_data = [
-    {active: false, title: 'Альбомы', id: 1},
-    {active: false, title: 'Исполнители', id: 2},
-    {active: false, title: 'Плейлисты', id: 3},
-];
+import { useSettingContext } from '../../context/SettingContext';
+import localization from '../../utils/data/localization/index';
+import { keys } from '../../utils/data/localization/keys';
 
 function UserFavoritesSection(props) {
+    const {currentLocalization} = useSettingContext();
+
+    const nav_data = [
+        {active: false, title: currentLocalization !== null ? localization[currentLocalization][keys.searchHeaderAlbum] : '', id: 1},
+        {active: false, title: currentLocalization !== null ? localization[currentLocalization][keys.searchHeaderAuthor] : '', id: 2},
+        {active: false, title: currentLocalization !== null ? localization[currentLocalization][keys.searchHeaderPlaylist] : '', id: 3},
+    ];
+
+
     const {activeTab, setActiveTab} = useFavoritesContext();
 
     const getActiveTab = () => {

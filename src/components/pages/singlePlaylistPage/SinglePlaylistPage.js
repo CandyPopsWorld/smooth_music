@@ -15,7 +15,11 @@ import { PLAYLIST_STORAGE } from '../../../utils/data/storageId';
 import { getImageStorage } from '../../../utils/functions/db';
 import Loader from '../../loader/Loader';
 import { useSearchContext } from '../../../context/SearchContext';
+import { useSettingContext } from '../../../context/SettingContext';
+import localization from '../../../utils/data/localization/index';
+import { keys } from '../../../utils/data/localization/keys';
 function SinglePlaylistPage({title, description, thumbnail, musics, id, playlists}) {
+    const {currentLocalization} = useSettingContext();
     const {db, auth, storage} = useFirebaseContext();
     const {setActiveSlide, setSearchTab} = useTabsContext();
     const {setSearchInfoAboutItem} = useSearchContext();
@@ -53,7 +57,7 @@ function SinglePlaylistPage({title, description, thumbnail, musics, id, playlist
         await updateDoc(docRef, {
             playlists: newArray
         });
-        await getSuccessAlert('Название плейлиста обновлено!', setShowAlert, setSeverityAlert, setTextAlert);
+        await getSuccessAlert(currentLocalization !== null ? localization[currentLocalization][keys.singlePlaylistPageSuccessAlertChangeTitle] : '', setShowAlert, setSeverityAlert, setTextAlert);
     };
 
     const changeDescriptionInput = async (e) => {
@@ -69,7 +73,7 @@ function SinglePlaylistPage({title, description, thumbnail, musics, id, playlist
         await updateDoc(docRef, {
             playlists: newArray
         });
-        await getSuccessAlert('Описание плейлиста обновлено!', setShowAlert, setSeverityAlert, setTextAlert);
+        await getSuccessAlert(currentLocalization !== null ? localization[currentLocalization][keys.singlePlaylistPageSuccessAlertChangeDescription] : '', setShowAlert, setSeverityAlert, setTextAlert);
     };
 
     const getPlaylists = async () => {
@@ -130,7 +134,6 @@ function SinglePlaylistPage({title, description, thumbnail, musics, id, playlist
             await getSinglePlaylistPage(image);
             return;
         }
-        console.log('Недопустимый тип файла!');
     };
 
     const getSinglePlaylistPage = async (image) => {
@@ -184,33 +187,33 @@ function SinglePlaylistPage({title, description, thumbnail, musics, id, playlist
                         name='image_playlist'
                         onChange={(e) => getFileInput(e)} 
                         ref={imageInputRef}/>
-                        <button onClick={addCustomImagePlaylist}>Добавить обложку</button>
+                        <button onClick={addCustomImagePlaylist}>{currentLocalization !== null ? localization[currentLocalization][keys.singlePlaylistPageInitialChangeImageBtnText] : ''}</button>
                     </div>
                 </div>
                 <div className="single_playlist_page_about_text">
-                    <h2 style={{color: 'gray', opacity: 0.7}}>Плейлист</h2>
+                    <h2 style={{color: 'gray', opacity: 0.7}}>{currentLocalization !== null ? localization[currentLocalization][keys.singlePlaylistPageHeader] : ''}</h2>
                     <div className="single_playlist_page_about_text_title">
                         <input type="text" value={titleInput} onChange={(e) => setTitleInput(e.target.value)} onKeyDown={changeTitleInput} ref={titleInputRef}/>
                     </div>
                     <div className="single_playlist_page_about_text_description">
-                        <textarea name="" id="" cols="70" rows="5" placeholder='Добавить описание...' value={descriptionInput} onChange={(e) => setDescriptionInput(e.target.value)} onKeyDown={changeDescriptionInput} ref={descriptionInputRef}/>
+                        <textarea name="" id="" cols="70" rows="5" placeholder={currentLocalization !== null ? localization[currentLocalization][keys.singlePlaylistPageInitialDescription] : ''} value={descriptionInput} onChange={(e) => setDescriptionInput(e.target.value)} onKeyDown={changeDescriptionInput} ref={descriptionInputRef}/>
                     </div>
                     <div className="single_playlist_page_about_text_controls">
-                        <button className='delete_playlist' onClick={deletePlaylist}>Удалить плейлист</button>
+                        <button className='delete_playlist' onClick={deletePlaylist}>{currentLocalization !== null ? localization[currentLocalization][keys.singlePlaylistPageInitialDeleteBtnText] : ''}</button>
                     </div>
                 </div>
             </div>
 
             <div className="single_playlist_page_list">
-                <h2>Треки</h2>
+                <h2>{currentLocalization !== null ? localization[currentLocalization][keys.singlePlaylistPageMusicListHeader] : ''}</h2>
                 <MusicList albumMusics={playlistMusics} title=''/>
             </div>
             
             {
                 musics.length === 0 ?
                 <div className="single_playlist_page_list_not_found">
-                    <h3>Плейлист пока пуст</h3>
-                    <p>Добавьте в него пару треков, а мы предложим похожие</p>
+                    <h3>{currentLocalization !== null ? localization[currentLocalization][keys.singlePlaylistPageMusicListErrorHeaderText] : ''}</h3>
+                    <p>{currentLocalization !== null ? localization[currentLocalization][keys.singlePlaylistPageMusicListErrorDescriptionText] : ''}</p>
                 </div>
                 :
                 null

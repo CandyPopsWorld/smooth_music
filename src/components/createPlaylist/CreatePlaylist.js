@@ -6,8 +6,12 @@ import { USERS } from "../../utils/data/collectionsId";
 import { getImageStorage } from '../../utils/functions/db';
 import { useEffect, useState } from "react";
 import {PLAYLIST_STORAGE} from '../../utils/data/storageId';
+import { useSettingContext } from '../../context/SettingContext';
+import localization from '../../utils/data/localization/index';
+import { keys } from '../../utils/data/localization/keys';
 
 function CreatePlaylist({playlists}) {
+    const {currentLocalization} = useSettingContext();
     const {db, auth, storage} = useFirebaseContext();
 
     const {setActiveSlide, setSearchTab} = useTabsContext();
@@ -21,7 +25,7 @@ function CreatePlaylist({playlists}) {
             return;
         }
         const docRef = await doc(db, USERS, auth.currentUser.uid);
-        const object = {title: 'НОВЫЙ ПЛЕЙЛИСТ', description: '' , thumbnail: defaultThumbPlaylist, musics: [], id: String(+playlistId + 1)};
+        const object = {title: currentLocalization !== null ? localization[currentLocalization][keys.singlePlaylistPageInitialTitle] : '', description: '' , thumbnail: defaultThumbPlaylist, musics: [], id: String(+playlistId + 1)};
         await updateDoc(docRef, {
             playlists: arrayUnion(object)
         })

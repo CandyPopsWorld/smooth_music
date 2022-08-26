@@ -1,11 +1,18 @@
 import {useTabsContext} from '../../context/TabsContext';
+import { useSettingContext } from '../../context/SettingContext';
+import localization from '../../utils/data/localization/index';
+import { keys } from '../../utils/data/localization/keys';
 import './Navbar.scss';
-const tabs = [
-    {active: false,title: 'Главная',id: 1},
-    {active: false,title: 'Коллекция',id: 2},
-    {active: false,title: 'Настройки',id: 5},
-];
+
 function Navbar(props) {
+    const {currentLocalization} = useSettingContext();
+
+    const tabs = [
+        {active: false,title: currentLocalization !== null ? localization[currentLocalization][keys.navbarMain] : '',id: 1},
+        {active: false,title: currentLocalization !== null ? localization[currentLocalization][keys.navbarCollection] : '',id: 2},
+        {active: false,title: currentLocalization !== null ? localization[currentLocalization][keys.navbarSettings] : '',id: 5},
+    ];
+
     const {activeSlide, setActiveSlide} = useTabsContext();
     const elements_btns = tabs.map(item => {
         const clazz = activeSlide === item.id ? 'active' : '';

@@ -1,13 +1,15 @@
 import { createContext, useContext, useState } from "react";
-
 const settingContext = createContext();
 
 export const SettingContext = ({children}) => {
     const [activeSlide, setActiveSlide] = useState(1);
+    const [currentLocalization, setCurrentLocalization] = useState(null);
 
     const value = {
         activeSlide,
-        setActiveSlide
+        setActiveSlide,
+        currentLocalization,
+        setCurrentLocalization
     };
 
     return (

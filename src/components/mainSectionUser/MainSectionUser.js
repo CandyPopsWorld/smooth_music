@@ -7,6 +7,9 @@ import {useFirebaseContext} from '../../context/FirebaseContext';
 import {AUDIO_STORAGE} from '../../utils/data/storageId';
 import {IDS, AUDIO, USERS} from '../../utils/data/collectionsId';
 import { downloadFile } from '../../utils/functions/db';
+import { useSettingContext } from '../../context/SettingContext';
+import localization from '../../utils/data/localization/index';
+import { keys } from '../../utils/data/localization/keys';
 import './MainSectionUser.scss';
 function MainSectionUser(props) {
     const {titleOrigin, titleTranslate, viewTitle} = useAudioContext();
@@ -15,6 +18,7 @@ function MainSectionUser(props) {
     const {setPlayed} = useAudioContext();
     const {originalTextMute, translateTextMute} = useAudioContext();
     const {setAutoPlay} = useAudioContext();
+    const {currentLocalization} = useSettingContext();
 
     const onRandomAudio = async () => {
         await setAutoPlay(true);
@@ -74,13 +78,13 @@ function MainSectionUser(props) {
             {
                 viewTitle === false ?
                 <div className="user_main_animation">
-                    <h1 className='user_volna' style={{userSelect: 'none'}} onClick={onRandomAudio}>Моя Волна</h1>
+                    <h1 className='user_volna' style={{userSelect: 'none'}} onClick={onRandomAudio}>{currentLocalization !== null ? localization[currentLocalization][keys.waveText] : ''}</h1>
                 </div>
                 :
                 <div className="user_main_text">
                     <h2 className='title_origin'>{originalTextMute === true ? titleOrigin : null}</h2>
                     <h2 className='title_translate'>{translateTextMute === true ? titleTranslate : null}</h2>
-                    <h2 className='text_not_found'>{currentTextOfMusic.length <= 1 ? 'Текст недоступен!' : null}</h2>
+                    <h2 className='text_not_found'>{currentTextOfMusic.length <= 1 ? currentLocalization !== null ? localization[currentLocalization][keys.hintNotFoundText] : '' : null}</h2>
                 </div>
             }
         </div>

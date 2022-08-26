@@ -9,11 +9,13 @@ import { useTabsContext } from '../../context/TabsContext';
 import { localSettings } from '../../utils/data/localStorage';
 import { Slider } from '@mui/material';
 import Hint from '../hint/Hint';
-import {repeatHint, translateTextHint, originalTextHint, banTextHint, textFoundHint, textNotFoundHint,addPlaylistHint} from '../../utils/data/hintData';
 import arrow from '../../resources/image/controls/arrow.png';
 import pause from '../../resources/image/controls/pause.png';
 import play from '../../resources/image/controls/play.png';
 import AddPlaylistModal from '../addPlaylistModal/AddPlaylistModal';
+import { useSettingContext } from '../../context/SettingContext';
+import localization from '../../utils/data/localization/index';
+import { keys } from '../../utils/data/localization/keys';
 
 const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolume, mute, setMute, uniqueid, favoriteClass, setFavoriteClass, clickBackMusic, clickNextMusic, currentIndexMusicListAudio, setRepeatMusicList, repeatMusicList, banClass, setBanClass, setAutoPlay, autoPlay}) => {
     
@@ -39,6 +41,8 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
     const [elementHint, setElementHint] = useState(null);
 
     const {showModalPlaylist, setShowModalPlaylist} = useAudioContext(false);
+
+    const {currentLocalization} = useSettingContext();
 
     const getAudioData = async () => {
         if(currentIdAudio === null){
@@ -478,7 +482,7 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
                 <div className="controls_add_playlits" style={currentIdAudio !== null ? {pointerEvents: 'all'} : {pointerEvents: 'none'}} 
                 onClick={() => setShowModalPlaylist(true)} 
                 onMouseOver={() => {
-                    setElementHint(<Hint message={addPlaylistHint} top={'-30px'} left={'-1100%'}/>);
+                    setElementHint(<Hint message={currentLocalization !== null ? localization[currentLocalization][keys.hintPlaylistAdd] : ''} top={'-30px'} left={'-1100%'}/>);
                 }} onMouseOut={() => {
                     setElementHint(null);
                 }}>
@@ -541,7 +545,7 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
                         localStorage.setItem(auth.currentUser.uid, JSON.stringify(object));
                     }
                 }} onMouseOver={() => {
-                    setElementHint(<Hint message={originalTextHint} top={'-20px'} left={'50%'}/>);
+                    setElementHint(<Hint message={currentLocalization !== null ? localization[currentLocalization][keys.hintOriginalText] : ''} top={'-20px'} left={'50%'}/>);
                 }} onMouseOut={() => {
                     setElementHint(null);
                 }}>
@@ -556,7 +560,7 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
                     }
                     setTranslateTextMute(prev => !prev);
                  }} onMouseOver={() => {
-                    setElementHint(<Hint message={translateTextHint} top={'-20px'} left={'50%'}/>);
+                    setElementHint(<Hint message={currentLocalization !== null ? localization[currentLocalization][keys.hintTranslateText] : ''} top={'-20px'} left={'50%'}/>);
                  }} onMouseOut={() => {
                     setElementHint(null);
                  }}>
@@ -571,7 +575,7 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
                     }
                     setRepeatMusicList(prev => !prev);
                 }} onMouseOver={() => {
-                    setElementHint(<Hint message={repeatHint} top={'-20px'} left={'50%'}/>);
+                    setElementHint(<Hint message={currentLocalization !== null ? localization[currentLocalization][keys.hintRepeat] : ''} top={'-20px'} left={'50%'}/>);
                 }} onMouseOut={() => {
                     setElementHint(null);
                 }}>
@@ -582,7 +586,7 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
                 <div className="controls_ban_text_block" style={currentIdAudio !== null ? {pointerEvents: 'all', position: 'relative'} : {pointerEvents: 'none', position: 'relative'}} onClick={() => {
                     
                 }} onMouseOver={() => {
-                    setElementHint(<Hint message={banTextHint} top={'-20px'} left={'50%'}/>);
+                    setElementHint(<Hint message={currentLocalization !== null ? localization[currentLocalization][keys.hintBan] : ''} top={'-20px'} left={'50%'}/>);
                 }} onMouseOut={() => {
                     setElementHint(null);
                 }}>
@@ -592,9 +596,9 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
                 <div className="controls_text_found_block" style={currentIdAudio !== null ? {pointerEvents: 'all', position: 'relative'} : {pointerEvents: 'none', position: 'relative'}} 
                 onMouseOver={() => {
                     if(currentTextOfMusic.length > 1){
-                        setElementHint(<Hint message={textFoundHint} top={'-20px'} left={'50%'}/>);
+                        setElementHint(<Hint message={currentLocalization !== null ? localization[currentLocalization][keys.hintFoundText] : ''} top={'-20px'} left={'50%'}/>);
                     } else {
-                        setElementHint(<Hint message={textNotFoundHint} top={'-20px'} left={'350%'}/>);
+                        setElementHint(<Hint message={currentLocalization !== null ? localization[currentLocalization][keys.hintNotFoundText] : ''} top={'-20px'} left={'350%'}/>);
                     }
                 }} onMouseOut={() => {
                     setElementHint(null);

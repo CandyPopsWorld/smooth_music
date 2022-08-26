@@ -11,15 +11,22 @@ import './SettingsSection.scss';
 import Helmet from '../helmet/Helmet';
 // eslint-disable-next-line
 import { SETTINGS_ACCOUNT_PAGE_HELMET, SETTINGS_OTHER_PAGE_HELMET } from '../../utils/data/seoHelmet';
-import { dangerZoneElements } from '../../utils/data/setting';
 import defaultLoaderSprite from '../../resources/image/loader.gif';
 import dangerLoaderSprite from '../../resources/image/danger_loader.gif';
+import localization from '../../utils/data/localization/index';
+import { keys } from '../../utils/data/localization/keys';
+import { clearAllDataUser, deleteUserProfile } from "../../utils/functions/setting";
+import {languageLocation} from '../../utils/data/setting';
 
-const tabs = [
-    {active: false, title: 'Аккаунт', id: 1},
-];
 
 function SettingsSection(props) {
+
+    const {currentLocalization} = useSettingContext();
+
+    const tabs = [
+        {active: false, title: currentLocalization !== null ? localization[currentLocalization][keys.settingSectionNavbarAccountText] : '', id: 1},
+    ];
+
     const {auth,storage} = useFirebaseContext();
     const {activeSlide, setActiveSlide} = useSettingContext();
     const [username, setUsername] = useState('');
@@ -132,7 +139,7 @@ function SettingsSection(props) {
 
                     <div className="user_settings_nav_info_about">
                         <div className="user_settings_nav_info_about_name">{auth.currentUser.displayName}</div>
-                        <div className="user_settings_nav_info_about_text">Ваш аккаунт</div>
+                        <div className="user_settings_nav_info_about_text">{currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountSmallHeader] : ''}</div>
                     </div>
                 </div>
 
@@ -151,6 +158,9 @@ function SettingsSection(props) {
 const AccountSettings = ({username, setUsername, avatar, uploadAvatar, updateUserProfile, loading, setLoading, styleLoader, srcLoader, setSrcLoader}) => {
 
     const {auth, db, storage} = useFirebaseContext();
+    const {currentLocalization, setCurrentLocalization} = useSettingContext();
+    // eslint-disable-next-line
+    const [localizationSelect, setLocalizationSelect] = useState('');
 
     let avatarInputRef = useRef(null);
 
@@ -159,6 +169,11 @@ const AccountSettings = ({username, setUsername, avatar, uploadAvatar, updateUse
             avatarInputRef.current.click();
         }
     };
+
+    const dangerZoneElements = [
+        {header: currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountDangerZoneItemDeleteAccountHeader] : '', description: `${currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountDangerZoneItemDeleteAccountDescription] : ''}<span class='danger_red_text'>${currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountDangerZoneItemDeleteAccountDescriptionDanger] : ''}</span>`, btnText: currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountDangerZoneItemDeleteAccountBtn] : '', action: (user, db, storage, setLoading) => deleteUserProfile(user, db, storage, setLoading), id: 1},
+        {header: currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountDangerZoneItemResetAccountHeader] : '', description: `${currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountDangerZoneItemResetAccountDescription] : ''}<span class='danger_red_text'>${currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountDangerZoneItemResetAccountDescriptionDanger] : ''}</span>`, btnText: currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountDangerZoneItemResetAccountBtn] : '', action: (user, db, storage, setLoading) => clearAllDataUser(user, db, storage, setLoading), id: 2},
+    ];
 
     let danger_zone_elements = dangerZoneElements.map(({header, description, btnText, action, id}) => {
         return (
@@ -181,6 +196,26 @@ const AccountSettings = ({username, setUsername, avatar, uploadAvatar, updateUse
             </div>
         )
     });
+
+    const indexCurrentLocationOption = languageLocation.findIndex(item => item.title === currentLocalization);
+
+    let languageLocationFilter = [languageLocation[indexCurrentLocationOption], ...languageLocation.slice(0, indexCurrentLocationOption), ...languageLocation.slice(indexCurrentLocationOption + 1)];
+
+    let elements_option = languageLocationFilter.map(item => {
+        return <option value={item.title} key={item.id}>{item.title}</option>
+    });
+
+    const updateLocalization = async (e) => {
+        let value = e.target.value;
+        await setLocalizationSelect(value);
+        if(localStorage.getItem(auth.currentUser.uid)){
+            const object = await JSON.parse(localStorage.getItem(auth.currentUser.uid));
+            object.localization = value;
+            const serializedLocalSettings = await JSON.stringify(object);
+            localStorage.setItem(auth.currentUser.uid, serializedLocalSettings);
+            await setCurrentLocalization(value);
+        }
+    }
      
     return (
         loading === false ?
@@ -188,13 +223,13 @@ const AccountSettings = ({username, setUsername, avatar, uploadAvatar, updateUse
             <Helmet 
             title={SETTINGS_ACCOUNT_PAGE_HELMET.title}
             description={SETTINGS_ACCOUNT_PAGE_HELMET.description}/>
-            <h2>Настройки аккаунта</h2>
+            <h2>{currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountHeader] : ''}</h2>
             
             <div className="account_settings_block">
                 <div className="user_settings_list_inputs">
                     <div className="user_settings_inputs_block">
                         <div className="user_settings_list_inputs_item user_settings_list_inputs_item_username">
-                            <label htmlFor="">Имя пользователя</label>
+                            <label htmlFor="">{currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountLabelUsername] : ''}</label>
                             <input 
                             type="text" 
                             // placeholder={`текущий:${auth.currentUser.displayName}`}
@@ -208,9 +243,9 @@ const AccountSettings = ({username, setUsername, avatar, uploadAvatar, updateUse
 
                     <div className="user_settings_avatar_block">
                         <div className="user_settings_list_inputs_item user_settings_list_inputs_item_avatar" style={{position: 'relative'}}>
-                            <label style={{marginBottom: '10px'}} htmlFor="">Фото профиля</label>
+                            <label style={{marginBottom: '10px'}} htmlFor="">{currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountLabelPhoto] : ''}</label>
                             <img src={auth.currentUser.photoURL !== null ? auth.currentUser.photoURL : avatarSprite} style={{width: '128px', height: '128px', borderRadius: '50%', userSelect: 'none'}} alt="" />
-                            <button className='edit_avatar_btn' onClick={editAvatar}>Edit</button>
+                            <button className='edit_avatar_btn' onClick={editAvatar}>{currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountEditBtnPhoto] : ''}</button>
                             <input 
                             type="file" 
                             name='avatar'
@@ -222,17 +257,23 @@ const AccountSettings = ({username, setUsername, avatar, uploadAvatar, updateUse
                         </div>
                     </div>
                 </div>
-                    <button className='change_setting' onClick={updateUserProfile}>Обновить профиль</button>
+                    <button className='change_setting' onClick={updateUserProfile}>{currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountUpdateBtn] : ''}</button>
                 <div className="user_settings_item">
                 </div>
 
                 <div className="user_settings_account_danger_zone">
-                    <h2 style={{color: 'red'}}>Опасная зона</h2>
+                    <h2 style={{color: 'red'}}>{currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountDangerZoneHeader] : ''}</h2>
                     <div className="user_settings_account_danger_zone_wrapper">
                         {danger_zone_elements}
                     </div>
                 </div>
-                    <button className='sign_out_account' onClick={() => signOut(auth)}>Выйти из аккаунта</button>
+                    <div className="btns_account_manipulation">
+                        <button className='sign_out_account' onClick={() => signOut(auth)}>{currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountSignOut] : ''}</button>
+                        <select id='localization' name='localization' onChange={updateLocalization} style={{backgroundColor: 'rgb(14, 15, 15)', border: '1px solid white', color: 'white'}}>
+                            {elements_option}
+                        </select>
+                    </div>
+
             </div>
         </div>
 

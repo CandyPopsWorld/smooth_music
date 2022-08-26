@@ -13,7 +13,11 @@ import
 import './SingleAuthorPage.scss';
 import Helmet from '../../helmet/Helmet';
 import { SINGLE_AUTHOR_PAGE_HELMET } from '../../../utils/data/seoHelmet';
+import { useSettingContext } from '../../../context/SettingContext';
+import localization from '../../../utils/data/localization/index';
+import { keys } from '../../../utils/data/localization/keys';
 function SingleAuthorPage({image, uid, title, description, albums, musics}) {
+    const {currentLocalization} = useSettingContext();
 
     const {db, auth, storage} = useFirebaseContext();
     const [favoriteClass, setFavoriteClass] = useState(false);
@@ -86,7 +90,7 @@ function SingleAuthorPage({image, uid, title, description, albums, musics}) {
                     </div>
 
                     <div className="single_author_page_about_title">
-                        <span>Исполнитель</span>
+                        <span>{currentLocalization !== null ? localization[currentLocalization][keys.singleAuthorPageHeader] : ''}</span>
                         <h2>{title}</h2>
                         <div className="single_author_page_about_favorite">
                             <i className="fa-solid fa-heart favorite_album_control" onClick={onFavoriteAuthor} style={favoriteClass ? {color: 'orangered'} : null}></i>
@@ -98,14 +102,14 @@ function SingleAuthorPage({image, uid, title, description, albums, musics}) {
                     {description}
                 </div>
                 
-                <h2>Все альбомы</h2>
+                <h2>{currentLocalization !== null ? localization[currentLocalization][keys.singleAuthorPageAllAlbumsText] : ''}</h2>
 
                 <div className="single_author_page_about_all_album_list">
                     {elements_albums}
                 </div>
 
                 <div className="single_author_page_about_all_music_list">
-                    <MusicList albumMusics={allAudioList} title={'Все треки'}/>
+                    <MusicList albumMusics={allAudioList} title={currentLocalization !== null ? localization[currentLocalization][keys.singleAuthorPageAllAudioText] : ''}/>
                 </div>
             </div>
 

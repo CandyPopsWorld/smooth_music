@@ -14,11 +14,15 @@ import { ALBUMS } from '../../utils/data/collectionsId';
 import Loader from '../loader/Loader';
 import { Helmet } from 'react-helmet';
 import { COLLECTION_ALBUMS_PAGE_HELMET } from '../../utils/data/seoHelmet';
+import { useSettingContext } from '../../context/SettingContext';
+import localization from '../../utils/data/localization/index';
+import { keys } from '../../utils/data/localization/keys';
 
 const Album_Block = () => {
     const {auth, db, storage} = useFirebaseContext();
     const {favoriteAlbums, setFavoriteAlbums, albumMusics, setAlbumMusics, albums, setAlbums} = useFavoritesContext();
     const [loading, setLoading] = useState(false);
+    const {currentLocalization} = useSettingContext();
 
     const getFavoriteAlbum = async () => {
         const docRef = await doc(db, 'users', auth.currentUser.uid);
@@ -84,13 +88,13 @@ const Album_Block = () => {
                         favoriteAlbums.length !== 0 || favoriteAlbums === null ?
                         elements_albums
                         :
-                        <h2 className='not_found_elements'>Вы ещё не добавили ни одного альбома в коллекцию!</h2>
+                        <h2 className='not_found_elements'>{currentLocalization !== null ? localization[currentLocalization][keys.collectionAlbumsBlockTextError] : ''}</h2>
                     }
                 </div>
                 <div className="albums_section_item_music_block">
                     {
                         albumMusics === null ?
-                        <h2 style={{marginLeft: '10px', color: 'red', opacity: '0.4'}}>Вы еще не выбрали ни одного альбома</h2>
+                        <h2 style={{marginLeft: '10px', color: 'red', opacity: '0.4'}}>{currentLocalization !== null ? localization[currentLocalization][keys.collectionAlbumsBlockMusicListError] : ''}</h2>
                         :
                         <MusicList albumMusics={albumMusics}/>
                     }

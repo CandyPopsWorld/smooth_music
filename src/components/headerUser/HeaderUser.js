@@ -5,9 +5,13 @@ import Navbar from '../navbar/Navbar';
 import Search from '../search/Search';
 import avatarSprite from '../../resources/image/avatar.png';
 import './HeaderUser.scss';
+import { useSettingContext } from '../../context/SettingContext';
+import localization from '../../utils/data/localization/index';
+import { keys } from '../../utils/data/localization/keys';
 function Header(props) {
     const {auth} = useFirebaseContext();
     const {activeSlide, setActiveSlide} = useTabsContext();
+    const {currentLocalization} = useSettingContext();
     return (
         <div className='user_header'>
             <div className="user_header_item">
@@ -16,7 +20,7 @@ function Header(props) {
                         setActiveSlide(1);
                     }
                 }}>
-                    SMOOTH MUSIC
+                    {currentLocalization !== null ? localization[currentLocalization][keys.logo] : ''}
                 </div>
             </div>
             <Navbar/>
