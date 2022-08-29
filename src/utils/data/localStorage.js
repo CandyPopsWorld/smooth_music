@@ -6,5 +6,5 @@ export const localSettings = {
     originalText: null,
     repeatMusicList: null,
     titleTranslate: null,
-    localization: 'en'
+    localization: 'ru'
 };

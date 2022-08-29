@@ -1,7 +1,7 @@
 import { BrowserRouter as Router} from 'react-router-dom';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useFirebaseContext } from '../../context/FirebaseContext';
-import { BrowserView, MobileView} from 'react-device-detect';
+import { isMobile } from 'react-device-detect';
 import AppRouter from '../appRouter/AppRouter';
 import MainLoader from '../mainLoader/MainLoader';
 import ErrorPage from '../pages/errorPage/ErrorPage';
@@ -17,13 +17,11 @@ function App(props) {
         error ? <ErrorPage/>
         :
         <Router>
-            <BrowserView>
+            {
+                isMobile ? <MobilePage/>
+                :
                 <AppRouter/>
-            </BrowserView>
-            
-            <MobileView>
-                <MobilePage/>
-            </MobileView>
+            }
         </Router>
     )
 }
