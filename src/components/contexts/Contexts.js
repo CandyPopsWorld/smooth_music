@@ -7,6 +7,7 @@ import { SettingContext } from '../../context/SettingContext';
 import { AudioContext } from '../../context/AudioContext';
 import { FirebaseContext } from '../../context/FirebaseContext';
 import { TabsContext } from '../../context/TabsContext';
+import { LoginAndSignUpContext } from '../../context/LoginAndSignUpContext';
 function Contexts({children}) {
     return (
         <FirebaseContext>
@@ -18,7 +19,9 @@ function Contexts({children}) {
                   <AudioContext>
                     <SearchContext>
                       <SettingContext>
-                        {children}
+                        <LoginAndSignUpContext>
+                          {children}
+                        </LoginAndSignUpContext>
                       </SettingContext>
                     </SearchContext>
                   </AudioContext>

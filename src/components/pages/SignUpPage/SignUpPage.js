@@ -14,6 +14,11 @@ import { errorsAlert } from '../../../utils/data/alert';
 import {USERS} from '../../../utils/data/collectionsId';
 import logoSprite from '../../../resources/image/logo.png';
 import './SignUpPage.scss';
+import LocalizationSelect from '../../localizationSelect/LocalizationSelect';
+import {languageLocation} from '../../../utils/data/setting';
+import localization from '../../../utils/data/localization/index';
+import { keys } from '../../../utils/data/localization/keys';
+import {useLoginAndSignUpContext} from '../../../context/LoginAndSignUpContext';
 function SignUpPage(props) {
     const {auth, db} = useFirebaseContext();
     const [username, setUsername] = useState('');
@@ -24,6 +29,7 @@ function SignUpPage(props) {
     const [textAlert, setTextAlert] = useState(undefined);
     const [severityAlert, setSeverityAlert] = useState(null);
     const [loading, setLoading] = useState(false);
+    const {currentLocalization, setCurrentLocalization} = useLoginAndSignUpContext();
 
     const registerUser = () => {
         if(validateUserSignUp(username, password, confirmPassword, email, setShowAlert, setSeverityAlert, setTextAlert)){
@@ -62,6 +68,28 @@ function SignUpPage(props) {
             banAudio: []
         });
     };
+
+    const indexCurrentLocationOption = languageLocation.findIndex(item => item.title === currentLocalization);
+
+    let languageLocationFilter = [languageLocation[indexCurrentLocationOption], ...languageLocation.slice(0, indexCurrentLocationOption), ...languageLocation.slice(indexCurrentLocationOption + 1)];
+
+    let elements_option = languageLocationFilter.map(item => {
+        return <option value={item.title} key={item.id}>{item.title}</option>
+    });
+
+    const styleLocalization = {
+        backgroundColor: 'rgb(14, 15, 15)', 
+        border: '1px solid white', 
+        color: 'white',
+        position: 'absolute',
+        bottom: '20px',
+        right: '20px'
+    }
+
+    const updateLocalization = async (e) => {
+        let value = e.target.value;
+        await setCurrentLocalization(value);
+    };
  
     return (
         loading === false ?
@@ -70,11 +98,11 @@ function SignUpPage(props) {
             <div className="login_navbar">
                 <NavLink to={'/login'} style={({ isActive }) =>
               isActive ? {color: 'orangered'} : null
-            }>Вход</NavLink>
+            }>{currentLocalization !== null ? localization[currentLocalization][keys.singupAndLoginPageNavigateLinkLogin] : ''}</NavLink>
                 <span>/</span>
                 <NavLink to={'/signup'} style={({ isActive }) =>
               isActive ? {color: 'orangered'} : null
-            }>Регистрация</NavLink>
+            }>{currentLocalization !== null ? localization[currentLocalization][keys.singupAndLoginPageNavigateLinkSignup] : ''}</NavLink>
             </div>
             <div className="signup_wrapper">
                 <div className="login_header">
@@ -88,13 +116,13 @@ function SignUpPage(props) {
                 <div className="signup_container">
                 <div className="signup_container_item">
                     <div className="signup_container_item_header">
-                        Регистрация
+                    {currentLocalization !== null ? localization[currentLocalization][keys.signupPageHeader] : ''}
                     </div>
                 </div>
 
                 <div className="signup_container_item signup_container_item_form">
                     <div className="signup_container_item_input">
-                            <label htmlFor="">Никнейм</label>
+                            <label htmlFor="">{currentLocalization !== null ? localization[currentLocalization][keys.signupPageLabelUsername] : ''}</label>
                             <input 
                             type="text" 
                             name='username'
@@ -104,7 +132,7 @@ function SignUpPage(props) {
                     </div>
 
                     <div className="signup_container_item_input">
-                        <label htmlFor="">Почта</label>
+                        <label htmlFor="">{currentLocalization !== null ? localization[currentLocalization][keys.signupPageLabelEmail] : ''}</label>
                         <input 
                         type="email" 
                         name='email'
@@ -114,7 +142,7 @@ function SignUpPage(props) {
                     </div>
 
                     <div className="signup_container_item_input">
-                        <label htmlFor="">Пароль</label>
+                        <label htmlFor="">{currentLocalization !== null ? localization[currentLocalization][keys.signupPageLabelPassword] : ''}</label>
                         <input 
                         type="password" 
                         name='password'
@@ -124,7 +152,7 @@ function SignUpPage(props) {
                     </div>
 
                     <div className="signup_container_item_input">
-                        <label htmlFor="">Повторите пароль</label>
+                        <label htmlFor="">{currentLocalization !== null ? localization[currentLocalization][keys.signupPageLabelConfirmPassword] : ''}</label>
                         <input 
                         type="password" 
                         name='confirm'
@@ -134,7 +162,7 @@ function SignUpPage(props) {
                     </div>
 
                     <div className="signup_container_item_button">
-                        <button id='signup' onClick={registerUser}>Зарегистрироваться</button>
+                        <button id='signup' onClick={registerUser}>{currentLocalization !== null ? localization[currentLocalization][keys.signupPageBtn] : ''}</button>
                     </div>
                 </div>
             </div>
@@ -145,6 +173,10 @@ function SignUpPage(props) {
                 {
                     showAlert ? <Alert severity={severityAlert} text={textAlert} setShowAlert={setShowAlert} showAlert={showAlert}/> : null
                 }
+            </div>
+
+            <div className="signup_localization">
+                <LocalizationSelect elements_option={elements_option} updateLocalization={updateLocalization} style={styleLocalization}/>
             </div>
         </div>
         :

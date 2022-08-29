@@ -17,6 +17,7 @@ import localization from '../../utils/data/localization/index';
 import { keys } from '../../utils/data/localization/keys';
 import { clearAllDataUser, deleteUserProfile } from "../../utils/functions/setting";
 import {languageLocation} from '../../utils/data/setting';
+import LocalizationSelect from '../localizationSelect/LocalizationSelect';
 
 
 function SettingsSection(props) {
@@ -269,9 +270,10 @@ const AccountSettings = ({username, setUsername, avatar, uploadAvatar, updateUse
                 </div>
                     <div className="btns_account_manipulation">
                         <button className='sign_out_account' onClick={() => signOut(auth)}>{currentLocalization !== null ? localization[currentLocalization][keys.settingsSectionAccountSignOut] : ''}</button>
-                        <select id='localization' name='localization' onChange={updateLocalization} style={{backgroundColor: 'rgb(14, 15, 15)', border: '1px solid white', color: 'white'}}>
+                        <LocalizationSelect elements_option={elements_option} updateLocalization={updateLocalization}/>
+                        {/* <select id='localization' name='localization' onChange={updateLocalization} style={{backgroundColor: 'rgb(14, 15, 15)', border: '1px solid white', color: 'white'}}>
                             {elements_option}
-                        </select>
+                        </select> */}
                     </div>
 
             </div>

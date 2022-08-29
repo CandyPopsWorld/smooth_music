@@ -61,6 +61,22 @@ const en = {
     [keys.singleErrorPageHeader]: 'Something went wrong!',
     [keys.singleErrorPageDescription]: 'Try reloading the page.',
     [keys.singleErrorPageRefresh]: 'Refresh page',
+    [keys.loginPageHeader]: 'Login',
+    [keys.loginPageLabelUsername]: 'Email',
+    [keys.loginPageLabelPassword]: 'Password',
+    [keys.loginPageForgotLink]: 'Forgot password?',
+    [keys.loginPageBtn]: 'Login',
+    [keys.loginForgotPageLabelInput]: 'Enter the email to reset your password!',
+    [keys.loginForgotPageBackLink]: 'Go back',
+    [keys.loginForgotPageResetBtn]: 'Reset',
+    [keys.signupPageHeader]: 'Registration',
+    [keys.signupPageLabelUsername]: 'Username',
+    [keys.signupPageLabelEmail]: 'Email',
+    [keys.signupPageLabelPassword]: 'Password',
+    [keys.signupPageLabelConfirmPassword]: 'Confirm password',
+    [keys.signupPageBtn]: 'Register',
+    [keys.singupAndLoginPageNavigateLinkLogin]: 'Login',
+    [keys.singupAndLoginPageNavigateLinkSignup]: 'Registration',
 };
 
 export default en;
