@@ -11,7 +11,6 @@ function MainAudio(props) {
     const {storage} = useFirebaseContext();
     const {currentAudio, currentIdAudio} = useDatabaseContext();
     const [duration, setDuration] = useState(null);
-    const [volume, setVolume] = useState(null);
     const [mute, setMute] = useState(false);
     const [favoriteClass, setFavoriteClass] = useState(false);
     const [banClass, setBanClass] = useState(false);
@@ -22,7 +21,9 @@ function MainAudio(props) {
         setTitleTranslate, 
         setViewTitle,
         setTextOfMusic, 
-        currentTime 
+        currentTime,
+        volume,
+        setVolume
     } = useAudioContext();
 
     const {currentTextOfMusic} = useDatabaseContext();
@@ -40,6 +41,7 @@ function MainAudio(props) {
     const loadMetadata = (e) => {
         const {duration, volume} = e.target;
         const durationFloor = Math.floor(duration);
+
         setDuration(durationFloor);
         setVolume(volume);
     };

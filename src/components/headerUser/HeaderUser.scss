@@ -1,5 +1,6 @@
 @import '../../style/variables.scss';
 @import '../../style/mixin.scss';
+@import '../../style/keyframes.scss';
 
 .user_header{
     width: 100vw;
@@ -8,12 +9,28 @@
     @include flex($justifyContent: space-around);
 
     &_item{
-
         &_logo{
             color: $user_header_logo_color;
             font-size: 1.2em;
             font-weight: 700;
+            user-select: none;
             cursor: pointer;
+            &.played{
+                .user_header_item_logo_span{
+                    position: relative;
+                    display: inline-block;
+                    animation: wave 1.3s ease-in-out infinite;
+                    animation-delay: calc(0.1s * var(--i));
+                }
+            }
+            &.paused{
+                .user_header_item_logo_span{
+                    position: relative;
+                    display: inline-block;
+                    animation: wave 1.3s ease-in-out;
+                    animation-delay: calc(0.1s * var(--i));
+                }
+            }
         }
 
         &_list{

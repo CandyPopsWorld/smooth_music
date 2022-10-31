@@ -1,6 +1,6 @@
 import { keys } from "../keys";
 const ru = {
-    [keys.logo]: 'ПЛАВНАЯ МУЗЫКА',
+    [keys.logo]: 'ПЛАВНАЯМУЗЫКА',
     [keys.waveText]: 'Моя волна',
     [keys.navbarMain]: 'Главная',
     [keys.navbarCollection]: 'Коллекция',

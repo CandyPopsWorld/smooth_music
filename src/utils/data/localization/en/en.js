@@ -1,6 +1,6 @@
 import { keys } from "../keys";
 const en = {
-    [keys.logo]: 'SMOOTH MUSIC',
+    [keys.logo]: 'SMOOTHMUSIC',
     [keys.waveText]: 'My wave',
     [keys.navbarMain]: 'Main',
     [keys.navbarCollection]: 'Collection',

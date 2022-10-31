@@ -10,6 +10,7 @@ export function AudioContext({children}){
     const [titleTranslate, setTitleTranslate] = useState(<span style={{opacity: '0.1'}}>{textOfMusic !== null ? textOfMusic[0].titleTranslate : null}</span>);
     const [viewTitle, setViewTitle] = useState(false);
     const [played, setPlayed] = useState(true);
+    const [volume, setVolume] = useState(null);
 
     const [originalTextMute, setOriginalTextMute] = useState(true);
     const [translateTextMute, setTranslateTextMute] = useState(true);
@@ -37,7 +38,9 @@ export function AudioContext({children}){
         autoPlay,
         setAutoPlay,
         setShowModalPlaylist,
-        showModalPlaylist
+        showModalPlaylist,
+        volume,
+        setVolume
     }
 
     return (

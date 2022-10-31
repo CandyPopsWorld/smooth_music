@@ -11,6 +11,7 @@ import { useSettingContext } from '../../context/SettingContext';
 import localization from '../../utils/data/localization/index';
 import { keys } from '../../utils/data/localization/keys';
 import './MainSectionUser.scss';
+
 function MainSectionUser(props) {
     const {titleOrigin, titleTranslate, viewTitle} = useAudioContext();
     const {setCurrentAudio, setCurrentTextOfMusic, ids, setIds, setCurrentIdAudio, currentTextOfMusic} = useDatabaseContext();
@@ -81,11 +82,13 @@ function MainSectionUser(props) {
                     <h1 className='user_volna' style={{userSelect: 'none'}} onClick={onRandomAudio}>{currentLocalization !== null ? localization[currentLocalization][keys.waveText] : ''}</h1>
                 </div>
                 :
-                <div className="user_main_text">
-                    <h2 className='title_origin'>{originalTextMute === true ? titleOrigin : null}</h2>
-                    <h2 className='title_translate'>{translateTextMute === true ? titleTranslate : null}</h2>
-                    <h2 className='text_not_found'>{currentTextOfMusic.length <= 1 ? currentLocalization !== null ? localization[currentLocalization][keys.hintNotFoundText] : '' : null}</h2>
-                </div>
+                <>
+                    <div className="user_main_text">
+                        <h2 className='title_origin'>{originalTextMute === true ? titleOrigin : null}</h2>
+                        <h2 className='title_translate'>{translateTextMute === true ? titleTranslate : null}</h2>
+                        <h2 className='text_not_found'>{currentTextOfMusic.length <= 1 ? currentLocalization !== null ? localization[currentLocalization][keys.hintNotFoundText] : '' : null}</h2>
+                    </div>
+                </>
             }
         </div>
     );

@@ -285,28 +285,4 @@ const AccountSettings = ({username, setUsername, avatar, uploadAvatar, updateUse
     )
 };
 
-// const OtherSettings = () => {
-//     return (
-//         <div className="other_settings block_setting">
-//             <Helmet 
-//             title={SETTINGS_OTHER_PAGE_HELMET.title}
-//             description={SETTINGS_OTHER_PAGE_HELMET.description}/>
-//             <div className="other_settings_header">
-//                 <h2>Прочее</h2>
-//             </div>
-//             <div className="other_settings_form">
-//                 <div className="other_settings_form_item">
-//                     <label htmlFor="browser_setting">Сохранять настройки в браузере:</label>
-//                     <input type="checkbox" id='browser_setting' name='browser_setting'/>
-//                 </div>
-
-//                 <div className="other_settings_form_item">
-//                     <label htmlFor="hint_setting">Показывать подсказки в приложении:</label>
-//                     <input type="checkbox" id='hint_setting' name='hint_setting'/>
-//                 </div>
-//             </div>
-//         </div>
-//     )
-// };
-
 export default SettingsSection;

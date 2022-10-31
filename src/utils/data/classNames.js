@@ -7,4 +7,12 @@ const albumClass = (active, uid) => {
     });  
 };
 
-export {albumClass};
+const headerLogoClass = (play) => {
+    return classNames({
+        'user_header_item_logo': true,
+        'played': play,
+        'paused': play === false
+    });  
+};
+
+export {albumClass, headerLogoClass};

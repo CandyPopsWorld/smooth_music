@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import {doc, getDoc, updateDoc, arrayUnion, arrayRemove} from 'firebase/firestore';
-import {ref,getDownloadURL } from "firebase/storage";
+import {ref,getDownloadURL, getBlob } from "firebase/storage";
 import { useAudioContext } from '../../context/AudioContext';
 import { useDatabaseContext } from '../../context/DatabaseContext';
 import { useSearchContext } from '../../context/SearchContext';
@@ -16,6 +16,7 @@ import AddPlaylistModal from '../addPlaylistModal/AddPlaylistModal';
 import { useSettingContext } from '../../context/SettingContext';
 import localization from '../../utils/data/localization/index';
 import { keys } from '../../utils/data/localization/keys';
+import loader from '../../resources/image/loader.gif';
 
 const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVolume, mute, setMute, uniqueid, favoriteClass, setFavoriteClass, clickBackMusic, clickNextMusic, currentIndexMusicListAudio, setRepeatMusicList, repeatMusicList, banClass, setBanClass, setAutoPlay, autoPlay}) => {
     
@@ -43,6 +44,8 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
     const {showModalPlaylist, setShowModalPlaylist} = useAudioContext(false);
 
     const {currentLocalization} = useSettingContext();
+
+    const [loadingDownload, setLoadingDownload] = useState(false);
 
     const getAudioData = async () => {
         if(currentIdAudio === null){
@@ -399,6 +402,24 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
         return `${volume}%`;
     };
 
+    const downloadMusic = async (e) => {
+        e.preventDefault();
+        await setLoadingDownload(true);
+
+        const refAudio = await ref(storage, `audio/${currentIdAudio}`);
+        await getBlob(refAudio).then(blob => {
+            const fileURL = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = fileURL;
+            a.download = audioData.name;
+            document.body.append(a);
+            a.style = 'display: none';
+            setLoadingDownload(false);
+            a.click();
+            a.remove();
+        });
+    };
+
     return (
         <div className="controls">
             <div className="line">
@@ -604,6 +625,15 @@ const Player = ({currentIdAudio, duration, currentTime, audioRef, volume, setVol
                     setElementHint(null);
                 }}>
                     <span style={currentTextOfMusic.length > 1 ? {color: 'green'} : {color: 'red'}}>TXT</span>
+                </div>
+
+                <div className="controls_download_block" style={currentIdAudio !== null ? {pointerEvents: 'all', position: 'relative'} : {pointerEvents: 'none', position: 'relative'}}>
+                    {
+                        loadingDownload === false ? 
+                        <i className="fa-solid fa-download" onClick={downloadMusic} style={{color: 'orangered', marginLeft: '10px'}}></i>
+                        :
+                        <img src={loader} style={{width: '32px', height: '32px'}} alt="" />
+                    }
                 </div>
             </div>
 
